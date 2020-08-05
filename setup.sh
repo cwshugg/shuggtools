@@ -6,7 +6,7 @@ setup_dir=$(pwd)
 function_dir=$setup_dir/funcs
 source_dir=$setup_dir/links
 
-globals=$setup_dir/globals.st
+globals=$setup_dir/globals.sh
 
 # if the source directory exists, wipe it and remake it
 if [ -d "$source_dir" ]; then
@@ -15,9 +15,9 @@ fi
 mkdir $source_dir
 
 # echo the correct "source" command into each function file
-for func in $function_dir/*.st; do
-    # search for the occurrence of 'globals.st'. If it's there we'll assume the
-    # function has run 'source <path>/globals.st' already
+for func in $function_dir/*.sh; do
+    # search for the occurrence of 'globals.sh'. If it's there we'll assume the
+    # function has run 'source <path>/globals.sh' already
     global_source=$(grep -i "$globals" $func)
     
     # if the string was found, remove the old line
@@ -37,16 +37,16 @@ for func in $function_dir/*.st; do
     cat $func >> temp.txt
     cat temp.txt > $func
     rm temp.txt
+
+    # make the file executable
+    chmod 755 $func
 done
 
-# make all st's in the func dir executable
-chmod 755 $function_dir/*.st
-
 # create links for each function
-ln -s -r $function_dir/smite.st             $source_dir/smite
-ln -s -r $function_dir/line_separator.st    $source_dir/sep
-ln -s -r $function_dir/shugg_vimrc.st       $source_dir/shugg_vimrc
-ln -s -r $function_dir/termalert.st         $source_dir/termalert
+ln -s -r $function_dir/smite.sh             $source_dir/smite
+ln -s -r $function_dir/line_separator.sh    $source_dir/sep
+ln -s -r $function_dir/shugg_vimrc.sh       $source_dir/shugg_vimrc
+ln -s -r $function_dir/termalert.sh         $source_dir/termalert
 
 # lastly, modify the path variable to include the source directory in .bashrc
 PATH=$PATH:$source_dir

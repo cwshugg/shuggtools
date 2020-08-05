@@ -1,4 +1,4 @@
-source /data/users/t-coshug/shuggtools/globals.st
+source /data/users/t-coshug/shuggtools/globals.sh
 #!/bin/bash
 # Helper function that simply prints a line across the width of the terminal.
 # Used to visually separate things when dealing with a lot of text. Text can be
