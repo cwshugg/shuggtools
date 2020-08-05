@@ -1,4 +1,4 @@
-source /home/ugrads/nonmajors/cwshugg/personal/shuggtools/globals.sh
+source /data/users/t-coshug/shuggtools/globals.sh
 #!/bin/bash
 # Termalert (terminal alert)
 # Helper function that prints a large, obnoxious message to the terminal to

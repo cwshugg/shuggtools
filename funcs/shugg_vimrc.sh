@@ -1,4 +1,4 @@
-source /home/ugrads/nonmajors/cwshugg/personal/shuggtools/globals.sh
+source /data/users/t-coshug/shuggtools/globals.sh
 #!/bin/bash
 # Helper function that makes a .vimrc with my custom settings in ~/
 #
