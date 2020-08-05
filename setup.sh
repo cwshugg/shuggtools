@@ -45,7 +45,7 @@ done
 
 # create links for each function
 ln -s -r $function_dir/smite.sh             $source_dir/smite
-ln -s -r $function_dir/line_separator.sh    $source_dir/sep
+ln -s -r $function_dir/sep.sh               $source_dir/sep
 ln -s -r $function_dir/shugg_vimrc.sh       $source_dir/shugg_vimrc
 ln -s -r $function_dir/termalert.sh         $source_dir/termalert
 
