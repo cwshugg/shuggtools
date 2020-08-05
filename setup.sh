@@ -41,13 +41,9 @@ for func in $function_dir/*.sh; do
 
     # make the file executable
     chmod 755 $func
+    # create a link for it in the source directory
+    ln -s -r $func $source_dir/$(basename $func .sh)
 done
-
-# create links for each function
-ln -s -r $function_dir/smite.sh             $source_dir/smite
-ln -s -r $function_dir/line_separator.sh    $source_dir/sep
-ln -s -r $function_dir/shugg_vimrc.sh       $source_dir/shugg_vimrc
-ln -s -r $function_dir/termalert.sh         $source_dir/termalert
 
 # lastly, modify the path variable to include the source directory in .bashrc
 PATH=$PATH:$source_dir
