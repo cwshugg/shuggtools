@@ -1,0 +1,4 @@
+# Ignore the 'links' directory - this contains the results of setup.sh that are
+# appended to the $PATH variable
+./links
+
