@@ -6,7 +6,8 @@ setup_dir=$(pwd)
 function_dir=$setup_dir/funcs
 source_dir=$setup_dir/links
 
-globals=$setup_dir/globals.sh
+globals_file=globals.sh
+globals=$setup_dir/$globals_file
 
 # if the source directory exists, wipe it and remake it
 if [ -d "$source_dir" ]; then
@@ -18,7 +19,7 @@ mkdir $source_dir
 for func in $function_dir/*.sh; do
     # search for the occurrence of 'globals.sh'. If it's there we'll assume the
     # function has run 'source <path>/globals.sh' already
-    global_source=$(grep -i "$globals" $func)
+    global_source=$(grep -i "$globals_file" $func)
     
     # if the string was found, remove the old line
     if [ ! -z "$global_source" ]; then
