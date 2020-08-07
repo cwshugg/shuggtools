@@ -1,4 +1,4 @@
-source /data/users/t-coshug/shuggtools/globals.sh
+source /home/cwshugg/shuggtools/globals.sh
 #!/bin/bash
 # Helper function that simply prints a line across the width of the terminal.
 # Used to visually separate things when dealing with a lot of text. Text can be
@@ -7,6 +7,7 @@ source /data/users/t-coshug/shuggtools/globals.sh
 #
 #   Connor Shugg
 
+# main function
 function __shuggtool_line_separator()
 {
     line_character="="
@@ -20,12 +21,7 @@ function __shuggtool_line_separator()
     while getopts "hc:t:" opt; do
         case $opt in
             h)
-                echo "Invocation arguments:"
-                echo "--------------------------------------------------------"
-                echo " -h           Shows this help menu"
-                echo " -c <char>    Sets the line character"
-                echo " -t <text>    Sets the text to be displayed on the line"
-                echo "--------------------------------------------------------"
+                __shuggtool_line_separator_usage
                 return
                 ;;
             c)
@@ -35,19 +31,18 @@ function __shuggtool_line_separator()
                 line_text=${OPTARG}
                 ;;
             *)
-                echo "Run with -h for options."
+                __shuggtool_line_separator_usage
                 return
         esac
     done
-
-    # 'stty size' tells the number of columns in the current terminal window.
-    # We can tell it to look at our current terminal by running 'tty' to get
-    # which /dev/pts/* our terminal belongs to
-    tty_size=$(stty size < $(tty))  # output looks like:       "<rows> <cols>"
-    tty_size_arr=($tty_size)        # turn output into array:  [<rows>, <cols>]
-    columns=${tty_size_arr[1]}      # grab first array slot:   <cols>
     
-    # if the text was not blank, determine where to place it on the line
+    # invoke the global terminal_size function to get the number of columns
+    # making up the current terminal's size
+    __shuggtool_terminal_size
+    columns=$shuggtools_terminal_cols
+
+    # if the text was not blank, determine where to place it on the line (to
+    # ensure the text is centered)
     column_to_write_text=-1
     if [ ! -z "$line_text" ]; then
         # calculate the space on the line the text will make up (strlen + 2
@@ -71,11 +66,25 @@ function __shuggtool_line_separator()
         fi
 
         # append the next character
-        line="$line$line_character";
+        line="$line$line_character"
     done
 
     # print out the line
     echo -e $line
 }
 
+# The 'usage' function prints out the help menu
+function __shuggtool_line_separator_usage()
+{
+    echo "Line separator: prints a line across the width of the terminal."
+    echo ""
+    echo "Invocation arguments:"
+    echo "--------------------------------------------------------"
+    echo " -h           Shows this help menu"
+    echo " -c <char>    Sets the line character"
+    echo " -t <text>    Sets the text to be displayed on the line"
+    echo "--------------------------------------------------------"
+}
+
+# call main function and pass in all arguments
 __shuggtool_line_separator "$@"

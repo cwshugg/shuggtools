@@ -1,5 +1,5 @@
 # Terminal Hackery Helpers
-This is a repository containing tools I created to use on the command-line. It's structured in a way that makes setting it up relatively easy.
+This is a repository containing tools I created to use on the command-line. It's structured to make set up easy.
 
 # Using these tools
 To use these tools yourself, you'll first have to clone the repository:

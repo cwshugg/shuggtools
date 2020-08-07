@@ -1,9 +1,10 @@
-source /data/users/t-coshug/shuggtools/globals.sh
+source /home/cwshugg/shuggtools/globals.sh
 #!/bin/bash
 # Helper function that makes a .vimrc with my custom settings in ~/
 #
 #   Connor Shugg
 
+# main function
 function __shuggtool_vimrc()
 {
     vimrc_location=~/.vimrc

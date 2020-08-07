@@ -1,18 +1,18 @@
-source /data/users/t-coshug/shuggtools/globals.sh
+source /home/cwshugg/shuggtools/globals.sh
 #!/bin/bash
 # Smite: takes in either a process name or PID and attempts to send the SIGKILL
-# signal to it.
+# signal to it. Useful for being too lazy to explicitly call 'kill' or 'pkill'
 #
 #   Connor Shugg
 
-# source global definitions
-
+# main function
 function __shuggtool_smite
 {
     # don't-kill list: processes NOT to kill, even if given as input (useful
     # for when I goof up and accidentally kill my tmux process)
     declare -a nokills=(
         "tmux: server"
+        "bash"
     )
 
     # ------------- Variable/Argument Setup ------------- #
