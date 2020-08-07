@@ -8,7 +8,7 @@ source /home/cwshugg/shuggtools/globals.sh
 function __shuggtool_vimrc()
 {
     vimrc_location=~/.vimrc
-    echo -e "Writing to ${c_green}${vimrc_location}${c_white}..."
+    echo -e "Writing to ${c_green}${vimrc_location}${c_none}..."
     
     # custom .vimrc settings
     echo "\" Connor's Vim Settings" > ~/.vimrc
@@ -19,7 +19,7 @@ function __shuggtool_vimrc()
     echo "set number                              \" displays page numbers" >> ~/.vimrc
     echo "au FileType * set formatoptions-=cro    \" disable automatic comment insertion for all file types" >> ~/.vimrc
 
-    echo -e "${c_green}${vimrc_location}${c_white} written successfully."
+    echo -e "${c_green}${vimrc_location}${c_none} written successfully."
 }
 
 __shuggtool_vimrc "$@"

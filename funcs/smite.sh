@@ -18,7 +18,8 @@ function __shuggtool_smite
     # ------------- Variable/Argument Setup ------------- #
     # make sure at least one argument was given
     if [ $# -lt 1 ]; then
-        echo -e "${c_yellow}Usage: smite <PID/PName>${c_none}"
+        __shuggtool_print_error "smite${c_none} must be invoked with: ${c_yellow}smite <PID/PName>${c_none}"
+#        echo -e "${c_yellow}Usage: smite <PID/PName>${c_none}"
         return
     fi
 

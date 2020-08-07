@@ -51,7 +51,7 @@ function __shuggtool_terminal_alert()
     # print the text (centered)
     echo -e "${color_text}"
     __shuggtool_print_text_centered "$text"
-    echo -e -n "${c_white}"
+    echo -e -n "${c_none}"
 
     # print the bottom section
     for (( i=${#chars_top[@]}; i>=0; i-- ))
@@ -78,7 +78,7 @@ function __shuggtool_terminal_alert_line()
     done
     
     # reset the color at the end of the line and echo it out
-    line="$line$c_white"
+    line="$line${c_none}"
     echo -e $line
 }
 

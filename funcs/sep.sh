@@ -12,7 +12,7 @@ function __shuggtool_line_separator()
 {
     line_character="="
     line_text=""
-    line_color=${c_white}
+    line_color=${c_none}
     line_text_color=${c_yellow}
 
     # check a few possible command-line arguments (set each argument as local

@@ -35,7 +35,7 @@ function __shuggtool_print_error()
     msg=$1
 
     # print the error (to stderr)
-    echo -e "${c_red}Shuggtool error: ${c_white}$msg${c_white}" 1>&2
+    echo -e "${c_red}Shuggtool error: ${c_none}$msg${c_none}" 1>&2
 }
 
 # Helper function that sets two global variables equal to the number of rows
