@@ -1,4 +1,4 @@
-source /home/cwshugg/shuggtools/globals.sh
+source /home/snowmiser/shuggtools/globals.sh
 #!/bin/bash
 # Helper function that simply prints a line across the width of the terminal.
 # Used to visually separate things when dealing with a lot of text. Text can be
@@ -33,6 +33,7 @@ function __shuggtool_line_separator()
             *)
                 __shuggtool_line_separator_usage
                 return
+                ;;
         esac
     done
     

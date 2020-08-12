@@ -1,4 +1,4 @@
-source /home/cwshugg/shuggtools/globals.sh
+source /home/snowmiser/shuggtools/globals.sh
 #!/bin/bash
 # Smite: takes in either a process name or PID and attempts to send the SIGKILL
 # signal to it. Useful for being too lazy to explicitly call 'kill' or 'pkill'
