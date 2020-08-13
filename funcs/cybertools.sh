@@ -58,14 +58,15 @@ function __shuggtool_cybertools()
     mkdir $dir_cyber
     cd $dir_cyber
 
-    # install needed dependencies
+    # ---------------------------- Dependencies ----------------------------- #
     __shuggtool_cybertools_print "Installing ${c_yellow}Python 3${c_none}..."
     sudo apt-get install python3 -y
     echo ""
     __shuggtool_cybertools_print "Installing ${c_yellow}Pip${c_none}..."
     sudo apt-get install python-pip -y
     echo ""
-
+    
+    # -------------------------- Git Repositories --------------------------- #
     # get 'dirsearch'
     __shuggtool_cybertools_print "Installing ${c_ltblue}dirsearch${c_none}..."
     git clone https://github.com/maurosoria/dirsearch.git
@@ -78,6 +79,17 @@ function __shuggtool_cybertools()
     cd $dir_cyber/sherlock
     python3 -m pip install -r requirements.txt
     cd $dir_cyber
+    echo ""
+
+    # -------------------------- apt-get installs --------------------------- #
+    # tcpdump
+    __shuggtool_cybertools_print "Installing ${c_green}tcpdump${c_none}..."
+    sudo apt-get install tcpdump -y
+    echo ""
+    
+    # nmap
+    __shuggtool_cybertools_print "Installing ${c_green}nmap${c_none}..."
+    sudo apt-get install nmap -y
     echo ""
 
 
@@ -114,5 +126,3 @@ function __shuggtool_cybertools_usage()
 
 # call main function
 __shuggtool_cybertools "$@"
-
-
