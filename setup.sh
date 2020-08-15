@@ -49,5 +49,3 @@ done
 PATH=$PATH:$source_dir
 PATH=$PATH:./
 
-echo "Shuggtools initialized."
-
