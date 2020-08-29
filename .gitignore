@@ -2,3 +2,6 @@
 # appended to the $PATH variable
 links
 
+# Ignore the 'info.txt' file produced by setup.sh
+info.txt
+

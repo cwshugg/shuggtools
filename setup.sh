@@ -6,8 +6,10 @@ setup_dir=$(pwd)
 function_dir=$setup_dir/funcs
 source_dir=$setup_dir/links
 
+# set up globals.sh variables and source the file
 globals_file=globals.sh
 globals=$setup_dir/$globals_file
+source $globals
 
 # if the source directory exists, wipe it and remake it
 if [ -d "$source_dir" ]; then
@@ -48,4 +50,9 @@ done
 # lastly, modify the path variable to include the source directory in .bashrc
 PATH=$PATH:$source_dir
 PATH=$PATH:./
+
+
+# ========================== Generating Info File =========================== #
+# invoke the script that writes to the globals file
+__shuggtool_write_info_file $setup_dir/$shuggtools_info_file
 

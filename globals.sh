@@ -23,6 +23,9 @@ c_ltpurple="\033[1;35m"
 c_ltcyan="\033[1;36m"
 c_white="\033[1;37m"
 
+# Information file
+shuggtools_info_file=info.txt
+
 # ============================ Global Functions ============================= #
 # A small helper function that takes in text as a parameter and prints it out
 # as an error
@@ -31,8 +34,9 @@ function __shuggtool_print_error()
     # make sure text was actually given
     if [ $# -lt 1 ]; then
         msg="error-printer must be invoked with one argument."
+    else
+        msg=$1
     fi
-    msg=$1
 
     # print the error (to stderr)
     echo -e "${c_red}Shuggtool error: ${c_none}$msg${c_none}" 1>&2
@@ -84,5 +88,24 @@ function __shuggtool_print_text_centered()
     # print the text
     echo -e "$text"
 
+}
+
+# Helper function that's invoked by setup.sh to create an information file with
+# various version information for shuggtools. Parameters:
+#   $1      The full path to the information file
+function __shuggtool_write_info_file()
+{
+    # make sure an argument was given
+    if [ $# -lt 1 ]; then
+        __shuggtool_print_error "info file could not be set up: the full path was not specified."
+        return
+    fi
+    info_file=$1
+
+    # dump git version information into a text file (for the 'shuggtools' script)
+    shuggtools_git_remote_url="$(git config --get remote.origin.url)"
+    shuggtools_git_commit_hash="$(git rev-parse --short HEAD)"
+    echo "Remote URL:    $shuggtools_git_remote_url"    > $info_file
+    echo "Commit Hash:   $shuggtools_git_commit_hash"   >> $info_file
 }
 
