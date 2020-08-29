@@ -17,6 +17,12 @@ function __shuggtool_summary()
     info_file=$(dirname $0) # should be the path to the links/ directory
     info_file=${info_file}/../$shuggtools_info_file
 
+    # if the file doesn't exist, print an error
+    if [ ! -f $info_file ]; then
+        __shuggtool_print_error "info file not found. Perhaps ${c_ltblue}setup.sh${c_none} has not been run yet?"
+        return
+    fi
+
     # print info file
     echo -e "${c_yellow}Info File${c_none}"
     echo -e "========="
