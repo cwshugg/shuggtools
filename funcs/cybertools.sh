@@ -1,4 +1,4 @@
-source /home/snowmiser/shuggtools/globals.sh
+source /home/cwshugg/toolbox/shuggtools/globals.sh
 #!/bin/bash
 # A shell script that clones and sets up various cybersecurity tools I've used
 # in the past
@@ -35,9 +35,11 @@ function __shuggtool_cybertools()
                 ;;
         esac
     done
-
+    
+    dir_cyber=$(realpath $dir_cyber)
     # update alias file location
-    alias_file=$dir_cyber/aliases.sh
+    alias_file_name=aliases.sh
+    alias_file=$dir_cyber/$alias_file_name
 
 
     # if the directory already exists, we'll blindly assume this script has already
@@ -95,12 +97,17 @@ function __shuggtool_cybertools()
 
     # set up the shell script with aliases
     __shuggtool_cybertools_print "Creating alias file..."
+    # (create it if it doesn't exist)
+    if [ ! -f $alias_file ]; then
+        touch $alias_file
+    fi
+    # write in aliases
     echo "#!/bin/bash"                                                      > $alias_file
     echo "# Aliases for cybertools in this directory"                       >> $alias_file
     echo "alias dirsearch=\"python3 $dir_cyber/dirsearch/dirsearch.py\""    >> $alias_file
     echo "alias sherlock=\"python3 $dir_cyber/sherlock/sherlock\""          >> $alias_file
 
-    __shuggtool_cybertools_print "Cybertool setup complete. Run \"source $alias_file\" to assign aliases."
+    __shuggtool_cybertools_print "Cybertool setup complete. Run \"source $dir_cyber/$alias_file_name\" to assign aliases."
 }
 
 # print helper function
