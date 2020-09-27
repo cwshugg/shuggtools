@@ -1,4 +1,3 @@
-source /home/ugrads/nonmajors/cwshugg/personal/shuggtools/globals.sh
 # A small function that prints some basic information on shuggtools
 #
 #   Connor Shugg

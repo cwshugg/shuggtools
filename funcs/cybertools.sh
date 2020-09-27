@@ -1,4 +1,3 @@
-source /home/cwshugg/toolbox/shuggtools/globals.sh
 #!/bin/bash
 # A shell script that clones and sets up various cybersecurity tools I've used
 # in the past
