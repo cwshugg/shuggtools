@@ -132,3 +132,4 @@ function __shuggtool_cybertools_usage()
 
 # call main function
 __shuggtool_cybertools "$@"
+
