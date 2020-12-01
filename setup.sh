@@ -51,6 +51,9 @@ done
 PATH=$PATH:$source_dir
 PATH=$PATH:./
 
+# set up aliases
+source aliases.sh
+
 
 # ========================== Generating Info File =========================== #
 # invoke the script that writes to the globals file
