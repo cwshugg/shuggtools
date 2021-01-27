@@ -14,6 +14,9 @@ source $globals
 # if the source directory exists, just exit - no need to remake
 if [ -d "$source_dir" ]; then
     return;
+else
+    # otherwise, we'll make the directory
+    mkdir $source_dir
 fi
 
 # echo the correct "source" command into each function file
