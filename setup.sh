@@ -11,11 +11,10 @@ globals_file=globals.sh
 globals=$setup_dir/$globals_file
 source $globals
 
-# if the source directory exists, wipe it and remake it
+# if the source directory exists, just exit - no need to remake
 if [ -d "$source_dir" ]; then
-    rm -rf $source_dir
+    return;
 fi
-mkdir $source_dir
 
 # echo the correct "source" command into each function file
 for func in $function_dir/*.sh; do
