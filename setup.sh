@@ -17,9 +17,11 @@ if [ $# -ge 1 ] && [ "$1" == "-f" ]; then
     rm -rf $source_dir
 fi
 
-# if the source directory exists, just exit - no need to remake
+# if the source directory exists, just modify the path and exit
 if [ -d "$source_dir" ]; then
-    return;
+    PATH=$PATH:$source_dir
+    PATH=$PATH:./
+    return
 else
     # otherwise, we'll make the directory
     mkdir $source_dir
