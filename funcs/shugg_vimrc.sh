@@ -1,4 +1,3 @@
-#!/bin/bash
 # Helper function that makes a .vimrc with my custom settings in ~/
 #
 #   Connor Shugg

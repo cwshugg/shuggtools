@@ -1,4 +1,3 @@
-#!/bin/bash
 # Creates a new shared tmux session with a random name. The socket location
 # and name can be specified to replace the default.
 #

@@ -1,4 +1,3 @@
-source /home/snowmiser/shuggtools/globals.sh
 # Helper function that makes ~/.tmux.conf and applies settings to it
 #
 #   Connor Shugg

@@ -1,4 +1,3 @@
-#!/bin/bash
 # Termalert (terminal alert)
 # Helper function that prints a large, obnoxious message to the terminal to
 # alert me when something happens. For example, this could be used for:
