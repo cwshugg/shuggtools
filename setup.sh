@@ -11,6 +11,12 @@ globals_file=globals.sh
 globals=$setup_dir/$globals_file
 source $globals
 
+# if we got "-f" as the first argument, we'll force a setup by removing
+# the source directory
+if [ $# -ge 1 ] && [ "$1" == "-f" ]; then
+    rm -rf $source_dir
+fi
+
 # if the source directory exists, just exit - no need to remake
 if [ -d "$source_dir" ]; then
     return;
