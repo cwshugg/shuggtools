@@ -92,6 +92,10 @@ function __shuggtool_cybertools()
     sudo apt-get install nmap -y
     echo ""
 
+    # hping3
+    __shuggtool_cybertools_print "Installing ${c_green}hping3${c_none}..."
+    sudo apt-get install hping3 -y
+    echo ""
 
     # set up the shell script with aliases
     __shuggtool_cybertools_print "Creating alias file..."
