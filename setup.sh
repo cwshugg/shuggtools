@@ -20,34 +20,29 @@ else
 fi
 
 # echo the correct "source" command into each function file
+echo -e -n "\033[33mshuggtools\033[0m: initializing "
 for func in $function_dir/*.sh; do
-    # search for the occurrence of 'globals.sh'. If it's there we'll assume the
-    # function has run 'source <path>/globals.sh' already
-    global_source=$(grep -i "$globals_file" $func)
-    
-    # if the string was found, remove the old line
-    if [ ! -z "$global_source" ]; then
-        # replace all "/" with "\/" to be read as escape sequences by sed
-        sed_pattern=$(echo "$global_source" | sed 's#/#\\/#g')
-        # use sed to delete the line where the pattern occurs
-        temp=$(sed "/${sed_pattern}/d" $func)
-        echo "$temp" > $func
+    # search for the occurrence of the 'source ..../global.sh' in the function
+    global_source=$(grep -i "source $globals" $func)
+
+    # if it's not found, echo it into the top of the file (with a temp file),
+    # along with a "#!/bin/bash" shebang
+    if [ -z "$global_source" ]; then
+        echo "#!/bin/bash" > temp.txt
+        echo "source $globals" >> temp.txt
+        cat $func >> temp.txt
+        cat temp.txt > $func
+        rm temp.txt
     fi
 
-    # TODO: put "#!/bin/bash" before the "source" line
-
-    # echo the source command and the file contents into a temp file, then move
-    # it all back to the original file
-    echo "source $globals" > temp.txt
-    cat $func >> temp.txt
-    cat temp.txt > $func
-    rm temp.txt
-
-    # make the file executable
+    # at this point, we know it's sourcing the correct globals file, so we'll
+    # make the file executable and create a link for it in the source dir
     chmod 755 $func
-    # create a link for it in the source directory
-    ln -s -r $func $source_dir/$(basename $func .sh)
+    ln -s $func $source_dir/$(basename $func .sh)
+    
+    echo -n "."
 done
+echo -e " \033[32mdone\033[0m"
 
 # lastly, modify the path variable to include the source directory in .bashrc
 PATH=$PATH:$source_dir
