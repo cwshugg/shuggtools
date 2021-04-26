@@ -11,6 +11,14 @@ globals_file=globals.sh
 globals=$setup_dir/$globals_file
 source $globals
 
+# sourcing and finalizing function
+function __shuggtools_setup_finalize
+{
+    PATH=$PATH:$source_dir
+    PATH=$PATH:./
+    source aliases.sh
+}
+
 # if we got "-f" as the first argument, we'll force a setup by removing
 # the source directory
 if [ $# -ge 1 ] && [ "$1" == "-f" ]; then
@@ -19,8 +27,7 @@ fi
 
 # if the source directory exists, just modify the path and exit
 if [ -d "$source_dir" ]; then
-    PATH=$PATH:$source_dir
-    PATH=$PATH:./
+    __shuggtools_setup_finalize
     return
 else
     # otherwise, we'll make the directory
@@ -52,13 +59,7 @@ for func in $function_dir/*.sh; do
 done
 echo -e " \033[32mdone\033[0m"
 
-# lastly, modify the path variable to include the source directory in .bashrc
-PATH=$PATH:$source_dir
-PATH=$PATH:./
-
-# set up aliases
-source aliases.sh
-
+__shuggtools_setup_finalize
 
 # ========================== Generating Info File =========================== #
 # invoke the script that writes to the globals file
