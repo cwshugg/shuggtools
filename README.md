@@ -15,8 +15,10 @@ Once cloned, all you *should* need to do is source the setup script:
 
 If you'd like to have this source automatically, place something like this inside your `.bashrc` or `.bash_profile`:
 
-    old_dir=$(pwd)
-    shuggtools_setup=<path_to_repo>/shuggtools/setup.sh
-    cd $(dirname $shuggtools_setup)
-    source $shuggtools_setup
-    cd $old_dir
+```bash
+old_dir=$(pwd)
+cd /home/pi/personal/shuggtools
+source setup.sh
+cd $old_dir
+```
+
