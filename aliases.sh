@@ -18,7 +18,8 @@ pc3="0;30;128"      # blue      ( 20,  55, 143)
 pc_black="0;0;0"    # black
 pc_white="255;255;255" # white
 pc_none="0"         # none
-PS1="\[\033[${bgc};${pc3};${fgc};${pc_white}m\] \u \[\033[${bgc};${pc2};${fgc};${pc_black}m\] \h \[\033[${bgc};${pc1};${fgc};${pc_black}m\] \W \[\033[${pc_none}m\] "
+p_suffix="▖"
+PS1="\[\033[${bgc};${pc3};${fgc};${pc_white}m\] \u \[\033[${bgc};${pc2};${fgc};${pc_black}m\] \h \[\033[${bgc};${pc1};${fgc};${pc_black}m\] \W \[\033[${bgc};${pc_black};${fgc};${pc1}m\]${p_suffix}\[\033[${pc_none}m\] "
 
 # standard colored prompt
 #PS1="[\[\033[01;32m\]\u\[\033[00m\]@\[\033[01;31m\]\h\[\033[00m\]: \[\033[01;36m\]\W\[\033[00m\]] ";
