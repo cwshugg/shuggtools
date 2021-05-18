@@ -19,7 +19,7 @@ pc_black="0;0;0"    # black
 pc_white="255;255;255" # white
 pc_none="0"         # none
 p_suffix="$(echo -e '\u2596')" #"▖"
-PS1="\[\033[${bgc};${pc3};${fgc};${pc_white}m\] \u \[\033[${bgc};${pc2};${fgc};${pc_black}m\] \h \[\033[${bgc};${pc1};${fgc};${pc_black}m\] \W \[\033[${bgc};${pc_black};${fgc};${pc1}m\]${p_suffix}\[\033[${pc_none}m\] "
+PS1="\[\033[${bgc};${pc3};${fgc};${pc_white}m\] \u \[\033[${bgc};${pc2};${fgc};${pc_black}m\] \h \[\033[${bgc};${pc1};${fgc};${pc_black}m\] \W \[\033[${pc_none}m\]\[\033[${fgc};${pc1}m\]${p_suffix}\[\033[${pc_none}m\] "
 
 # standard colored prompt
 #PS1="[\[\033[01;32m\]\u\[\033[00m\]@\[\033[01;31m\]\h\[\033[00m\]: \[\033[01;36m\]\W\[\033[00m\]] ";
