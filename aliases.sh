@@ -35,7 +35,7 @@ if [ $ptoggle -eq 0 ]; then
     PS1="\[\033[${bgc};${pc3};${fgc};${pc_white}m\] \u \[\033[${bgc};${pc2};${fgc};${pc_white}m\] \h \[\033[${bgc};${pc1};${fgc};${pc_black}m\] \W \[\033[${pc_none}m\]\[\033[${fgc};${pc1}m\]${p_suffix}\[\033[${pc_none}m\] "
 elif [ $ptoggle -eq 1 ]; then
     # fancy prompt 2
-    PS1="\[\033[${bgc};${pc3};${fgc};${pc_white}m\] \u \[\033[${pc_none}m\]${b_line}${b_fork}${b_line}\[\033[${bgc};${pc2};${fgc};${pc_white}m\] \h \[\033[${bgc};${pc1};${fgc};${pc_black}m\] \W \[\033[${pc_none}m\]\[\033[${fgc};${pc1}m\]${p_suffix}\[\033[${pc_none}m\]\n          ${b_corner}${b_line} "
+    PS1="\[\033[${bgc};${pc3};${fgc};${pc_white}m\] \u \[\033[${pc_none}m\]${b_line}${b_fork}${b_line}\[\033[${bgc};${pc2};${fgc};${pc_white}m\] \h \[\033[${bgc};${pc1};${fgc};${pc_black}m\] \w \[\033[${pc_none}m\]\[\033[${fgc};${pc1}m\]${p_suffix}\[\033[${pc_none}m\]\n          ${b_corner}${b_line} "
 else
     # standard colored prompt
     PS1="[\[\033[${fgc};${pc6}m\]\u\[\033[${pc_none}m\]@\[\033[${fgc};${pc5}m\]\h\[\033[${pc_none}m\]: \[\033[${fgc};${pc4}m\]\W\[\033[${pc_none}m\]] "
