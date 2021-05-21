@@ -26,7 +26,7 @@ pc_black="0;0;0"    # black
 pc_white="255;255;255" # white
 pc_none="0"         # none
 p_suffix="" #"$(echo -e '\u2596')"
-b_line="$(echo -e '\u2500')"
+b_line="$(echo -e '\u2501')"
 b_fork="$(echo -e '\u2533')"
 b_corner="$(echo -e '\u2517')"
 
