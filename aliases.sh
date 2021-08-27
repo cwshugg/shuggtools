@@ -3,6 +3,12 @@
 #
 #   Connor Shugg
 
+# cscope adjustments (if it's installed)
+cscope_version="$(cscope --version 2>&1)"
+if [[ ${cscope_version} == *"version"* ]]; then
+    CSCOPE_EDITOR=$(which vim)
+fi
+
 # coding/debugging aliases
 alias valgfull="valgrind -v --leak-check=full --show-leak-kinds=all --track-origins=yes"
 
