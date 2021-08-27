@@ -6,7 +6,7 @@
 # cscope adjustments (if it's installed)
 cscope_version="$(cscope --version 2>&1)"
 if [[ ${cscope_version} == *"version"* ]]; then
-    CSCOPE_EDITOR=$(which vim)
+    export CSCOPE_EDITOR=$(which vim)
 fi
 
 # coding/debugging aliases
