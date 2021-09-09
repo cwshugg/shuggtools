@@ -109,3 +109,24 @@ function __shuggtool_write_info_file()
     echo "Commit Hash:   $shuggtools_git_commit_hash"   >> $info_file
 }
 
+# Helper function that takes in a single string argument and sets a global
+# variable equal to the hashed value. Makes use of cksum.
+shuggtools_hash_string_retval=0
+function __shuggtool_hash_string()
+{
+    # first, attempt to find an executable to use to hash the string
+    hasher=$(which cksum)
+    if [ -z $hasher ]; then
+        hasher=$(which sum)
+    fi
+    # if a suitable executable can't be found, default to 0 and return
+    if [ -z $hasher ]; then
+        __shuggtool_hash_string_retval=0
+        return
+    fi
+
+    # otherwise, pass the string as input into the hashing program
+    __shuggtool_hash_string_retval=$(echo "$1" | $hasher | cut -f 1 -d ' ')
+}
+
+
