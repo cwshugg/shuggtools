@@ -8,8 +8,8 @@ globals_file=globals.sh
 source $globals_file
 
 # cscope adjustments (if it's installed)
-cscope_version="$(cscope --version 2>&1)"
-if [[ ${cscope_version} == *"version"* ]]; then
+cscope_exists="$(which cscope 2>&1)"
+if [[ ${cscope_exists} != *"no cscope"* ]]; then
     export CSCOPE_EDITOR=$(which vim)
 fi
 
