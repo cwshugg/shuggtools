@@ -17,6 +17,7 @@ function __shuggtools_setup_finalize
     PATH=$PATH:$source_dir
     PATH=$PATH:./
     source aliases.sh
+    source prompt.sh
 }
 
 # if we got "-f" as the first argument, we'll force a setup by removing
