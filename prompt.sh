@@ -57,9 +57,11 @@ fi
 if [[ "${username}" == "root" ]]; then
     ptoggle=1
     text_color1="0;255;0"       # green username text
+    text_color2="0;255;0"       # green text
+    text_color3="128;255;128"   # green text
     prompt_color1="14;49;57"    # dark blue-green
-    prompt_color2="0;100;17"    # green
-    prompt_color3="136;225;136" # light green
+    prompt_color2="32;32;32"    # dark gray
+    prompt_color3="40;40;40"    # not-as-dark gray
 fi
 
 
