@@ -16,12 +16,12 @@ bgc="48;2"          # prefix for background colors
 fgc="38;2"          # prefix for foreground colors
 
 # set up three arrays of colors choices, for the three prompt colors
-#                        dark blue  dark purple dark green
-declare -a pc1_choices=("0;30;128" "68;51;113" "22;113;13")
-#                        dark red    magenta      dark orange
-declare -a pc2_choices=("180;17;33" "145;31;160" "184;94;12")
-#                        yellow      light blue
-declare -a pc3_choices=("210;129;7" "152;213;231" "207;239;109")
+#                        dark blue  dark purple dark blue-green
+declare -a pc1_choices=("0;30;128" "68;51;113" "14;59;67")
+#                        dark red    magenta      aquamarine
+declare -a pc2_choices=("180;17;33" "145;31;160" "3;152;107")
+#                        yellow      light blue   light pink
+declare -a pc3_choices=("210;129;7" "152;213;231" "235;186;179")
 
 
 pc_black="0;0;0"    # black
@@ -37,6 +37,9 @@ __shuggtool_hash_string "${username}"
 username_hash=$__shuggtool_hash_string_retval
 
 # choose default values
+text_color1=${pc_white}
+text_color2=${pc_white}
+text_color3=${pc_black}
 prompt_color1="${pc1_choices[0]}"
 prompt_color2="${pc2_choices[0]}"
 prompt_color3="${pc3_choices[0]}"
@@ -50,10 +53,20 @@ if [ $username_hash -ne 0 ]; then
     prompt_color2=${pc2_choices[$index2]}
     prompt_color3=${pc3_choices[$index3]}
 fi
+# make adjustments if we're the root user
+if [[ "${username}" == "root" ]]; then
+    ptoggle=1
+    text_color1="0;255;0"       # green username text
+    prompt_color1="14;49;57"    # dark blue-green
+    prompt_color2="0;100;17"    # green
+    prompt_color3="136;225;136" # light green
+fi
+
+
 # make the color formatter strings
-prompt_format1="${bgc};${prompt_color1};${fgc};${pc_white}"
-prompt_format2="${bgc};${prompt_color2};${fgc};${pc_white}"
-prompt_format3="${bgc};${prompt_color3};${fgc};${pc_black}"
+prompt_format1="${bgc};${prompt_color1};${fgc};${text_color1}"
+prompt_format2="${bgc};${prompt_color2};${fgc};${text_color2}"
+prompt_format3="${bgc};${prompt_color3};${fgc};${text_color3}"
 
 
 if [ $ptoggle -eq 0 ]; then
