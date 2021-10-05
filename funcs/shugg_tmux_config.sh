@@ -8,20 +8,10 @@ function __shuggtool_tmux_config()
     config_location=~/.tmux.conf
     echo -e "Writing to ${c_green}${config_location}${c_none}..."
     
-    # based on the username, decide what color to use
-    status_bg_color="colour18"  # dark blue
-    status_fg_color="colour172" # yellow
+    status_bg_color="colour235" # dark gray
+    status_fg_color="colour46"  # green
     pane_active_color="${status_fg_color}"
     pane_inactive_color="${status_bg_color}"
-
-    # special case for root
-    username=$(whoami)
-    if [[ "$username" == "root" ]]; then
-        status_bg_color="colour235" # dark gray
-        status_fg_color="colour46"  # green
-        pane_active_color="${status_fg_color}"
-        pane_inactive_color="${status_bg_color}"
-    fi
 
     # custom tmux settings
     echo "# Connor's tmux settings"                     > $config_location
