@@ -23,6 +23,12 @@ c_ltpurple="\033[1;35m"
 c_ltcyan="\033[1;36m"
 c_white="\033[1;37m"
 
+# Tree-like space-tabs
+STAB="    "
+STAB_TREE1=" \u2514\u2500 "
+STAB_TREE2=" \u251c\u2500 "
+STAB_TREE3=" \u2503  "
+
 # Information file
 shuggtools_info_file=info.txt
 
