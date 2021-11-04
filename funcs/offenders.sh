@@ -22,7 +22,7 @@ function __shuggtool_storage_offenders_search()
 {
     local sdir=$1
     local snum=$2
-    
+
     # make an array of colors to use to draw the 'heats' of large-to-small
     # files (nice visual effect)
     local heatcolors=("\033[38;2;255;0;0m"   "\033[38;2;255;100;0m" \
@@ -80,6 +80,8 @@ function __shuggtool_storage_offenders_search()
         # increment our counter
         count=$((count+1))
     done
+
+    return 0
 }
 
 # Main function
@@ -111,6 +113,16 @@ function __shuggtool_storage_offenders()
                 ;;
         esac
     done
+
+    # perform some error-checking on the inputs
+    if [ ! -d ${sdir} ]; then
+        __shuggtool_print_error "${sdir} could not be found."
+        return 1
+    fi
+    if [ ${snum} -le 0 ]; then
+        __shuggtool_print_error "-d must be followed by a positive non-zero integer."
+        return 2
+    fi
     
     # print a message to the user
     echo -e "Searching ${c_ltcyan}${sdir}${c_none} for the top" \
@@ -118,6 +130,7 @@ function __shuggtool_storage_offenders()
     
     # search the base directory
     __shuggtool_storage_offenders_search ${sdir} ${snum}
+    return 0
 }
 
 # pass all args to main function
