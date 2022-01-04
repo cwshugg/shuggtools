@@ -1,15 +1,51 @@
 # Screen Cover (sc)
 # A function used to display some sort of screen-saver or cover over what I
-# currentl have in my terminal. Good for privacy!
+# currently have in my terminal. Good for privacy!
 #
 #   Connor Shugg
+
+__shuggtool_screen_cover_sc_dir=~/.sc
+
+# binary locator function
+__shuggtool_screen_cover_cmatrix_bin=cannot_find_cmatrix_bin
+function __shuggtool_screen_cover_find_binary()
+{
+    cmatrix_dir=${__shuggtool_screen_cover_sc_dir}
+
+    # if the directory doesn't exist, return
+    if [ ! -d ${cmatrix_dir} ]; then
+        return
+    fi
+
+    # iterate through all 'find' results
+    bpath=0
+    for fpath in $(find ${cmatrix_dir} -name "cmatrix"); do
+        # if the file path is a directory, ignore it
+        if [ -d ${fpath} ]; then
+            continue
+        fi
+        # grab the current one
+        bpath=${fpath}
+        
+        # if this is an executable, it's probably what we're looking for
+        if [[ "$(file ${fpath})" == *"ELF"* ]]; then
+            break
+        fi
+    done
+    
+    # save to the global variable
+    __shuggtool_screen_cover_cmatrix_bin=${bpath}
+}
 
 # main function
 function __shuggtool_screen_cover()
 {
-    sc_dir=~/.sc
+    sc_dir=${__shuggtool_screen_cover_sc_dir}
     cmatrix_url=https://github.com/abishekvashok/cmatrix/releases/download/v2.0/cmatrix-v2.0-Butterscotch.tar
-    cmatrix_bin=~/.sc/cmatrix
+
+    # attempt to locate the binary
+    __shuggtool_screen_cover_find_binary
+    cmatrix_bin=${__shuggtool_screen_cover_cmatrix_bin}
 
     # if the screen cover directory doesn't exist, make it
     if [ ! -d ${sc_dir} ]; then
@@ -43,17 +79,22 @@ function __shuggtool_screen_cover()
         rm ${tarfile}
         echo -e "${c_ltgreen}success.${c_none}"
 
-        # rename the directory and copy the executable out
-        echo -n "Copying binary... "
-        mv ./cmatrix ./cm
-        cp ./cm/cmatrix ${cmatrix_bin}
-        if [ ! -f ${cmatrix_bin} ]; then
-            echo -e "${c_red}failure.${c_none}"
-            __shuggtool_print_error "failed to copy executable to ${cmatrix_bin}."
+        # attempt to build from source
+        cd ./cmatrix
+        rm -f ./cmatrix # remove any old gunk
+        ./configure
+        make
+        cd ..
+
+        # locate the binary
+        echo -n "Locating binary... "
+        __shuggtool_screen_cover_find_binary
+        bpath=${__shuggtool_screen_cover_cmatrix_bin}
+        if [ ! -f ${bpath} ]; then
+            echo -e "${c_red}failure.${c_none} Failed to find binary."
             return 3
         fi
-        rm -rf ./cm
-        echo -e "${c_ltgreen}success.${c_none}"
+        echo -e "${c_ltgreen}success.${c_none} (${c_dkgray}${bpath}${c_none})"
 
         cd ${old_dir}
         echo "Installation successful. Run this again to start the screen cover."
@@ -61,7 +102,7 @@ function __shuggtool_screen_cover()
     fi
     
     # run the cmatrix binary
-    ${cmatrix_bin} 2> /dev/null
+    ${cmatrix_bin} -ba
     return 0
 }
 
