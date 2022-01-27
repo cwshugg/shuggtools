@@ -83,7 +83,16 @@ function __shuggtool_vimhelp()
     __shuggtool_vimhelp_print "${pfx}" "Move cursor right" "l"
     __shuggtool_vimhelp_print "${pfx}" "Move cursor right 10 columns" "10l"
     __shuggtool_vimhelp_print "${pfx}" "Move cursor to the top of the screen" "H"
-    __shuggtool_vimhelp_print "${STAB_TREE1}" "Move cursor to the bottom of the screen" "L"
+    __shuggtool_vimhelp_print "${pfx}" "Move cursor to the middle of the screen" "M"
+    __shuggtool_vimhelp_print "${pfx}" "Move cursor to the bottom of the screen" "L"
+    __shuggtool_vimhelp_print "${STAB_TREE1}" "Move cursor to a specific line 134" ":134"
+
+    # insert mode
+    __shuggtool_vimhelp_print_section "Insert Mode"
+    __shuggtool_vimhelp_print "${pfx}" "Enter insert mode" "i"
+    __shuggtool_vimhelp_print "${pfx}" "Enter insert mode with the cursor one character to the right" "a"
+    __shuggtool_vimhelp_print "${pfx}" "Enter insert mode with the cursor at the beginning of the line" "I"
+    __shuggtool_vimhelp_print "${pfx}" "Enter insert mode with the cursor at the end of the line" "A"
 
     # markers
     __shuggtool_vimhelp_print_section "Markers"
@@ -98,12 +107,28 @@ function __shuggtool_vimhelp()
     echo -e "${STAB_TREE2}Try swapping the ${cc}d${cn} for ${cc}c${cn} in some commands to enter insert mode."
     __shuggtool_vimhelp_print "${pfx}" "Delete current line" "dd"
     __shuggtool_vimhelp_print "${pfx}" "Delete the next 10 lines, starting at the cursor" "10dd"
+    __shuggtool_vimhelp_print "${pfx}" "Delete the current word, starting at the cursor" "dw"
+    __shuggtool_vimhelp_print "${pfx}" "Delete the next 10 words, starting at the cursor" "10dw"
     __shuggtool_vimhelp_print "${pfx}" "Delete everything inside current brackets" "di{"
-    __shuggtool_vimhelp_print "${STAB_TREE3}" "${STAB}Where ${cc}{${cn} can also be: ${cc}(${cn}" ""
+    __shuggtool_vimhelp_print "${STAB_TREE3}" "${STAB}Where ${cc}{${cn} can also be: ${cc}( \"${cn}" ""
     __shuggtool_vimhelp_print "${pfx}" "Delete everything inside current brackets AND the brackets themselves" "da{"
     __shuggtool_vimhelp_print "${pfx}" "Delete all text from the cursor up to a marker" "d'x"
     __shuggtool_vimhelp_print "${STAB_TREE3}" "${STAB}Where ${cc}x${cn} is a previously-set marker" ""
     __shuggtool_vimhelp_print "${STAB_TREE1}" "" "TODO: ADD MORE"
+
+    # copy and paste
+    __shuggtool_vimhelp_print_section "Copy and Paste"
+    echo -e "${STAB_TREE2}These mostly start with ${cc}y${cn}, short for \"yank\""
+    __shuggtool_vimhelp_print "${pfx}" "Copy the current line" "yy"
+    __shuggtool_vimhelp_print "${pfx}" "Copy the current word" "yw"
+    __shuggtool_vimhelp_print "${pfx}" "Paste what's on the clipboard" "p"
+
+    # search and replace
+    __shuggtool_vimhelp_print_section "Search and Replace"
+    __shuggtool_vimhelp_print "${pfx}" "Search for the word \"dog\"" "/dog"
+    __shuggtool_vimhelp_print "${pfx}" "Move cursor to the next occurrence of the searched term" "n"
+    __shuggtool_vimhelp_print "${pfx}" "Move cursor to the previous occurrence of the searched term" "N"
+    __shuggtool_vimhelp_print "${pfx}" "Search and replace \"cat\" with \"dog\" in the whole file" ":%s/cat/dog/g"
    
     # other text editing
     __shuggtool_vimhelp_print_section "Other Keybindings"

@@ -47,8 +47,8 @@ function __shuggtool_vimrc_theme()
 
     # copy the color file into the vim color subdirectory, and update the
     # global color variable
-    cp ${color_file} ${vim_color_dir}/shugg.vim
-    __shuggtool_vimrc_theme_name="shugg"
+    cp ${color_file} ${vim_color_dir}/eldar.vim
+    __shuggtool_vimrc_theme_name="eldar"
     
     # once finished, remove the repository directory
     rm -rf ${theme_repo_dir}
@@ -64,13 +64,27 @@ function __shuggtool_vimrc()
     echo -e "Writing to ${c_green}${vimrc_location}${c_none}..."
     
     # custom .vimrc settings
-    echo "\" Connor's Vim Settings" > $vimrc_location
-    echo "syntax on                               \" syntax highlighting" >> $vimrc_location
-    echo "colorscheme ${__shuggtool_vimrc_theme_name} \" modifies color scheme" >> $vimrc_location
-    echo "set tabstop=4 shiftwidth=4 expandtab    \" tabs = 4 spaces" >> $vimrc_location
-    echo "set autoindent                          \" forces vim to auto-indent" >> $vimrc_location
-    echo "set number                              \" displays page numbers" >> $vimrc_location
-    echo "au FileType * set formatoptions-=cro    \" disable automatic comment insertion for all file types" >> $vimrc_location
+    echo -e "\" Connor's Vim Settings\n" \
+            "syntax on                               \" syntax highlighting\n" \
+            "colorscheme ${__shuggtool_vimrc_theme_name} \" modifies color scheme\n" \
+            "set tabstop=4 shiftwidth=4 expandtab    \" tabs = 4 spaces\n" \
+            "set autoindent                          \" forces vim to auto-indent\n" \
+            "set number                              \" displays page numbers\n" \
+            "au FileType * set formatoptions-=cro    \" disable automatic comment insertion for all file types\n" \
+            "\n" \
+            "\" line/column highlighting\n" \
+            "set cursorline                          \" highlight current line cursor is on\n" \
+            "hi CursorLine ctermbg=234               \" gray color for current line highlighting\n" \
+            "set cursorcolumn                        \" highlight current column cursor is on\n" \
+            "hi CursorColumn ctermbg=233             \" dark gray color for current column highlighting\n" \
+            "\n" \
+            "\" search settings\n" \
+            "set hlsearch                            \" highlight search results\n" \
+            "set is                                  \" highlight searches as you type\n" \
+            "\" the below shortcut allows you to press space to clear highlighted search terms\n" \
+            "\" thanks to: https://vim.fandom.com/wiki/Highlight_all_search_pattern_matches\n" \
+            "nnoremap <silent> <Space> :nohlsearch<Bar>:echo<CR>\n" \
+            "" > ${vimrc_location}
 
     echo -e "${c_green}${vimrc_location}${c_none} written successfully."
 }
