@@ -85,14 +85,21 @@ function __shuggtool_vimhelp()
     __shuggtool_vimhelp_print "${pfx}" "Move cursor to the top of the screen" "H"
     __shuggtool_vimhelp_print "${pfx}" "Move cursor to the middle of the screen" "M"
     __shuggtool_vimhelp_print "${pfx}" "Move cursor to the bottom of the screen" "L"
-    __shuggtool_vimhelp_print "${STAB_TREE1}" "Move cursor to a specific line 134" ":134"
+    __shuggtool_vimhelp_print "${pfx}" "Move cursor to a specific line 134" ":134"
+    __shuggtool_vimhelp_print "${pfx}" "Move cursor to 35% of the way through the file" "35%"
+    __shuggtool_vimhelp_print "${pfx}" "Jump to the next word" "w"
+    __shuggtool_vimhelp_print "${pfx}" "Jump to next non-whitespace" "W"
+    __shuggtool_vimhelp_print "${pfx}" "Page up" "Ctrl-b"
+    __shuggtool_vimhelp_print "${pfx}" "Page down" "Ctrl-f"
+    __shuggtool_vimhelp_print "${pfx}" "Jump to the end of the line" "$"
+    __shuggtool_vimhelp_print "${STAB_TREE1}" "Jump to the beginning of the line" "^"
 
     # insert mode
     __shuggtool_vimhelp_print_section "Insert Mode"
     __shuggtool_vimhelp_print "${pfx}" "Enter insert mode" "i"
     __shuggtool_vimhelp_print "${pfx}" "Enter insert mode with the cursor one character to the right" "a"
     __shuggtool_vimhelp_print "${pfx}" "Enter insert mode with the cursor at the beginning of the line" "I"
-    __shuggtool_vimhelp_print "${pfx}" "Enter insert mode with the cursor at the end of the line" "A"
+    __shuggtool_vimhelp_print "${STAB_TREE1}" "Enter insert mode with the cursor at the end of the line" "A"
 
     # markers
     __shuggtool_vimhelp_print_section "Markers"
@@ -122,6 +129,7 @@ function __shuggtool_vimhelp()
     __shuggtool_vimhelp_print "${pfx}" "Copy the current line" "yy"
     __shuggtool_vimhelp_print "${pfx}" "Copy the current word" "yw"
     __shuggtool_vimhelp_print "${pfx}" "Paste what's on the clipboard" "p"
+    __shuggtool_vimhelp_print "${STAB_TREE1}" "" "TODO: ADD MORE"
 
     # search and replace
     __shuggtool_vimhelp_print_section "Search and Replace"
@@ -129,12 +137,13 @@ function __shuggtool_vimhelp()
     __shuggtool_vimhelp_print "${pfx}" "Move cursor to the next occurrence of the searched term" "n"
     __shuggtool_vimhelp_print "${pfx}" "Move cursor to the previous occurrence of the searched term" "N"
     __shuggtool_vimhelp_print "${pfx}" "Search and replace \"cat\" with \"dog\" in the whole file" ":%s/cat/dog/g"
+    __shuggtool_vimhelp_print "${STAB_TREE1}" "" "TODO: ADD MORE"
    
     # other text editing
     __shuggtool_vimhelp_print_section "Other Keybindings"
     __shuggtool_vimhelp_print "${pfx}" "Undo latest change" "u"
+    __shuggtool_vimhelp_print "${pfx}" "Redo latest undo" "Ctrl-r"
     __shuggtool_vimhelp_print "${STAB_TREE1}" "" "TODO: ADD MORE"
-
 }
 
 # pass all args to main function
