@@ -2,14 +2,15 @@
 #
 #   Connor Shugg
 
-__shuggtool_vimrc_theme_name="desert"
+__shuggtool_vimrc_theme_name="desert" # by default, we'll use this theme
 
 # Function that attempts to download and install a vim theme
 function __shuggtool_vimrc_theme()
 {
     vim_dir=~/.vim
-    theme_repo_url=https://github.com/agude/vim-eldar
+    theme_repo_url=https://github.com/pR0Ps/molokai-dark
     theme_repo_dir=${vim_dir}/__shuggtool_vim_theme
+    theme_name=molokai-dark
 
     # make the '.vim' directory if it doesn't already exist
     if [ ! -d ${vim_dir} ]; then
@@ -19,8 +20,8 @@ function __shuggtool_vimrc_theme()
         rm -rf ${theme_repo_dir}
     fi
 
-    # first, we'll attempt to clone a repository containing the 'Eldar' theme
-    # into our ~/.vim directory
+    # first, we'll attempt to clone a repository containing the theme into our
+    # ~/.vim directory
     echo -e "Cloning theme repository: ${c_yellow}${theme_repo_url}${c_none}..."
     git clone ${theme_repo_url}.git ${theme_repo_dir} > /dev/null 2> /dev/null
     
@@ -47,8 +48,8 @@ function __shuggtool_vimrc_theme()
 
     # copy the color file into the vim color subdirectory, and update the
     # global color variable
-    cp ${color_file} ${vim_color_dir}/eldar.vim
-    __shuggtool_vimrc_theme_name="eldar"
+    cp ${color_file} ${vim_color_dir}/${theme_name}.vim
+    __shuggtool_vimrc_theme_name="${theme_name}"
     
     # once finished, remove the repository directory
     rm -rf ${theme_repo_dir}
