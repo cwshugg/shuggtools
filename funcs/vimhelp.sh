@@ -89,6 +89,8 @@ function __shuggtool_vimhelp()
     __shuggtool_vimhelp_print "${pfx}" "Move cursor to 35% of the way through the file" "35%"
     __shuggtool_vimhelp_print "${pfx}" "Jump to the next word" "w"
     __shuggtool_vimhelp_print "${pfx}" "Jump to next non-whitespace" "W"
+    __shuggtool_vimhelp_print "${pfx}" "Jump to the previous word" "b"
+    __shuggtool_vimhelp_print "${pfx}" "Jump to previous non-whitespace" "B"
     __shuggtool_vimhelp_print "${pfx}" "Page up" "Ctrl-b"
     __shuggtool_vimhelp_print "${pfx}" "Page down" "Ctrl-f"
     __shuggtool_vimhelp_print "${pfx}" "Jump to the end of the line" "$"
