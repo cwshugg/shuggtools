@@ -1,5 +1,4 @@
-# Creates a new shared tmux session with a random name. The socket location
-# and name can be specified to replace the default.
+# Tmux Shared window. Used to create a shared window through /tmp/.
 #
 #   Connor Shugg
 

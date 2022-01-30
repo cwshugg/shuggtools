@@ -21,7 +21,7 @@ function __shuggtool_stab_usage()
     echo "The available tree index values are:"
     for i in {1..3}; do
         command="$0 -t ${i}"
-        echo -e " ${i}. \"$(${command})\" (${c_dkgray}${command}${c_none})"
+        echo -e " ${i}. \"$(${command})\" (${C_DKGRAY}${command}${C_NONE})"
     done
 }
 

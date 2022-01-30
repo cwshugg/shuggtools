@@ -10,8 +10,8 @@ function __shuggtool_line_separator()
 {
     line_character="="
     line_text=""
-    line_color=${c_none}
-    line_text_color=${c_yellow}
+    line_color=${C_NONE}
+    line_text_color=${C_YELLOW}
 
     # check a few possible command-line arguments (set each argument as local
     # so problems don't arise with multiple runs)

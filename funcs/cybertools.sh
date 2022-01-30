@@ -59,21 +59,21 @@ function __shuggtool_cybertools()
     cd $dir_cyber
 
     # ---------------------------- Dependencies ----------------------------- #
-    __shuggtool_cybertools_print "Installing ${c_yellow}Python 3${c_none}..."
+    __shuggtool_cybertools_print "Installing ${C_YELLOW}Python 3${C_NONE}..."
     sudo apt-get install python3 -y
     echo ""
-    __shuggtool_cybertools_print "Installing ${c_yellow}Pip${c_none}..."
+    __shuggtool_cybertools_print "Installing ${C_YELLOW}Pip${C_NONE}..."
     sudo apt-get install python-pip -y
     echo ""
     
     # -------------------------- Git Repositories --------------------------- #
     # get 'dirsearch'
-    __shuggtool_cybertools_print "Installing ${c_ltblue}dirsearch${c_none}..."
+    __shuggtool_cybertools_print "Installing ${C_LTBLUE}dirsearch${C_NONE}..."
     git clone https://github.com/maurosoria/dirsearch.git
     echo ""
 
     # get 'sherlock'
-    __shuggtool_cybertools_print "Installing ${c_ltblue}sherlock${c_none}..."
+    __shuggtool_cybertools_print "Installing ${C_LTBLUE}sherlock${C_NONE}..."
     git clone https://github.com/sherlock-project/sherlock.git
     # cd into the directory and install the dependencies
     cd $dir_cyber/sherlock
@@ -83,17 +83,17 @@ function __shuggtool_cybertools()
 
     # -------------------------- apt-get installs --------------------------- #
     # tcpdump
-    __shuggtool_cybertools_print "Installing ${c_green}tcpdump${c_none}..."
+    __shuggtool_cybertools_print "Installing ${C_GREEN}tcpdump${C_NONE}..."
     sudo apt-get install tcpdump -y
     echo ""
     
     # nmap
-    __shuggtool_cybertools_print "Installing ${c_green}nmap${c_none}..."
+    __shuggtool_cybertools_print "Installing ${C_GREEN}nmap${C_NONE}..."
     sudo apt-get install nmap -y
     echo ""
 
     # hping3
-    __shuggtool_cybertools_print "Installing ${c_green}hping3${c_none}..."
+    __shuggtool_cybertools_print "Installing ${C_GREEN}hping3${C_NONE}..."
     sudo apt-get install hping3 -y
     echo ""
 
@@ -116,7 +116,7 @@ function __shuggtool_cybertools()
 function __shuggtool_cybertools_print()
 {
     # echo a header followed by the given argument
-    echo -e "${c_red}==== ${c_none}CYBERTOOLS ${c_red}==== ${c_none}$1"
+    echo -e "${C_RED}==== ${C_NONE}CYBERTOOLS ${C_RED}==== ${C_NONE}$1"
 }
 
 # usage menu printer function

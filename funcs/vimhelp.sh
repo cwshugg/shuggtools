@@ -2,8 +2,8 @@
 #
 #   Connor Shugg
 
-cc=${c_dkgray}
-cn=${c_none}
+cc=${C_DKGRAY}
+cn=${C_NONE}
 
 # helper printing function
 function __shuggtool_vimhelp_print()
@@ -47,7 +47,7 @@ function __shuggtool_vimhelp_print()
 function __shuggtool_vimhelp_print_section()
 {
     name=$1
-    echo -e "\n${c_ltblue}${name}${cn}"
+    echo -e "\n${C_LTBLUE}${name}${cn}"
 
     # print lines below the section header
     i=0
@@ -66,7 +66,7 @@ function __shuggtool_vimhelp_print_section()
 # main function
 function __shuggtool_vimhelp()
 {
-    echo -e "${c_yellow}Helpful Vim Tricks${cn}"
+    echo -e "${C_YELLOW}Helpful Vim Tricks${cn}"
 
     # compute terminal size (used later)
     __shuggtool_terminal_size

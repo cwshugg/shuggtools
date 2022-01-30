@@ -6,7 +6,7 @@
 function __shuggtool_tmux_config()
 {
     config_location=~/.tmux.conf
-    echo -e "Writing to ${c_green}${config_location}${c_none}..."
+    echo -e "Writing to ${C_GREEN}${config_location}${C_NONE}..."
     
     status_bg_color="colour235" # dark gray
     status_fg_color="colour46"  # green
@@ -24,7 +24,7 @@ function __shuggtool_tmux_config()
     echo "set -g pane-border-style fg=${pane_inactive_color}" >> $config_location
     echo "set -g pane-active-border-style fg=${pane_active_color}" >> $config_location
 
-    echo -e "${c_green}${config_location}${c_none} written successfully."
+    echo -e "${C_GREEN}${config_location}${C_NONE} written successfully."
 }
 
 __shuggtool_tmux_config "$@"

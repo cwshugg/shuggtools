@@ -62,22 +62,22 @@ function __shuggtool_screen_cover()
         tarfile=$(basename ${cmatrix_url})
         wget ${cmatrix_url} > /dev/null 2> /dev/null
         if [ ! -f ${tarfile} ]; then
-            echo -e "${c_red}failure.${c_none}"
+            echo -e "${C_RED}failure.${C_NONE}"
             __shuggtool_print_error "failed to download ${cmatrix_url}."
             return 1
         fi
-        echo -e "${c_ltgreen}success.${c_none}"
+        echo -e "${C_LTGREEN}success.${C_NONE}"
 
         # unpack the tarfile
         echo -n "Unpacking tarfile... "
         tar -xf ${tarfile}
         if [ ! -d ./cmatrix ]; then
-            echo -e "${c_red}failure.${c_none}"
+            echo -e "${C_RED}failure.${C_NONE}"
             __shuggtool_print_error "failed to unpack: ${sc_dir}/${tarfile}."
             return 2
         fi
         rm ${tarfile}
-        echo -e "${c_ltgreen}success.${c_none}"
+        echo -e "${C_LTGREEN}success.${C_NONE}"
 
         # attempt to build from source
         cd ./cmatrix
@@ -91,10 +91,10 @@ function __shuggtool_screen_cover()
         __shuggtool_screen_cover_find_binary
         bpath=${__shuggtool_screen_cover_cmatrix_bin}
         if [ ! -f ${bpath} ]; then
-            echo -e "${c_red}failure.${c_none} Failed to find binary."
+            echo -e "${C_RED}failure.${C_NONE} Failed to find binary."
             return 3
         fi
-        echo -e "${c_ltgreen}success.${c_none} (${c_dkgray}${bpath}${c_none})"
+        echo -e "${C_LTGREEN}success.${C_NONE} (${C_DKGRAY}${bpath}${C_NONE})"
 
         cd ${old_dir}
         echo "Installation successful. Run this again to start the screen cover."

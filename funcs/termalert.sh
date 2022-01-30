@@ -11,12 +11,12 @@ function __shuggtool_terminal_alert()
     text="HEY! This is an alert. Whatever you just launched is finished."
 
     # define colors
-    color_text=$c_red
+    color_text=$C_RED
     declare -a colors_top=(
-        $c_cyan
-        $c_ltblue
-        $c_green
-        $c_yellow
+        $C_CYAN
+        $C_LTBLUE
+        $C_GREEN
+        $C_YELLOW
         $c_brown
     )
     declare -a colors_bot=(
@@ -49,7 +49,7 @@ function __shuggtool_terminal_alert()
     # print the text (centered)
     echo -e "${color_text}"
     __shuggtool_print_text_centered "$text"
-    echo -e -n "${c_none}"
+    echo -e -n "${C_NONE}"
 
     # print the bottom section
     for (( i=${#chars_top[@]}; i>=0; i-- ))
@@ -76,7 +76,7 @@ function __shuggtool_terminal_alert_line()
     done
     
     # reset the color at the end of the line and echo it out
-    line="$line${c_none}"
+    line="$line${C_NONE}"
     echo -e $line
 }
 

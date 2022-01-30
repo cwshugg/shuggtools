@@ -5,7 +5,7 @@
 
 # source globals file
 globals_file=globals.sh
-source $globals_file
+source ${globals_file}
 
 # cscope adjustments (if it's installed)
 cscope_exists="$(which cscope 2>&1)"

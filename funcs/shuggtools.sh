@@ -6,10 +6,10 @@
 function __shuggtool_summary()
 {
     # print a description
-    echo -e "${c_yellow}Shuggtools${c_none}"
+    echo -e "${C_YELLOW}Shuggtools${C_NONE}"
     echo -e "=========="
     echo -e "A suite of command-line tools developed by Connor Shugg."
-    echo -e "Take a look at ${c_ltblue}README.md${c_none} for more information."
+    echo -e "Take a look at ${C_LTBLUE}README.md${C_NONE} for more information."
     echo -e ""
 
     # get the path to info.txt
@@ -18,12 +18,12 @@ function __shuggtool_summary()
 
     # if the file doesn't exist, print an error
     if [ ! -f $info_file ]; then
-        __shuggtool_print_error "info file not found. Perhaps ${c_ltblue}setup.sh${c_none} has not been run yet?"
+        __shuggtool_print_error "info file not found. Perhaps ${C_LTBLUE}setup.sh${C_NONE} has not been run yet?"
         return
     fi
 
     # print info file
-    echo -e "${c_yellow}Info File${c_none}"
+    echo -e "${C_YELLOW}Info File${C_NONE}"
     echo -e "========="
     cat $info_file
 }

@@ -72,10 +72,10 @@ function __shuggtool_storage_offenders_search()
 
         # print an informative message about the current file's size, name, and
         # what kind of file it is
-        echo -e "${prefix1}${hc}${fbytes}${c_none} bytes:" \
-                "${c_ltcyan}${fpath}${c_none}${suffix}"
+        echo -e "${prefix1}${hc}${fbytes}${C_NONE} bytes:" \
+                "${C_LTCYAN}${fpath}${C_NONE}${suffix}"
         ftype="$(file ${fpath} | cut -d ' ' -f 2-)"
-        echo -e "${prefix2}${STAB_TREE1}${c_dkgray}${ftype}${c_none}"
+        echo -e "${prefix2}${STAB_TREE1}${C_DKGRAY}${ftype}${C_NONE}"
 
         # increment our counter
         count=$((count+1))
@@ -125,8 +125,8 @@ function __shuggtool_storage_offenders()
     fi
     
     # print a message to the user
-    echo -e "Searching ${c_ltcyan}${sdir}${c_none} for the top" \
-            "${c_ltcyan}${snum}${c_none} storage offenders..."
+    echo -e "Searching ${C_LTCYAN}${sdir}${C_NONE} for the top" \
+            "${C_LTCYAN}${snum}${C_NONE} storage offenders..."
     
     # search the base directory
     __shuggtool_storage_offenders_search ${sdir} ${snum}

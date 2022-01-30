@@ -16,8 +16,8 @@ function __shuggtool_smite
     # ------------- Variable/Argument Setup ------------- #
     # make sure at least one argument was given
     if [ $# -lt 1 ]; then
-        __shuggtool_print_error "smite${c_none} must be invoked with: ${c_yellow}smite <PID/PName>${c_none}"
-#        echo -e "${c_yellow}Usage: smite <PID/PName>${c_none}"
+        __shuggtool_print_error "smite${C_NONE} must be invoked with: ${C_YELLOW}smite <PID/PName>${C_NONE}"
+#        echo -e "${C_YELLOW}Usage: smite <PID/PName>${C_NONE}"
         return
     fi
 
@@ -45,8 +45,8 @@ function __shuggtool_smite
 
     # if the PID wasn't set, print error and exit
     if [ -z "$pid" ]; then
-        echo -e "${c_yellow}The process thou wishes to smite was not found."
-        echo -e "${c_yellow}(The process name must be an exact match)${c_none}"
+        echo -e "${C_YELLOW}The process thou wishes to smite was not found."
+        echo -e "${C_YELLOW}(The process name must be an exact match)${C_NONE}"
         return
     fi
 
@@ -55,7 +55,7 @@ function __shuggtool_smite
     do
         # if the name matches the current process name, don't kill it!
         if [ "$pname" == "$name" ]; then
-            echo -e "${c_yellow}The process thou wishes to smite is on the no-smite list.${c_none}"
+            echo -e "${C_YELLOW}The process thou wishes to smite is on the no-smite list.${C_NONE}"
             return
         fi
     done
@@ -67,19 +67,19 @@ function __shuggtool_smite
     # if the kill command worked, no output should be produced
     if [ -z "$kill_result" ]; then
         # if it was a success, print the smite message
-        echo -e "${c_yellow}        ,/"
-        echo -e "${c_yellow}      ,'/"
-        echo -e "${c_yellow}    ,' /"
-        echo -e "${c_yellow}  ,'  /_____,   ${c_cyan} Thou art smitten,"
-        echo -e "${c_yellow}.'____    ,'    ${c_cyan} $pname"
-        echo -e "${c_yellow}     /  ,'"
-        echo -e "${c_yellow}    / ,'"
-        echo -e "${c_yellow}   /,'"
-        echo -e "${c_yellow}  /'${c_none}"
+        echo -e "${C_YELLOW}        ,/"
+        echo -e "${C_YELLOW}      ,'/"
+        echo -e "${C_YELLOW}    ,' /"
+        echo -e "${C_YELLOW}  ,'  /_____,   ${C_CYAN} Thou art smitten,"
+        echo -e "${C_YELLOW}.'____    ,'    ${C_CYAN} $pname"
+        echo -e "${C_YELLOW}     /  ,'"
+        echo -e "${C_YELLOW}    / ,'"
+        echo -e "${C_YELLOW}   /,'"
+        echo -e "${C_YELLOW}  /'${C_NONE}"
     else
         # otherwise, SOMETHING was printed after the kill command. Print it out
-        echo -e "${c_yellow}Smiting not possible:"
-        echo -e "${c_yellow}$kill_result${c_none}"
+        echo -e "${C_YELLOW}Smiting not possible:"
+        echo -e "${C_YELLOW}$kill_result${C_NONE}"
     fi
 }
 

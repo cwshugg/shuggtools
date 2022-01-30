@@ -14,7 +14,7 @@ function __shuggtool_vimsetup_theme()
 
     # make the '.vim' directory if it doesn't already exist
     if [ ! -d ${vim_dir} ]; then
-        echo -e "Making ${c_yellow}${vim_dir}${c_none}..."
+        echo -e "Making ${C_YELLOW}${vim_dir}${C_NONE}..."
         mkdir ${vim_dir}
     else
         rm -rf ${theme_repo_dir}
@@ -22,13 +22,13 @@ function __shuggtool_vimsetup_theme()
 
     # first, we'll attempt to clone a repository containing the theme into our
     # ~/.vim directory
-    echo -e "Cloning theme repository: ${c_yellow}${theme_repo_url}${c_none}..."
+    echo -e "Cloning theme repository: ${C_YELLOW}${theme_repo_url}${C_NONE}..."
     git clone ${theme_repo_url}.git ${theme_repo_dir} > /dev/null 2> /dev/null
     
     # check for the existence of the repo. If it failed, stop trying
     if [ ! -d ${theme_repo_dir} ]; then
-        echo -en "${c_red}Clone failed.${c_none} "
-        echo -e "Using default theme: ${c_yellow}${__shuggtool_vimsetup_theme}${c_none}"
+        echo -en "${C_RED}Clone failed.${C_NONE} "
+        echo -e "Using default theme: ${C_YELLOW}${__shuggtool_vimsetup_theme}${C_NONE}"
         return
     fi
 
@@ -41,8 +41,8 @@ function __shuggtool_vimsetup_theme()
     # locate the '.vim' file
     color_file=$(find ${theme_repo_dir} -name "*.vim" | head -n 1)
     if [ -z ${color_file} ]; then
-        echo -en "Couldn't find ${c_yellow}.vim${c_none} file. "
-        echo -e "Using default theme: ${c_yellow}${__shuggtool_vimsetup_theme}${c_none}"
+        echo -en "Couldn't find ${C_YELLOW}.vim${C_NONE} file. "
+        echo -e "Using default theme: ${C_YELLOW}${__shuggtool_vimsetup_theme}${C_NONE}"
         return
     fi
 
@@ -83,10 +83,10 @@ function __shuggtool_vimsetup_plugins()
         fname=shuggtool_$(basename ${fpath})
         cp ${fpath} ${vim_plugin_dst}/${fname}
 
-        echo -e "${STAB_TREE2}copied ${c_green}${fname}${c_none}."
+        echo -e "${STAB_TREE2}copied ${C_GREEN}${fname}${C_NONE}."
         pcount=$((pcount+1))
     done
-    echo -e "${STAB_TREE1}copied ${pcount} plugins from ${c_ltblue}${vim_plugin_src}${c_none}."
+    echo -e "${STAB_TREE1}copied ${pcount} plugins from ${C_LTBLUE}${vim_plugin_src}${C_NONE}."
 }
 
 # main function
@@ -96,7 +96,7 @@ function __shuggtool_vimsetup()
     __shuggtool_vimsetup_theme
     
     vimrc_location=~/.vimrc
-    echo -en "Writing to ${c_ltblue}${vimrc_location}${c_none}... "
+    echo -en "Writing to ${C_LTBLUE}${vimrc_location}${C_NONE}... "
     
     # custom .vimrc settings
     echo -e "\" Connor's Vim Settings\n" \
@@ -121,7 +121,7 @@ function __shuggtool_vimsetup()
             "nnoremap <silent> <Space> :nohlsearch<Bar>:echo<CR>\n" \
             "" > ${vimrc_location}
 
-    echo -e "${c_green}success${c_none}."
+    echo -e "${C_GREEN}success${C_NONE}."
     
     # next we'll install any plugins we have
     __shuggtool_vimsetup_plugins ${vimrc_location}
