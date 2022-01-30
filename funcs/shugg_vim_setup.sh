@@ -8,9 +8,9 @@ __shuggtool_vimrc_theme_name="desert" # by default, we'll use this theme
 function __shuggtool_vimrc_theme()
 {
     vim_dir=~/.vim
-    theme_repo_url=https://github.com/pR0Ps/molokai-dark
+    theme_repo_url=https://github.com/cwshugg/dwarrowdelf
     theme_repo_dir=${vim_dir}/__shuggtool_vim_theme
-    theme_name=molokai-dark
+    theme_name=dwarrowdelf
 
     # make the '.vim' directory if it doesn't already exist
     if [ ! -d ${vim_dir} ]; then
@@ -72,12 +72,11 @@ function __shuggtool_vimrc()
             "set autoindent                          \" forces vim to auto-indent\n" \
             "set number                              \" displays page numbers\n" \
             "au FileType * set formatoptions-=cro    \" disable automatic comment insertion for all file types\n" \
+            "set undolevels=1000                     \" LOTS of undos available\n" \
             "\n" \
             "\" line/column highlighting\n" \
             "set cursorline                          \" highlight current line cursor is on\n" \
-            "hi CursorLine ctermbg=234               \" gray color for current line highlighting\n" \
             "set cursorcolumn                        \" highlight current column cursor is on\n" \
-            "hi CursorColumn ctermbg=233             \" dark gray color for current column highlighting\n" \
             "\n" \
             "\" search settings\n" \
             "set hlsearch                            \" highlight search results\n" \
