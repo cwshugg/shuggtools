@@ -105,6 +105,7 @@ function __shuggtool_vimsetup()
             "set tabstop=4 shiftwidth=4 expandtab    \" tabs = 4 spaces\n" \
             "set softtabstop=4                       \" enables backspace to clear out 4 spaces\n" \
             "set autoindent                          \" forces vim to auto-indent\n" \
+            "set smartindent                         \" smart indentation - helps with backspace\n" \
             "set number                              \" displays page numbers\n" \
             "au FileType * set formatoptions-=cro    \" disable automatic comment insertion for all file types\n" \
             "set undolevels=1000                     \" LOTS of undos available\n" \
