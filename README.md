@@ -7,6 +7,7 @@ This is a repository containing tools I created to use on the command-line. It's
 Contained in this repository is the following:
 
 * `setup.sh` - the setup script (see below)
+* `globals.sh` - global variables and functions used by this repo's shell scripts
 * `prompt.sh` - my custom prompt routine
 * `aliases.sh` - any aliases and other miscellaneous settings
 * `funcs/` - a directory containing various shell scripts I've written
