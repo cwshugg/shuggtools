@@ -71,7 +71,6 @@ function __shuggtool_setup_source_dir()
         # it doesn't we'll set it up here
         has_bp="$(__shuggtool_file_has_boilerplate ${func})"
         if [ ! -z "${has_bp}" ]; then
-            echo -en "${C_YELLOW}adding boilerplate...${C_NONE} "
             __shuggtool_setup_file_boilerplate ${func}
         fi
     
