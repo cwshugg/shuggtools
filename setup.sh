@@ -144,12 +144,16 @@ for ofile in ${other_files[@]}; do
         echo -en "${STAB_TREE2}${other_files[${other_files_count}]}... "
         __shuggtool_setup_file_boilerplate ${ofpath}
         echo -e "${C_GREEN}success${C_NONE}"
+        other_files_count=$((other_files_count+1))
     fi
-    other_files_count=$((other_files_count+1))
-
+    
     # source the file
     source ${ofpath} 
 done
+# print if any 'other files' were set up
+if [ ${other_files_count} -gt 0 ]; then
+    echo -e "${STAB_TREE1}initialized ${C_GREEN}${other_files_count}${C_NONE} other files"
+fi
 
 # invoke the script that writes to the globals file
 __shuggtool_setup_info_file ${setup_dir}/${shuggtools_info_file}
