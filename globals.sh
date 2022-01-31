@@ -96,25 +96,6 @@ function __shuggtool_print_text_centered()
 
 }
 
-# Helper function that's invoked by setup.sh to create an information file with
-# various version information for shuggtools. Parameters:
-#   $1      The full path to the information file
-function __shuggtool_write_info_file()
-{
-    # make sure an argument was given
-    if [ $# -lt 1 ]; then
-        __shuggtool_print_error "info file could not be set up: the full path was not specified."
-        return
-    fi
-    info_file=$1
-
-    # dump git version information into a text file (for the 'shuggtools' script)
-    shuggtools_git_remote_url="$(git config --get remote.origin.url)"
-    shuggtools_git_commit_hash="$(git rev-parse --short HEAD)"
-    echo "Remote URL:    ${shuggtools_git_remote_url}"    > $info_file
-    echo "Commit Hash:   ${shuggtools_git_commit_hash}"   >> $info_file
-}
-
 # Helper function that takes in a single string argument and sets a global
 # variable equal to the hashed value. Makes use of cksum.
 shuggtools_hash_string_retval=0

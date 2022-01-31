@@ -1,11 +1,6 @@
-#!/bin/bash
 # A shell script that sets up my preferred aliases.
 #
 #   Connor Shugg
-
-# source globals file
-globals_file=globals.sh
-source ${globals_file}
 
 # cscope adjustments (if it's installed)
 cscope_exists="$(which cscope 2>&1)"

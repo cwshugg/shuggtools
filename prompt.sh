@@ -1,11 +1,6 @@
-#!/bin/bash
 # A shell script that sets up my preferred bash prompt.
 #
 #   Connor Shugg
-
-# source globals file
-globals_file=globals.sh
-source $globals_file
 
 # prompt toggle - set to any values in the below if-statement to adjust what
 # prompt is being displayed
