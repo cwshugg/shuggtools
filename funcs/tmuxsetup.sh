@@ -28,3 +28,4 @@ function __shuggtool_tmux_config()
 }
 
 __shuggtool_tmux_config "$@"
+
