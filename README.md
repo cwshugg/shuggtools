@@ -26,5 +26,10 @@ Once cloned, simply run the setup script:
 $ /your/path/to/shuggtools/setup.sh
 ```
 
-This will apply the changes to your current bash instance. If you'd like to have this source automatically, place the above command in your `.bashrc` or `.bash_profile`.
+This will apply the changes to your current bash instance. If you'd like to have this source automatically, you'll have to `source` and provide it the path to itself as an argument. Place this code in your `.bashrc` or `.bash_profile`:
+
+```bash
+stsetup=/your/path/to/shuggtools/setup.sh
+source ${stsetup} ${stsetup}
+```
 
