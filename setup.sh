@@ -1,9 +1,25 @@
 #!/bin/bash
+# [ST.SETUP] <-- KEEP THIS HERE. REQUIRED FOR SETUP.
 # A small shell script used to set up the shuggtools library. This should be
 # 'source'd in order for the PATH to be adjusted correctly.
 
-# ============================= Variable Setup ============================== # 
-setup_dir=$(dirname $(realpath $0))
+# ============================= Variable Setup ============================== #
+# this script can be either executed directly (./setup.sh), or it can be
+# sourced in a .bashrc or similar file (source ./setup.sh ./setup.sh). If it's
+# being sourced, the path to the file must be provided as an argument. This
+# code checks that here and attempts to locate the setup script.
+setup_fpath=$0
+if [ $# -ge 1 ]; then
+    setup_fpath=$1
+fi
+# make sure the argument is a file AND it has the special keyword in it
+if [ ! -f ${setup_fpath} ] || [ -z "$(grep 'ST.SETUP' ${setup_fpath})" ]; then
+    echo "shuggtools/setup.sh: expected path to setup.sh as first argument"
+    return
+fi
+setup_dir=$(dirname $(realpath ${setup_fpath}))
+
+# set up a few other directory paths
 old_dir=$(pwd)
 function_dir=${setup_dir}/funcs
 source_dir=${setup_dir}/links
@@ -37,13 +53,16 @@ function __shuggtool_setup_file_boilerplate()
     fpath=$1
     tfpath=${fpath}.shuggtool.tmp
 
+    # get current date
+    cdate="$(date)"
+
     # add the top lines
     bpid="${shuggtool_file_boilerplate_id}"
-    echo "#!/bin/bash"                                  > ${tfpath}
-    echo "# ---------- ${bpid}: BEGIN ---------- #"     >> ${tfpath}
-    echo "sthome=${gpath}"                              >> ${tfpath}
-    echo "source \${sthome}/globals.sh"                 >> ${tfpath}
-    echo "# ----------- ${bpid}: END ----------- #"     >> ${tfpath}
+    echo "#!/bin/bash"                                              > ${tfpath}
+    echo "# ---------- ${bpid}: BEGIN [${cdate}] ---------- #"      >> ${tfpath}
+    echo "sthome=${gpath}"                                          >> ${tfpath}
+    echo "source \${sthome}/globals.sh"                             >> ${tfpath}
+    echo "# ----------- ${bpid}: END [${cdate}] ----------- #"      >> ${tfpath}
     
     # add the script's contents and swap it into the original file
     cat ${fpath} >> ${tfpath}
