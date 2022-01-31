@@ -146,6 +146,7 @@ for ofile in ${other_files[@]}; do
         __shuggtool_setup_file_boilerplate ${ofpath}
         echo -e "${C_GREEN}success${C_NONE}"
     fi
+    other_files_count=$((other_files_count+1))
 
     # source the file
     source ${ofpath} 
