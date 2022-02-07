@@ -2,7 +2,7 @@
 #
 #   Connor Shugg
 
-__shuggtool_vimsetup_theme_name="desert" # by default, we'll use this theme
+__shuggtool_vimsetup_theme_name="elflord" # by default, we'll use this theme
 
 # Function that attempts to download and install a vim theme
 function __shuggtool_vimsetup_theme()
