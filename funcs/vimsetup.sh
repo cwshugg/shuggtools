@@ -97,30 +97,35 @@ function __shuggtool_vimsetup()
     
     vimrc_location=~/.vimrc
     echo -en "Writing to ${C_LTBLUE}${vimrc_location}${C_NONE}... "
-    
-    # custom .vimrc settings
-    echo -e "\" Connor's Vim Settings\n" \
-            "syntax on                               \" syntax highlighting\n" \
-            "colorscheme ${__shuggtool_vimsetup_theme_name} \" modifies color scheme\n" \
-            "set tabstop=4 shiftwidth=4 expandtab    \" tabs = 4 spaces\n" \
-            "set softtabstop=4                       \" enables backspace to clear out 4 spaces\n" \
-            "set autoindent                          \" forces vim to auto-indent\n" \
-            "set smartindent                         \" smart indentation - helps with backspace\n" \
-            "set number                              \" displays page numbers\n" \
-            "au FileType * set formatoptions-=cro    \" disable automatic comment insertion for all file types\n" \
-            "set undolevels=1000                     \" LOTS of undos available\n" \
-            "\n" \
-            "\" line/column highlighting\n" \
-            "set cursorline                          \" highlight current line cursor is on\n" \
-            "set cursorcolumn                        \" highlight current column cursor is on\n" \
-            "\n" \
-            "\" search settings\n" \
-            "set hlsearch                            \" highlight search results\n" \
-            "set is                                  \" highlight searches as you type\n" \
-            "\" the below shortcut allows you to press space to clear highlighted search terms\n" \
-            "\" thanks to: https://vim.fandom.com/wiki/Highlight_all_search_pattern_matches\n" \
-            "nnoremap <silent> <Space> :nohlsearch<Bar>:echo<CR>\n" \
-            "" > ${vimrc_location}
+
+    # create an array of lines to dump into the file
+    lines=("\" ----- general settings" \
+        "syntax on                               \" syntax highlighting" \
+        "colorscheme ${__shuggtool_vimsetup_theme_name} \" modifies color scheme" \
+        "set tabstop=4 shiftwidth=4 expandtab    \" tabs = 4 spaces" \
+        "set softtabstop=4                       \" enables backspace to clear out 4 spaces" \
+        "set autoindent                          \" forces vim to auto-indent" \
+        "set smartindent                         \" smart indentation - helps with backspace" \
+        "set number                              \" displays page numbers" \
+        "au FileType * set formatoptions-=cro    \" disable automatic comment insertion for all file types" \
+        "set undolevels=1000                     \" LOTS of undos available" \
+        "\n\"----- line/column highlighting" \
+        "set cursorline                          \" highlight current line cursor is on" \
+        "set cursorcolumn                        \" highlight current column cursor is on" \
+        "\n\" ----- search settings" \
+        "set hlsearch                            \" highlight search results" \
+        "set is                                  \" highlight searches as you type" \
+        "\n\" ----- the below shortcut allows you to press space to clear highlighted search terms" \
+        "\" ----- thanks to: https://vim.fandom.com/wiki/Highlight_all_search_pattern_matches" \
+        "nnoremap <silent> <Space> :nohlsearch<Bar>:echo<CR>"
+        ""
+    )
+
+    # loop through each line in the array and write it out to the file
+    echo "\" Connor's Vim Settings\n" > ${vimrc_location}
+    for ((i=0; i<${#lines[@]}; i++)); do
+        echo -e "${lines[${i}]}" >> ${vimrc_location}
+    done
 
     echo -e "${C_GREEN}success${C_NONE}."
     
