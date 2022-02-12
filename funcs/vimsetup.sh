@@ -115,6 +115,9 @@ function __shuggtool_vimsetup()
         "\n\" ----- search settings" \
         "set hlsearch                            \" highlight search results" \
         "set is                                  \" highlight searches as you type" \
+        "\n\" ----- gvim settings" \
+        "set guioptions -=m                      \" remove menu bar" \
+        "set guioptions -=T                      \" remove toolbar" \
         "\n\" ----- the below shortcut allows you to press space to clear highlighted search terms" \
         "\" ----- thanks to: https://vim.fandom.com/wiki/Highlight_all_search_pattern_matches" \
         "nnoremap <silent> <Space> :nohlsearch<Bar>:echo<CR>"
