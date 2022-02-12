@@ -120,6 +120,14 @@ function __shuggtool_vimsetup()
         "    set guifont=Consolas:h11            \" set gvim font" \
         "    set guioptions -=m                  \" remove menu bar" \
         "    set guioptions -=T                  \" remove toolbar" \
+        "    \n\" if we aren't editing a file, we'll 'cd' to the windows desktop" \
+        "    let filename = ''" \
+        "    redir =>> filename" \
+        "    silent execute 'file'" \
+        "    redir END" \
+        "    if stridx(filename, '[No Name]') > -1" \
+        "        cd Desktop                      \" navigate to desktop directory" \
+        "    endif" \
         "endif" \
         "\n\" ----- the below shortcut allows you to press space to clear highlighted search terms" \
         "\" ----- thanks to: https://vim.fandom.com/wiki/Highlight_all_search_pattern_matches" \
