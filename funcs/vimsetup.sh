@@ -120,6 +120,8 @@ function __shuggtool_vimsetup()
         "    set guifont=Consolas:h11            \" set gvim font" \
         "    set guioptions -=m                  \" remove menu bar" \
         "    set guioptions -=T                  \" remove toolbar" \
+        "    nnoremap y \"+y                      \" NORMAL: remap to system clipboard" \
+        "    vnoremap y \"+y                      \" VISUAL: remap to system clipboard" \
         "    \n\" if we aren't editing a file, we'll 'cd' to the windows desktop" \
         "    let filename = ''" \
         "    redir =>> filename" \
