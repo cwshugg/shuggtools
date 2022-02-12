@@ -23,6 +23,7 @@ set number                              " displays page numbers
 au FileType * set formatoptions-=cro    " disable automatic comment insertion for all file types
 set undolevels=1000                     " LOTS of undos available
 set backspace=indent,eol,start          " make sure backspace works properly
+set ruler                               " enable the bottom-right set of numbers
 
 "----- line/column highlighting
 set cursorline                          " highlight current line cursor is on
