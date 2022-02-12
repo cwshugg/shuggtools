@@ -63,7 +63,7 @@ function __shuggtool_vimsetup_plugins()
     # into the vimrc
 
     vimrc_path=$1
-    vim_plugin_src=${sthome}/vim
+    vim_plugin_src=${sthome}/vim/plugin
     vim_plugin_dst=~/.vim/plugin
 
     # make the directory if it doesn't exist
@@ -96,52 +96,15 @@ function __shuggtool_vimsetup()
     __shuggtool_vimsetup_theme
     
     vimrc_location=~/.vimrc
-    echo -en "Writing to ${C_LTBLUE}${vimrc_location}${C_NONE}... "
+    vimrc_source=${sthome}/vim/vimrc.vim
+    echo -en "Copying to ${C_LTBLUE}${vimrc_location}${C_NONE}... "
 
-    # create an array of lines to dump into the file
-    lines=("\" ----- general settings" \
-        "syntax on                               \" syntax highlighting" \
-        "colorscheme ${__shuggtool_vimsetup_theme_name} \" modifies color scheme" \
-        "set tabstop=4 shiftwidth=4 expandtab    \" tabs = 4 spaces" \
-        "set softtabstop=4                       \" enables backspace to clear out 4 spaces" \
-        "set autoindent                          \" forces vim to auto-indent" \
-        "set smartindent                         \" smart indentation - helps with backspace" \
-        "set number                              \" displays page numbers" \
-        "au FileType * set formatoptions-=cro    \" disable automatic comment insertion for all file types" \
-        "set undolevels=1000                     \" LOTS of undos available" \
-        "\n\"----- line/column highlighting" \
-        "set cursorline                          \" highlight current line cursor is on" \
-        "set cursorcolumn                        \" highlight current column cursor is on" \
-        "\n\" ----- search settings" \
-        "set hlsearch                            \" highlight search results" \
-        "set is                                  \" highlight searches as you type" \
-        "\n\" ----- gvim settings" \
-        "if has('gui_running')" \
-        "    set guifont=Consolas:h11            \" set gvim font" \
-        "    set guioptions -=m                  \" remove menu bar" \
-        "    set guioptions -=T                  \" remove toolbar" \
-        "    nnoremap y \"+y                      \" NORMAL: remap to system clipboard" \
-        "    vnoremap y \"+y                      \" VISUAL: remap to system clipboard" \
-        "    \n\" if we aren't editing a file, we'll 'cd' to the windows desktop" \
-        "    let filename = ''" \
-        "    redir =>> filename" \
-        "    silent execute 'file'" \
-        "    redir END" \
-        "    if stridx(filename, '[No Name]') > -1" \
-        "        cd Desktop                      \" navigate to desktop directory" \
-        "    endif" \
-        "endif" \
-        "\n\" ----- the below shortcut allows you to press space to clear highlighted search terms" \
-        "\" ----- thanks to: https://vim.fandom.com/wiki/Highlight_all_search_pattern_matches" \
-        "nnoremap <silent> <Space> :nohlsearch<Bar>:echo<CR>"
-        ""
-    )
-
-    # loop through each line in the array and write it out to the file
-    echo "\" Connor's Vim Settings\n" > ${vimrc_location}
-    for ((i=0; i<${#lines[@]}; i++)); do
-        echo -e "${lines[${i}]}" >> ${vimrc_location}
-    done
+    # copy the vimrc file to the correct location
+    if [ ! -f ${vimrc_source} ]; then
+        __shuggtool_print_error "couldn't find source vimrc at ${C_LTBLUE}${vimrc_source}${C_NONE}"
+    else
+        cp ${vimrc_source} ${vimrc_location}
+    fi
 
     echo -e "${C_GREEN}success${C_NONE}."
     
