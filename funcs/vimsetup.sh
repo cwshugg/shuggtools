@@ -117,7 +117,7 @@ function __shuggtool_vimsetup()
         "set is                                  \" highlight searches as you type" \
         "\n\" ----- gvim settings" \
         "if has('gui_running')" \
-        "    set guifont=Consolas                \" set gvim font" \
+        "    set guifont=Consolas:h11            \" set gvim font" \
         "    set guioptions -=m                  \" remove menu bar" \
         "    set guioptions -=T                  \" remove toolbar" \
         "endif" \
