@@ -18,7 +18,7 @@ colorscheme dwarrowdelf " modifies color scheme
 set tabstop=4 shiftwidth=4 expandtab    " tabs = 4 spaces
 set softtabstop=4                       " enables backspace to clear out 4 spaces
 set autoindent                          " forces vim to auto-indent
-set smartindent                         " smart indentation - helps with backspace
+filetype indent on
 set number                              " displays page numbers
 au FileType * set formatoptions-=cro    " disable automatic comment insertion for all file types
 set undolevels=1000                     " LOTS of undos available
