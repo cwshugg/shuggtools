@@ -21,7 +21,7 @@ function! CW(...)
     " based on the global state variable, enable or disable the indicator
     if g:ci_state ==? 'off'
         let g:ci_state = 'on'
-        exec 'set colorcolumn=' . s:cols
+        exec 'set colorcolumn=' . (s:cols + 1)
         exec 'set textwidth=' . s:cols
     else
         let g:ci_state = 'off'
