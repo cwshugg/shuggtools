@@ -14,4 +14,5 @@ alias gdb="gdb -q" # quiet-mode GDB (don't print intro)
 
 # other alises
 alias dir="ls"
+alias rm="srm" # invokes my 'srm' function
 
