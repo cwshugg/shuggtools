@@ -112,7 +112,10 @@ function! DL_SetLineCharacters(ft)
         call DL_SetLineCharacterGlobals('=', '#', '#')
     else
         " this is the default setting for anything non-detected
-        call DL_SetLineCharacterGlobals(g:dl_line_mid, g:dl_line_mid, g:dl_line_mid)
+        if g:dl_line_mid ==? ''
+            let g:dl_line_mid = '='
+        endif
+        call DL_SetLineCharacterGlobals(g:dl_line_mid, g:dl_line_prefix, g:dl_line_suffix)
     endif
 endfunction
 
@@ -169,29 +172,40 @@ function! DL(...)
     
     " compute the number of middle characters to print on either side
     let l:mid_room = g:dl_column_max - l:col
-    let l:mid_room -= strlen(g:dl_line_prefix) + strlen(g:dl_line_suffix) + 2
+    let l:mid_room -= strlen(g:dl_line_prefix) + strlen(g:dl_line_suffix)
+    if strlen(g:dl_line_prefix) > 0
+        let l:mid_room -= 1
+    endif
     if strlen(g:dl_msg) > 0
         let l:mid_room -= strlen(g:dl_msg) + 2
+    endif
+    if strlen(g:dl_line_suffix) > 0
+        let l:mid_room -= 1
     endif
     let l:mid_left = l:mid_room / 2
     let l:mid_right = l:mid_room - l:mid_left
  
     " finally, we'll build the final string
     let l:count = 0
-    let l:line = g:dl_line_prefix . ' '         " add prefix
+    let l:line = ''
+    if strlen(g:dl_line_prefix) > 0
+        let l:line = g:dl_line_prefix . ' '     " add prefix
+    endif
     while l:count < l:mid_left
         let l:line .= g:dl_line_mid             " add left-portion of middle
         let l:count += 1
     endwhile
     if strlen(g:dl_msg) > 0
-        let l:line .= ' ' . g:dl_msg . ' '    " add message
+        let l:line .= ' ' . g:dl_msg . ' '      " add message
     endif
     let l:count = 0
     while l:count < l:mid_right
         let l:line .= g:dl_line_mid             " add right-portion of middle
         let l:count += 1
     endwhile
-    let l:line .= ' ' . g:dl_line_suffix        " add suffix
+    if strlen(g:dl_line_suffix) > 0
+        let l:line .= ' ' . g:dl_line_suffix    " add suffix
+    endif
     
     " set up a string of spaces to append to the front
     let l:spaces = ''
