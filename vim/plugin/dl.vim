@@ -9,14 +9,15 @@
 "   Connor Shugg
 
 " Globals
+let g:dl_msg = ''
 let g:dl_column_max = 80    " default max-column length of the line
 let g:dl_line_mid = ''      " middle-of-the-line character
 let g:dl_line_prefix = ''   " prefix for the line
 let g:dl_line_suffix = ''   " suffix for the line
 
 " ============================= Helper Functions ============================= "
-" CCO - Capture Command Output. Runs the given command and returns the output
-function! CCO(cmd)
+" DL_CCO - Capture Command Output. Runs the given command and returns the output
+function! DL_CCO(cmd)
     let s:cco_out = ''
     redir =>> s:cco_out
     silent execute a:cmd
@@ -28,15 +29,15 @@ function! CCO(cmd)
 endfunction
 
 " Function to get the current cursor position.
-function! CursorPosition()
+function! DL_CursorPosition()
     let l:pos = getpos('.')
     return l:pos
 endfunction
 
 " Function to get the current file type as a string.
-function! GetFileType()
+function! DL_GetFileType()
     " get the filetype that was detected by vim
-    let l:ft = CCO('set filetype?')
+    let l:ft = DL_CCO('set filetype?')
     if strlen(l:ft) == 0
         return ""
     endif
@@ -50,9 +51,43 @@ function! GetFileType()
 endfunction
 
 
+" ============================== Script Options ============================== "
+" Used to print the 'usage' for the command to the vim command line.
+function! DL_Usage()
+    echo 'Usage: DL [msg=MESSAGE] [col=MAX_COLUMN] [char=LINE_CHARACTER] [pfx=LINE_PREFIX] [sfx=LINE_SUFFIX]'
+endfunction
+
+" Function used to get a command-line option of the following format:
+"   key=value
+" This function splits the two and returns them as an array.
+function! DL_GetOption(raw)
+    return split(a:raw, '=')
+endfunction
+
+" Function that takes in a key and value for a named option and processes it
+" as needed.
+function! DL_ProcessOption(key, value)
+    if a:key ==? 'msg'
+        let g:dl_msg = a:value
+    elseif a:key ==? 'col'
+        let g:dl_column_max = a:value
+    elseif a:key ==? 'char'
+        let g:dl_line_mid = a:value
+    elseif a:key ==? 'pfx'
+        let g:dl_line_prefix = a:value
+    elseif a:key ==? 'sfx'
+        let g:dl_line_suffix = a:value
+    else
+        call DL_Usage()
+        return 1
+    endif
+    return 0
+endfunction
+
+
 " ============================ Main Functionality ============================ "
-" Helper function for SetLineCharacters that simply sets all three globals.
-function! SetLineCharacterGlobals(mid, pfx, sfx)
+" Helper function for DL_SetLineCharacters that simply sets all three globals.
+function! DL_SetLineCharacterGlobals(mid, pfx, sfx)
     if strlen(g:dl_line_mid) == 0
         let g:dl_line_mid = a:mid
     endif
@@ -66,18 +101,18 @@ endfunction
 
 " Function that takes in a string representation of the current file type and
 " uses it to set the global variables (declared above) used to draw the line.
-function! SetLineCharacters(ft)
+function! DL_SetLineCharacters(ft)
     if a:ft ==? 'vim'
-        call SetLineCharacterGlobals('=', '"', '"')
+        call DL_SetLineCharacterGlobals('=', '"', '"')
     elseif a:ft ==? 'c'
-        call SetLineCharacterGlobals('=', '//', '//')
+        call DL_SetLineCharacterGlobals('=', '//', '//')
     elseif a:ft ==? 'python'
-        call SetLineCharacterGlobals('=', '#', '#')
+        call DL_SetLineCharacterGlobals('=', '#', '#')
     elseif a:ft ==? 'sh'
-        call SetLineCharacterGlobals('=', '#', '#')
+        call DL_SetLineCharacterGlobals('=', '#', '#')
     else
         " this is the default setting for anything non-detected
-        call SetLineCharacterGlobals(g:dl_line_mid, g:dl_line_mid, g:dl_line_mid)
+        call DL_SetLineCharacterGlobals(g:dl_line_mid, g:dl_line_mid, g:dl_line_mid)
     endif
 endfunction
 
@@ -85,26 +120,36 @@ endfunction
 "   DL [string_to_put_in_line] [mid_character] [columns]
 " Where all three are optional.
 function! DL(...)
-    let l:line_msg = ''
-    
-    " first, determine command-line arguments
-    if a:0 >= 1
-        let l:line_msg = a:1
-    endif
-    if a:0 >= 2
-        let g:dl_line_mid = a:2
-    endif
-    if a:0 >= 3
-        let g:dl_column_max = a:3
-    endif
-    
-    " next, attempt to determine the detected file type
-    let l:ft = GetFileType()
-    call SetLineCharacters(l:ft)
+    " set local and global defaults
+    let g:dl_msg = ''
+    let g:dl_column_max = 80
+    let g:dl_line_mid = ''
+    let g:dl_line_prefix = ''
+    let g:dl_line_suffix = ''
 
+    " try to process the current file type
+    let l:ft = DL_GetFileType()
+    call DL_SetLineCharacters(l:ft)
+
+    " iterate through the command-line options and check
+    let l:count = 0
+    for raw_arg in a:000
+        " parse the option into a list and account for failures
+        let l:opt = DL_GetOption(raw_arg)
+        if len(l:opt) < 2
+            call DL_Usage()
+            return
+        endif
+        " process the argument, and return on failure
+        let l:result = DL_ProcessOption(l:opt[0], l:opt[1])
+        if l:result != 0
+            return
+        endif
+    endfor
+    
     " get the cursor position and extract the horizontal spacing. Print and
     " return on failure
-    let l:cp = CursorPosition()
+    let l:cp = DL_CursorPosition()
     if len(l:cp) < 3
         echo 'Failed to get the cursor position. Cannot draw a divider line.'
         return
@@ -125,8 +170,8 @@ function! DL(...)
     " compute the number of middle characters to print on either side
     let l:mid_room = g:dl_column_max - l:col
     let l:mid_room -= strlen(g:dl_line_prefix) + strlen(g:dl_line_suffix) + 2
-    if strlen(l:line_msg) > 0
-        let l:mid_room -= strlen(l:line_msg) + 2
+    if strlen(g:dl_msg) > 0
+        let l:mid_room -= strlen(g:dl_msg) + 2
     endif
     let l:mid_left = l:mid_room / 2
     let l:mid_right = l:mid_room - l:mid_left
@@ -138,8 +183,8 @@ function! DL(...)
         let l:line .= g:dl_line_mid             " add left-portion of middle
         let l:count += 1
     endwhile
-    if strlen(l:line_msg) > 0
-        let l:line .= ' ' . l:line_msg . ' '    " add message
+    if strlen(g:dl_msg) > 0
+        let l:line .= ' ' . g:dl_msg . ' '    " add message
     endif
     let l:count = 0
     while l:count < l:mid_right
