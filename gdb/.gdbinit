@@ -21,6 +21,7 @@ set logging on
 # causing for infinite runs. This is useful for finding rare cases of deadlock
 # or an evasive SIGSEGV.
 define run-forever
+    set pagination off
     break exit
     commands
     run
