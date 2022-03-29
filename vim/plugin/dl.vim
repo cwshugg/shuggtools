@@ -104,7 +104,7 @@ endfunction
 function! DL_SetLineCharacters(ft)
     if a:ft ==? 'vim'
         call DL_SetLineCharacterGlobals('=', '"', '"')
-    elseif a:ft ==? 'c'
+    elseif a:ft ==? 'c' || a:ft ==? 'cpp'
         call DL_SetLineCharacterGlobals('=', '//', '//')
     elseif a:ft ==? 'python'
         call DL_SetLineCharacterGlobals('=', '#', '#')
