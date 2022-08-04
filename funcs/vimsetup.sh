@@ -17,7 +17,7 @@ function __shuggtool_vimsetup_theme()
         echo -e "Making ${C_YELLOW}${vim_dir}${C_NONE}..."
         mkdir ${vim_dir}
     else
-        rm -rf ${theme_repo_dir}
+        /bin/rm -rf ${theme_repo_dir}
     fi
 
     # first, we'll attempt to clone a repository containing the theme into our
@@ -52,7 +52,7 @@ function __shuggtool_vimsetup_theme()
     __shuggtool_vimsetup_theme_name="${theme_name}"
     
     # once finished, remove the repository directory
-    rm -rf ${theme_repo_dir}
+    /bin/rm -rf ${theme_repo_dir}
 }
 
 # Helper function used to load any plugins I've created or use.

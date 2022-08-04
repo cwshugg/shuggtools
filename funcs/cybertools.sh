@@ -46,7 +46,7 @@ function __shuggtool_cybertools()
         # if 'clean_first' is set, remove the directory and proceed
         if [ $clean_first -eq 1 ]; then
             __shuggtool_cybertools_print "Removing old cybertool directory '$dir_cyber'..."
-            rm -rf $dir_cyber
+            /bin/rm -rf $dir_cyber
         # otherwise, complain and exit
         else
             __shuggtool_print_error "Cybertool directory '$dir_cyber' already exists."

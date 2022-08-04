@@ -76,12 +76,12 @@ function __shuggtool_screen_cover()
             __shuggtool_print_error "failed to unpack: ${sc_dir}/${tarfile}."
             return 2
         fi
-        rm ${tarfile}
+        /bin/rm ${tarfile}
         echo -e "${C_LTGREEN}success.${C_NONE}"
 
         # attempt to build from source
         cd ./cmatrix
-        rm -f ./cmatrix # remove any old gunk
+        /bin/rm -f ./cmatrix # remove any old gunk
         ./configure
         make
         cd ..

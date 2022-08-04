@@ -67,7 +67,7 @@ function __shuggtool_setup_file_boilerplate()
     # add the script's contents and swap it into the original file
     cat ${fpath} >> ${tfpath}
     cat ${tfpath} > ${fpath}
-    rm ${tfpath}
+    /bin/rm ${tfpath}
 }
 
 # Optional function that sets up the 'source directory' (the location that gets
@@ -133,7 +133,7 @@ function __shuggtool_setup_info_file()
 # if we got "-f" as the first argument, we'll force a setup by removing
 # the source directory
 if [ $# -ge 1 ] && [ "$1" == "-f" ]; then
-    rm -rf ${source_dir}
+    /bin/rm -rf ${source_dir}
 fi
 
 # if the source directory doesn't exist, invoke the setup function
