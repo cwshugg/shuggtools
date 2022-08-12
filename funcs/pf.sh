@@ -19,6 +19,14 @@ function __shuggtool_pf()
         touch ${ST_PINGFILE_SRC}
     fi
 
+    # if arguments were given, we'll take them and dump them into the file as
+    # separate lines, then quit
+    if [ $# -ge 1 ]; then
+        for arg in "$@"; do
+            echo "${arg}" >> ${ST_PINGFILE_SRC}
+        done
+    fi
+
     # otherwise, examine the file contents. If it's empty, do nothing
     if [ ! -s ${ST_PINGFILE_SRC} ]; then
         return
@@ -36,7 +44,7 @@ function __shuggtool_pf()
 
     # if it's NOT empty, we'll print a small header, dump the contents, then
     # empty out the file
-    echo -e "\n${C_RED}${banner}\n${C_CYAN}${line}${C_NONE}"
+    echo -e "\n${C_YELLOW}${banner}\n${C_CYAN}${line}${C_NONE}"
     cat ${ST_PINGFILE_SRC}
     echo -e "${C_CYAN}${line}${C_NONE}\n"
     cat /dev/null > ${ST_PINGFILE_SRC}

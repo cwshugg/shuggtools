@@ -84,5 +84,5 @@ else
 fi
 
 # add the pingfile check at the end of PS1
-PS1+='$(which pf)'
+PS1+='$($(which pf))'
 
