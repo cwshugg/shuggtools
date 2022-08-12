@@ -17,7 +17,7 @@ function __shuggtool_terminal_alert()
         $C_LTBLUE
         $C_GREEN
         $C_YELLOW
-        $C_BROWN
+        $C_YELLOW
     )
     declare -a colors_bot=(
         ${colors_top[4]}
