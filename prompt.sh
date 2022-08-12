@@ -83,3 +83,6 @@ else
     #PS1="[\! \u@\h: \W] "
 fi
 
+# add the pingfile check at the end of PS1
+PS1+='$(which pf)'
+
