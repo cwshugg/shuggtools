@@ -4,6 +4,41 @@
 #
 #   Connor Shugg
 
+# Function to show pingfile contents as a dialog box.
+function __shuggtool_pf_show_dialog()
+{
+    # local the dialog command and invoke it to display a simple message
+    dlg=$(which dialog)
+    ${dlg} --title "You have new pingfile content" --clear \
+           --msgbox "$(cat ${ST_PINGFILE_SRC})" 0 0
+}
+
+# Function to show a simple alert for pingfile contents.
+function __shuggtool_pf_show_simple()
+{
+    # build a small line string for pretty formatting
+    banner="You have new pingfile content:"
+    line_char="\u2500"
+    line=""
+    count=0
+    while [ ${count} -lt ${#banner} ]; do
+        line="${line}${line_char}"
+        count=$((count+1))
+    done
+
+    # if it's NOT empty, we'll print a small header, dump the contents, then
+    # empty out the file
+    echo -e "\n${C_YELLOW}${banner}\n${C_CYAN}${line}${C_NONE}"
+    cat ${ST_PINGFILE_SRC}
+    echo -e "${C_CYAN}${line}${C_NONE}\n"
+}
+
+# Empties out the contents of the pingfile.
+function __shuggtool_pf_empty_file()
+{
+    cat /dev/null > ${ST_PINGFILE_SRC}
+}
+
 # Main function
 function __shuggtool_pf()
 {
@@ -32,22 +67,16 @@ function __shuggtool_pf()
         return
     fi
 
-    # build a small line string for pretty formatting
-    banner="You have new pingfile content:"
-    line_char="\u2500"
-    line=""
-    count=0
-    while [ ${count} -lt ${#banner} ]; do
-        line="${line}${line_char}"
-        count=$((count+1))
-    done
+    # we'll either use 'dialog' or a simple print-out to alert the user,
+    # depending on what's installed
+    if [ ! -z "$(which dialog)" ]; then
+        __shuggtool_pf_show_dialog
+    else
+        __shuggtool_pf_show_simple
+    fi
 
-    # if it's NOT empty, we'll print a small header, dump the contents, then
-    # empty out the file
-    echo -e "\n${C_YELLOW}${banner}\n${C_CYAN}${line}${C_NONE}"
-    cat ${ST_PINGFILE_SRC}
-    echo -e "${C_CYAN}${line}${C_NONE}\n"
-    cat /dev/null > ${ST_PINGFILE_SRC}
+    # empty out the pingfile after the alert has been shown
+    __shuggtool_pf_empty_file
 }
 
 # pass all args to main function

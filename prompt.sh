@@ -83,6 +83,6 @@ else
     #PS1="[\! \u@\h: \W] "
 fi
 
-# add the pingfile check at the end of PS1
-PS1+='$($(which pf))'
+# add the pingfile check to the PROMPT_COMMAND bash variable
+PROMPT_COMMAND='$(which pf)'
 
