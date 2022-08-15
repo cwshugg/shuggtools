@@ -9,8 +9,10 @@ function __shuggtool_pf_show_dialog()
 {
     # local the dialog command and invoke it to display a simple message
     dlg=$(which dialog)
+    clear
     ${dlg} --title "You have new pingfile content" --clear \
            --msgbox "$(cat ${ST_PINGFILE_SRC})" 0 0
+    clear
 }
 
 # Function to show a simple alert for pingfile contents.
