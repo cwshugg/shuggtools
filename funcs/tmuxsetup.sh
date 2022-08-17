@@ -24,9 +24,9 @@ function __shuggtool_tmux_config()
     echo "set -g pane-border-style fg=${pane_inactive_color}" >> $config_location
     echo "set -g pane-active-border-style fg=${pane_active_color}" >> $config_location
     
-    echo "set -g visual-activity on" >> $config_location
-    echo "setw -g monitor-activity on" >> $config_location
-    echo "set-window-option -g visual-bell on" >> $config_location
+    #echo "set -g visual-activity on" >> $config_location
+    #echo "setw -g monitor-activity on" >> $config_location
+    #echo "set-window-option -g visual-bell on" >> $config_location
 
     echo -e "${C_GREEN}${config_location}${C_NONE} written successfully."
 }
