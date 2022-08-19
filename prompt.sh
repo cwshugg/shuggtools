@@ -84,5 +84,5 @@ else
 fi
 
 # add the pingfile check to the PROMPT_COMMAND bash variable
-PROMPT_COMMAND='$(which pf)'
-
+pf="$(which pf)"
+PROMPT_COMMAND="${pf}"
