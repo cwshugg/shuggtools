@@ -17,6 +17,7 @@ function __shuggtool_tmux_config()
     echo "# Connor's tmux settings"                     > $config_location
     echo "# enable tmux window colors"                  >> $config_location
     echo "set -g default-terminal \"screen-256color\""  >> $config_location
+    echo "set -g terminal-overrides \",*256col*:RGB\""  >> $config_location
     echo "# set status bar color"                       >> $config_location
     echo "set -g status-bg ${status_bg_color}"          >> $config_location
     echo "set -g status-fg ${status_fg_color}"          >> $config_location
