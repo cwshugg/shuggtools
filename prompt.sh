@@ -13,8 +13,8 @@ fgc="38;2"          # prefix for foreground colors
 # set up three arrays of colors choices, for the three prompt colors
 #                        dark blue  dark purple dark blue-green
 declare -a pc1_choices=("0;30;128" "68;51;113" "14;59;67")
-#                        dark red    magenta      aquamarine
-declare -a pc2_choices=("180;17;33" "145;31;160" "3;152;107")
+#                        dark red    magenta      medium blue
+declare -a pc2_choices=("180;17;33" "145;31;160" "25;70;150")
 #                        yellow      light blue   light pink
 declare -a pc3_choices=("210;129;7" "152;213;231" "235;186;179")
 
