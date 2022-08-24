@@ -24,6 +24,9 @@ function __shuggtool_tmux_config()
     echo "# set pane divider colors"                    >> $config_location
     echo "set -g pane-border-style fg=${pane_inactive_color}" >> $config_location
     echo "set -g pane-active-border-style fg=${pane_active_color}" >> $config_location
+    echo "# force window name format"                   >> $config_location
+    echo "tmux set -g pane-border-format \"#{pane_index} #{pane_current_command}\"" >> $config_location
+    echo "tmux set -g allow-rename off"                 >> $config_location
     
     #echo "set -g visual-activity on" >> $config_location
     #echo "setw -g monitor-activity on" >> $config_location
