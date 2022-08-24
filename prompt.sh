@@ -26,8 +26,13 @@ b_line="$(echo -e '\u2501')"
 b_fork="$(echo -e '\u2533')"
 b_corner="$(echo -e '\u2517')"
 
-# get a hash value of the username
+# get a hash value of the username (if the username is one of my own, I'll
+# manually set it so I get my favorite colors in the prompt)
+special_usernames=("cwshugg" "connor" "connorshugg")
 username="$(whoami)"
+if [ ! -z "$(echo ${special_usernames[@]} | grep "${username}")" ]; then
+    username="cwshugg"
+fi
 __shuggtool_hash_string "${username}"
 username_hash=$__shuggtool_hash_string_retval
 
@@ -38,6 +43,7 @@ text_color3=${pc_black}
 prompt_color1="${pc1_choices[0]}"
 prompt_color2="${pc2_choices[0]}"
 prompt_color3="${pc3_choices[0]}"
+
 # if the hash worked, we'll pick pseudo-random values
 if [ $username_hash -ne 0 ]; then
     # compute three indexes from the hashed value
