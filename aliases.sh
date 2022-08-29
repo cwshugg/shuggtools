@@ -2,6 +2,9 @@
 #
 #   Connor Shugg
 
+# force bash to expand environment variables when using tab complete
+shopt -s direxpand
+
 # cscope adjustments (if it's installed)
 cscope_exists="$(which cscope 2>&1)"
 if [[ ${cscope_exists} != *"no cscope"* ]]; then
