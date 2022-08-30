@@ -104,12 +104,14 @@ endfunction
 function! DL_SetLineCharacters(ft)
     if a:ft ==? 'vim'
         call DL_SetLineCharacterGlobals('=', '"', '"')
-    elseif a:ft ==? 'c' || a:ft ==? 'cpp'
+    elseif a:ft ==? 'c' ||  a:ft ==? 'cpp' || a:ft ==? 'cc'
         call DL_SetLineCharacterGlobals('=', '//', '//')
-    elseif a:ft ==? 'python'
+    elseif a:ft ==? 'java' ||  a:ft ==? "javascript"
+        call DL_SetLineCharacterGlobals('=', '//', '//')
+    elseif a:ft ==? 'python' || a:ft ==? 'sh'
         call DL_SetLineCharacterGlobals('=', '#', '#')
-    elseif a:ft ==? 'sh'
-        call DL_SetLineCharacterGlobals('=', '#', '#')
+    elseif a:ft ==? 'html'
+        call DL_SetLineCharacterGlobals('-', '<!--', '-->')
     else
         " this is the default setting for anything non-detected
         if g:dl_line_mid ==? ''
