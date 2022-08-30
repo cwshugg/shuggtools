@@ -1,5 +1,6 @@
 " Connor's Vim Settings
-" ----- helper function(s)
+
+" ============================= Helper Functions ============================= "
 " CCO - Capture Command Output. Runs the given command and returns the output
 function! CCO(cmd)
     let s:cco_out = ''
@@ -12,9 +13,10 @@ function! CCO(cmd)
     return s:cco_out
 endfunction
 
-" ----- general settings
+
+" ============================= General Settings ============================= "
 syntax on                               " syntax highlighting
-colorscheme dwarrowdelf " modifies color scheme
+colorscheme dwarrowdelf                 " modifies color scheme
 set tabstop=4 shiftwidth=4 expandtab    " tabs = 4 spaces
 set softtabstop=4                       " enables backspace to clear out 4 spaces
 set autoindent                          " forces vim to auto-indent
@@ -25,15 +27,24 @@ set undolevels=1000                     " LOTS of undos available
 set backspace=indent,eol,start          " make sure backspace works properly
 set ruler                               " enable the bottom-right set of numbers
 
-"----- line/column highlighting
+
+" ========================= Line/Column Highlighting ========================= "
 set cursorline                          " highlight current line cursor is on
 set cursorcolumn                        " highlight current column cursor is on
 
-" ----- search settings
+
+" ============================= Search Settings ============================== "
 set hlsearch                            " highlight search results
 set is                                  " highlight searches as you type
 
-" ----- gvim settings
+
+" =========================== Remaps and Shortcuts =========================== "
+" the below shortcut allows you to press space to clear highlighted search terms
+" thanks to: https://vim.fandom.com/wiki/Highlight_all_search_pattern_matches
+nnoremap <silent> <Space> :nohlsearch<Bar>:echo<CR>
+
+
+" ============================== gVim Settings =============================== "
 if has('gui_running')
     set guifont=Consolas:h11            " set gvim font
     set guioptions -=m                  " remove menu bar
@@ -56,7 +67,4 @@ if has('gui_running')
     endif
 endif
 
-" the below shortcut allows you to press space to clear highlighted search terms
-" thanks to: https://vim.fandom.com/wiki/Highlight_all_search_pattern_matches
-nnoremap <silent> <Space> :nohlsearch<Bar>:echo<CR>
 
