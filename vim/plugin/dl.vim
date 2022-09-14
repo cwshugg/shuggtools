@@ -24,7 +24,7 @@ function! DL_CCO(cmd)
     redir END
 
     " trim off any whitespace and return
-    let s:cco_out = trim(s:cco_out)
+    " let s:cco_out = trim(s:cco_out)
     return s:cco_out
 endfunction
 
