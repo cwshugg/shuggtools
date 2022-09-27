@@ -77,31 +77,46 @@ function __shuggtool_setup_file_boilerplate()
 # to reference.
 function __shuggtool_setup_source_dir()
 {
-    echo -e "${C_LTBLUE}shuggtools${C_NONE}: initializing scripts..."
-    # make the source directory
-    mkdir ${source_dir}
-   
+    # make the source directory, if applicable
+    if [ ! -d ${source_dir} ]; then
+        mkdir ${source_dir}
+    fi
+
     # echo the correct "source" command into each function file
     count=0
     for func in ${function_dir}/*.sh; do
-        echo -en "${STAB_TREE2}$(basename ${func})... "
-
-        # try to determine if this file already has boilerplate code inside. If
-        # it doesn't we'll set it up here
+        # if the script already has boilerplate code inside, we'll skip it
         has_bp="$(__shuggtool_file_has_boilerplate ${func})"
-        if [ ! -z "${has_bp}" ]; then
-            __shuggtool_setup_file_boilerplate ${func}
+        if [ -z "${has_bp}" ]; then
+            continue
         fi
+
+        # echo out a one-time message if this is the first script we're
+        # initializing
+        if [ ${count} -eq 0 ]; then
+            echo -e "${C_LTBLUE}shuggtools${C_NONE}: initializing scripts..."
+        fi
+        
+        # otherwise, set up the boilerplate code
+        echo -en "${STAB_TREE2}$(basename ${func})... "
+        __shuggtool_setup_file_boilerplate ${func}
     
         # at this point, we know it's sourcing the correct globals file, so we'll
         # make the file executable and create a link for it in the source dir
         chmod 755 ${func}
-        ln -s ${func} ${source_dir}/$(basename ${func} .sh)
+        link_fpath=${source_dir}/$(basename ${func} .sh)
+        if [ ! -L ${link_fpath} ]; then
+            ln -s ${func} ${link_fpath}
+        fi
      
         echo -e "${C_GREEN}success${C_NONE}"
         count=$((count+1))
     done
-    echo -e "${STAB_TREE1}initialized ${C_GREEN}${count}${C_NONE} scripts"
+
+    # if we set up one or more script, echo out one final message
+    if [ ${count} -gt 0 ]; then
+        echo -e "${STAB_TREE1}initialized ${C_GREEN}${count}${C_NONE} scripts"
+    fi
 }
 
 # Helper function that creates an information file with various version
@@ -136,10 +151,8 @@ if [ $# -ge 1 ] && [ "$1" == "-f" ]; then
     /bin/rm -rf ${source_dir}
 fi
 
-# if the source directory doesn't exist, invoke the setup function
-if [ ! -d "${source_dir}" ]; then
-    __shuggtool_setup_source_dir
-fi
+# invoke the setup function for all links that will go into the source directory
+__shuggtool_setup_source_dir
 
 # append the source directory to our PATH variable, as well as the current
 # directory (so we can locate executables and other files without having
