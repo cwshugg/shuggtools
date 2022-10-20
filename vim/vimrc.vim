@@ -1,5 +1,36 @@
 " Connor's Vim Settings
 
+" ============================ Vundle and Plugins ============================ "
+set nocompatible                        " vundle requires VIM, not VI
+filetype off                            " required by vundle
+set rtp+=$HOME/.vim/bundle/Vundle.vim   " add vundle to vim's runtime path
+call vundle#begin()
+
+" ------------- Plugins -------------- "
+Plugin 'VundleVim/Vundle.vim'           " required by vundle
+Plugin 'https://github.com/lambdalisue/fern.vim'
+
+call vundle#end()                       " finish vundle setup
+filetype plugin indent on               " required by vundle
+
+
+" ------------------------------ Fern Shortcuts ------------------------------ "
+" FT - File Tree. Utilizes Fern to open a 'project-drawer'-style file tree next
+" to the current editor window.
+function! FT(...)
+    let l:file_tree_dir = '~'
+
+    " if one or more arguments was passed in, we'll parse the first one as the
+    " directory path to open with fern
+    if a:0 > 0
+        let l:file_tree_dir = a:1
+    endif
+
+    " invoke fern with the selected directory
+    execute 'Fern ' . l:file_tree_dir . ' -drawer'
+endfunction
+command! -nargs=* FT call FT(<f-args>)
+
 " ============================= Helper Functions ============================= "
 " CCO - Capture Command Output. Runs the given command and returns the output
 function! CCO(cmd)
@@ -59,12 +90,9 @@ if has('gui_running')
     if stridx(s:filename, '[No Name]') > -1
         " get the home directory and append 'Desktop' onto it. Assuming
         " this is a windows machine, that means we'll save any new files
-        " to the desktop, rather than our home directory
-        let s:homedir = CCO('echo $HOME')
         let s:desktop = s:homedir . '/Desktop'
         let s:cmd = 'cd ' . s:desktop
         execute s:cmd
     endif
 endif
-
 

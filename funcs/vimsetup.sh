@@ -17,7 +17,7 @@ function __shuggtool_vimsetup_theme()
         echo -e "Making ${C_YELLOW}${vim_dir}${C_NONE}..."
         mkdir ${vim_dir}
     else
-        /bin/rm -rf ${theme_repo_dir}
+        rm -rf ${theme_repo_dir}
     fi
 
     # first, we'll attempt to clone a repository containing the theme into our
@@ -52,7 +52,7 @@ function __shuggtool_vimsetup_theme()
     __shuggtool_vimsetup_theme_name="${theme_name}"
     
     # once finished, remove the repository directory
-    /bin/rm -rf ${theme_repo_dir}
+    rm -rf ${theme_repo_dir}
 }
 
 # Helper function used to load any plugins I've created or use.
@@ -61,8 +61,6 @@ function __shuggtool_vimsetup_plugins()
     # in the shuggtools home directory there's a 'vim/' directory containing
     # plugins I've written. We'll locate it and copy import/read statements
     # into the vimrc
-
-    vimrc_path=$1
     vim_plugin_src=${sthome}/vim/plugin
     vim_plugin_dst=~/.vim/plugin
 
@@ -71,7 +69,7 @@ function __shuggtool_vimsetup_plugins()
         mkdir ${vim_plugin_dst}
     fi
 
-    echo -e "Installing plugins and vim scripts..."
+    echo -e "Installing my plugins and vim scripts..."
     pcount=0
     for fpath in ${vim_plugin_src}/*.vim; do
         # if for some reason we're not looking at a file, skip it
@@ -89,6 +87,38 @@ function __shuggtool_vimsetup_plugins()
     echo -e "${STAB_TREE1}copied ${pcount} plugins from ${C_LTBLUE}${vim_plugin_src}${C_NONE}."
 }
 
+# Helper function that installs vundle, a vim plugin manager.
+function __shuggtool_vimsetup_vundle()
+{
+    vundle_url="https://github.com/VundleVim/Vundle.vim"
+    vundle_dst=~/.vim/bundle
+    vundle_name=Vundle.vim
+
+    # make the directory if it doesn't exist
+    if [ ! -d ${vundle_dst} ]; then
+        mkdir ${vundle_dst}
+    fi
+    
+    # clone the git repo into the correct directory (delete and re-clone if
+    # necessary)
+    vundle_dir=${vundle_dst}/${vundle_name}
+    if [ -d ${vundle_dir} ]; then
+        rm -rf ${vundle_dir}
+    fi
+    echo -en "Installing vundle to ${C_LTBLUE}${vundle_dir}${C_NONE}... "
+    git clone ${vundle_url} ${vundle_dir} > /dev/null 2> /dev/null
+
+    # check that the directory has been filled up with files from vundle
+    if [ ! -z "$(ls ${vundle_dir})" ]; then
+        echo -e "${C_GREEN}success${C_NONE}."
+        echo -e "\nVundle installed. Run vim and execute the" \
+                "${C_YELLOW}:PluginInstall${C_NONE} command to install the" \
+                "plugins defined in your .vimrc."
+    else
+        echo -e "${C_RED}failure${C_NONE}."
+    fi
+}
+
 # main function
 function __shuggtool_vimsetup()
 {
@@ -97,7 +127,7 @@ function __shuggtool_vimsetup()
     
     vimrc_location=~/.vimrc
     vimrc_source=${sthome}/vim/vimrc.vim
-    echo -en "Copying to ${C_LTBLUE}${vimrc_location}${C_NONE}... "
+    echo -en "Installing .vimrc to ${C_LTBLUE}${vimrc_location}${C_NONE}... "
 
     # copy the vimrc file to the correct location
     if [ ! -f ${vimrc_source} ]; then
@@ -105,11 +135,11 @@ function __shuggtool_vimsetup()
     else
         cp ${vimrc_source} ${vimrc_location}
     fi
-
     echo -e "${C_GREEN}success${C_NONE}."
     
     # next we'll install any plugins we have
-    __shuggtool_vimsetup_plugins ${vimrc_location}
+    __shuggtool_vimsetup_plugins
+    __shuggtool_vimsetup_vundle
 }
 
 __shuggtool_vimsetup "$@"
