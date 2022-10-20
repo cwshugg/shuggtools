@@ -18,7 +18,7 @@ filetype plugin indent on               " required by vundle
 " FT - File Tree. Utilizes Fern to open a 'project-drawer'-style file tree next
 " to the current editor window.
 function! FT(...)
-    let l:file_tree_dir = '~'
+    let l:file_tree_dir = './'
 
     " if one or more arguments was passed in, we'll parse the first one as the
     " directory path to open with fern
