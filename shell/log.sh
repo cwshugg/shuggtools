@@ -1,0 +1,167 @@
+# Log
+# A daily log tool used to keep track of my daily activity during work.
+#
+#   Connor Shugg
+
+# Globals
+log_dir=${HOME}/.daily_log
+log_editor=$(which vim)
+verbose=0
+
+# Help menu
+function __shuggtool_log_usage()
+{
+    echo "Log: a daily work log."
+    echo "Usage: $0 [-d YYYY-MM-DD]"
+    echo "Invocation arguments:"
+    echo "---------------------------------------------------------------------------"
+    echo " -h                   Displays this menu."
+    echo " -v                   Verbose mode."
+    echo " -d YYYY-MM-DD        Opens a log file for the day specified by YYYY-MM-DD."
+    echo " -s SEARCH_STRING     Searches all existing log files for the given text."
+    echo "---------------------------------------------------------------------------"
+}
+
+# Helper function that checks if a string is a number. Echoes a message if the given
+# string *is* a number.
+function __shuggtool_log_is_number()
+{
+    if [ "$1" ] && [ -z "${1//[0-9]}" ]; then
+        echo "IS a number"
+    fi
+}
+
+# Takes in a file path and initializes it (if necessary) to hold default logfile
+# content.
+function __shuggtool_log_file_init()
+{
+    fpath="$1"
+    ds="$2"
+
+    # if the file already exists, don't bother proceeding
+    if [ -f ${fpath} ]; then
+        echo "Log file ${fpath} already exists."
+        return 0
+    fi
+
+    # otherwise, we'll create and fill the file
+    echo "Creating log file ${fpath}."
+    touch ${fpath}
+    weekday="$(date -d "${ds}" +%A)"
+    echo -e "# ${weekday} ${ds}\n\n* \n" > ${fpath}
+}
+
+# Searches all log files for a specific string.
+function __shuggtool_log_search()
+{
+    str="$1"
+    str="${str,,}"
+
+    # iterate through all files in the log directory
+    for lf in ${log_dir}/*; do
+        # skip any non-files
+        if [ ! -f ${lf} ]; then
+            continue
+        fi
+
+        # retrieve the file contents and convert to lowercase
+        content="$(cat ${lf})"
+        content="${content,,}"
+
+        # iterate, line-by-line, through the file, searching for the string
+        results=()
+        while read -r line; do
+            # convert the line to lowercase and check the search string
+            lower_line="${line,,}"
+            if [[ "${lower_line}" == *"${str}"* ]]; then
+                results+=("${line}")
+            fi
+        done < ${lf}
+
+        # if the result array was filled up, alert the user
+        if [ ${#results[@]} -gt 0 ]; then
+            lf_base="$(basename ${lf})"
+            lf_base="${lf_base%.*}"
+            echo -e "${C_GREEN}${lf_base}${C_NONE}"
+
+            # echo the matching lines, if we're verbose
+            if [ ${verbose} -ne 0 ]; then
+                for (( i=0; i<${#results[@]}; i++ )); do
+                    line="${results[${i}]}"
+                    echo -e "${STAB}${line}"
+                done
+            fi
+        fi
+    done
+}
+
+# Main function
+function __shuggtool_log()
+{
+    # first, make sure the log directory exists
+    if [ ! -d ${log_dir} ]; then
+        mkdir ${log_dir}
+    fi
+
+    # take the current day and form a datestring
+    year="$(date +%Y)"
+    month="$(date +%m)"
+    day="$(date +%d)"
+    ds="${year}-${month}-${day}"
+
+    # check for command-line arguments
+    search_str=""
+    local OPTIND h v d s
+    while getopts "hvd:s:" opt; do
+        case ${opt} in
+            h)
+                __shuggtool_log_usage
+                return 0
+                ;;
+            v)
+                verbose=1
+                ;;
+            d)
+                ds="${OPTARG}"
+                ;;
+            s)
+                search_str="${OPTARG}"
+                ;;
+        esac
+    done
+
+    # if the search term was set, perform the search and return
+    if [ ! -z "${search_str}" ]; then
+        __shuggtool_log_search "${search_str}"
+        return 0
+    fi
+
+    # check the datestring for validity
+    ds_array=(${ds//-/ })
+    if [ ${#ds_array[@]} -lt 3 ]; then
+        __shuggtool_print_error "the date string must be in the \"YYYY-MM-DD\" format."
+        return 1
+    fi
+    year="${ds_array[0]}"   # grab the year
+    month="${ds_array[1]}"  # grab the month
+    day="${ds_array[2]}"    # grab the day
+
+    # make sure each piece are numbers
+    if [ -z "$(__shuggtool_log_is_number ${year})" ] || \
+       [ -z "$(__shuggtool_log_is_number ${month})" ] || \
+       [ -z "$(__shuggtool_log_is_number ${day})" ]; then
+        __shuggtool_print_error "each part of the date string must be a number."
+        return 2
+    fi
+
+    # create the path for the log file and initialize it
+    lfpath=${log_dir}/${year}-${month}-${day}.md
+    __shuggtool_log_file_init ${lfpath} "${year}-${month}-${day}"
+    
+    # open the log file for viewing/editing
+    ${log_editor} ${lfpath}
+}
+
+# pass all args to main function
+__shuggtool_log "$@"
+
