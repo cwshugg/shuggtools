@@ -10,7 +10,7 @@ Contained in this repository is the following:
 * `globals.sh` - global variables and functions used by this repo's shell scripts
 * `prompt.sh` - my custom prompt routine
 * `aliases.sh` - any aliases and other miscellaneous settings
-* `funcs/` - a directory containing various shell scripts I've written
+* `shell/` - a directory containing various shell scripts I've written
 * `vim/` - a directory containing any Vim scripts I've written
 * `gdb/` - a directory containing any GDB scripts I've written
 

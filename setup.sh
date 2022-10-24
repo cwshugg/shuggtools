@@ -21,7 +21,7 @@ setup_dir=$(dirname $(realpath ${setup_fpath}))
 
 # set up a few other directory paths
 old_dir=$(pwd)
-function_dir=${setup_dir}/funcs
+function_dir=${setup_dir}/shell
 source_dir=${setup_dir}/links
 
 # set up globals.sh variables and source the file
@@ -71,7 +71,7 @@ function __shuggtool_setup_file_boilerplate()
 }
 
 # Optional function that sets up the 'source directory' (the location that gets
-# added to the user's $PATH). This function modifies the scripts within funcs/
+# added to the user's $PATH). This function modifies the scripts within shell/
 # by adding a small boilerplate bit of shell code that sources globals.sh, adds
 # a shebang, and sets up a 'sthome' (shuggtools home) variable for each script
 # to reference.
