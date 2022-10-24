@@ -40,12 +40,16 @@ function __shuggtool_log_file_init()
 
     # if the file already exists, don't bother proceeding
     if [ -f ${fpath} ]; then
-        echo "Log file ${fpath} already exists."
+        if [ ${verbose} -ne 0 ]; then
+            echo "Log file ${fpath} already exists."
+        fi
         return 0
     fi
 
     # otherwise, we'll create and fill the file
-    echo "Creating log file ${fpath}."
+    if [ ${verbose} -ne 0 ]; then
+        echo "Creating log file ${fpath}."
+    fi
     touch ${fpath}
     weekday="$(date -d "${ds}" +%A)"
     echo -e "# ${weekday} ${ds}\n\n* \n" > ${fpath}
@@ -138,6 +142,10 @@ function __shuggtool_log()
                 ;;
             s)
                 search_str="${OPTARG}"
+                ;;
+            *)
+                __shuggtool_log_usage
+                return 0
                 ;;
         esac
     done
