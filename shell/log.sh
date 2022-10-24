@@ -79,16 +79,28 @@ function __shuggtool_log_search()
         done < ${lf}
 
         # if the result array was filled up, alert the user
-        if [ ${#results[@]} -gt 0 ]; then
+        results_len=${#results[@]}
+        if [ ${results_len} -gt 0 ]; then
             lf_base="$(basename ${lf})"
             lf_base="${lf_base%.*}"
-            echo -e "${C_GREEN}${lf_base}${C_NONE}"
+            echo -en "${C_GREEN}${lf_base}${C_NONE}"
+
+            if [ ${verbose} -eq 0 ]; then
+                echo -e " matches."
+            else
+                echo ""
+            fi
 
             # echo the matching lines, if we're verbose
             if [ ${verbose} -ne 0 ]; then
-                for (( i=0; i<${#results[@]}; i++ )); do
+                for (( i=0; i<${results_len}; i++ )); do
                     line="${results[${i}]}"
-                    echo -e "${STAB}${line}"
+                    # pick and appropraite prefix, then print out the line
+                    prefix="${STAB_TREE2}"
+                    if [ ${i} -eq $((results_len-1)) ]; then
+                        prefix="${STAB_TREE1}"
+                    fi
+                    echo -e "${prefix}${line}"
                 done
             fi
         fi
