@@ -15,7 +15,7 @@ C_BLUE="\033[38;2;73;165;255m"      # "\033[0;34m"
 C_PURPLE="\033[38;2;160;79;255m"    # "\033[0;35m"
 C_CYAN="\033[38;2;101;215;255m"     # "\033[0;36m"
 C_LTGRAY="\033[38;2;175;175;175m"   # "\033[0;37m"
-C_DKGRAY="\033[38;2;110;110;110m"   # "\033[1;30m"
+C_DKGRAY="\033[38;2;130;130;130m"   # "\033[1;30m"
 C_LTRED="\033[38;2;255;150;150m"    # "\033[1;31m"
 C_LTGREEN="\033[38;2;142;235;172m"  # "\033[1;32m"
 C_LTYELLOW="\033[38;2;255;252;79m"  # "\033[1;33m"
@@ -45,7 +45,7 @@ function __shuggtool_print_error()
     fi
 
     # print the error (to stderr)
-    echo -e "${C_RED}Shuggtool error: ${C_NONE}${msg}${C_NONE}" 1>&2
+    echo -e "${C_RED}Error: ${C_NONE}${msg}${C_NONE}" 1>&2
 }
 
 # Helper function that sets two global variables equal to the number of rows
