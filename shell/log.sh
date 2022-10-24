@@ -31,6 +31,19 @@ function __shuggtool_log_is_number()
     fi
 }
 
+# Takes in a datestring and echoes out its value in Unix epoch seconds.
+function __shuggtool_log_date_seconds()
+{
+    date -d "$1" +%s
+}
+
+# Helper function that echoes out the existing log file paths, one per line, in
+# sorted order by the date each file name specifies.
+function __shuggtool_log_get_files()
+{
+    ls -1 ${log_dir} | sort -V
+}
+
 # Takes in a file path and initializes it (if necessary) to hold default logfile
 # content.
 function __shuggtool_log_file_init()
@@ -62,7 +75,8 @@ function __shuggtool_log_search()
     str="${str,,}"
 
     # iterate through all files in the log directory
-    for lf in ${log_dir}/*; do
+    for lf in $(__shuggtool_log_get_files); do
+        lf=${log_dir}/${lf}
         # skip any non-files
         if [ ! -f ${lf} ]; then
             continue
@@ -74,12 +88,14 @@ function __shuggtool_log_search()
 
         # iterate, line-by-line, through the file, searching for the string
         results=()
+        line_num=1
         while read -r line; do
             # convert the line to lowercase and check the search string
             lower_line="${line,,}"
             if [[ "${lower_line}" == *"${str}"* ]]; then
                 results+=("${line}")
             fi
+            line_num=$((line_num+1))
         done < ${lf}
 
         # if the result array was filled up, alert the user
@@ -104,7 +120,7 @@ function __shuggtool_log_search()
                     if [ ${i} -eq $((results_len-1)) ]; then
                         prefix="${STAB_TREE1}"
                     fi
-                    echo -e "${prefix}${line}"
+                    echo -e "${C_DKGRAY}${prefix}${C_NONE}${line}"
                 done
             fi
         fi
@@ -162,6 +178,10 @@ function __shuggtool_log()
         __shuggtool_print_error "the date string must be in the \"YYYY-MM-DD\" format."
         return 1
     fi
+    if [[ "$(date -d ${ds} 2>&1)" == *"invalid date"* ]]; then
+        __shuggtool_print_error "the given date is invalid."
+        return 2
+    fi  
     year="${ds_array[0]}"   # grab the year
     month="${ds_array[1]}"  # grab the month
     day="${ds_array[2]}"    # grab the day
@@ -171,7 +191,7 @@ function __shuggtool_log()
        [ -z "$(__shuggtool_log_is_number ${month})" ] || \
        [ -z "$(__shuggtool_log_is_number ${day})" ]; then
         __shuggtool_print_error "each part of the date string must be a number."
-        return 2
+        return 
     fi
 
     # create the path for the log file and initialize it
