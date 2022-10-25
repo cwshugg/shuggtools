@@ -180,9 +180,12 @@ function __shuggtool_log_list()
 
         # if verbose mode is on, print a little extra information
         if [ ${verbose} -ne 0 ]; then
+            # count the line numbers
             lf_path=${log_dir}/${lf}
             lcount=$(cat ${lf_path} | wc -l)
-            echo " - ${lcount} lines"
+            # retrieve the weekday
+            lf_weekday="$(date -d "${lf_date}" +%A)"
+            echo -e " ${C_DKGRAY}(${lf_weekday})${C_NONE} - ${lcount} lines"
         else
             echo ""
         fi
