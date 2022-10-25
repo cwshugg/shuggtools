@@ -39,6 +39,44 @@ function __shuggtool_log_date_seconds()
     date -d "$1" +%s
 }
 
+# Echoes out the current year.
+function __shuggtool_log_get_current_year()
+{
+    date +%Y
+}
+
+# Echoes out the current month.
+function __shuggtool_log_get_current_month()
+{
+    date +%m
+}
+
+# Echoes out the current day.
+function __shuggtool_log_get_current_day()
+{
+    date +%d
+}
+
+# Echoes out a datestring representing today.
+function __shuggtool_log_get_current_datestring()
+{
+    year="$(__shuggtool_log_get_current_year)"
+    month="$(__shuggtool_log_get_current_month)"
+    day="$(__shuggtool_log_get_current_day)"
+    echo "${year}-${month}-${day}"
+}
+
+# Takes in a datestring and echoes out the color to use to print it out.
+function __shuggtool_log_get_datestring_color()
+{
+    ds="$1"
+    if [[ "$(__shuggtool_log_get_current_datestring)" == "${ds}" ]]; then
+        echo -n "${C_BLUE}"
+    else
+        echo -n "${C_NONE}"
+    fi
+}
+
 # Helper function that echoes out the existing log file paths, one per line, in
 # sorted order by the date each file name specifies.
 function __shuggtool_log_get_files()
@@ -103,9 +141,11 @@ function __shuggtool_log_search()
         # if the result array was filled up, alert the user
         results_len=${#results[@]}
         if [ ${results_len} -gt 0 ]; then
+            # get the file's basename without its extension
             lf_base="$(basename ${lf})"
             lf_base="${lf_base%.*}"
-            echo -en "${C_GREEN}${lf_base}${C_NONE}"
+            color="$(__shuggtool_log_get_datestring_color "${lf_base}")"
+            echo -en "${color}${lf_base}${C_NONE}"
 
             if [ ${verbose} -eq 0 ]; then
                 echo -e " matches."
@@ -135,7 +175,8 @@ function __shuggtool_log_list()
     # get a summary of all files in the log directory, sorted accordingly
     for lf in $(ls ${log_dir} | sort -V); do
         lf_date="${lf%.*}"
-        echo -en "${C_GREEN}${lf_date}${C_NONE}"
+        color="$(__shuggtool_log_get_datestring_color "${lf_date}")"
+        echo -en "${color}${lf_date}${C_NONE}"
 
         # if verbose mode is on, print a little extra information
         if [ ${verbose} -ne 0 ]; then
@@ -157,10 +198,7 @@ function __shuggtool_log()
     fi
 
     # take the current day and form a datestring
-    year="$(date +%Y)"
-    month="$(date +%m)"
-    day="$(date +%d)"
-    ds="${year}-${month}-${day}"
+    ds="$(__shuggtool_log_get_current_datestring)"
 
     # check for command-line arguments
     search_str=""
