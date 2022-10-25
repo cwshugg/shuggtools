@@ -74,7 +74,7 @@ function __shuggtool_prompt_yesno()
 
     # iterate until a proper answer is given
     while true; do
-        echo -en "${msg} ${C_LTGRAY}(y/n)${C_NONE}"
+        echo -en "${msg} ${C_LTGRAY}(${C_GREEN}y${C_LTGRAY}/${C_RED}n${C_LTGRAY})${C_NONE}"
         read -p " " answer
         # parse the response
         case ${answer} in
