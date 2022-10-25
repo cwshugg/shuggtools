@@ -8,7 +8,7 @@
 # main function
 function __shuggtool_line_separator()
 {
-    line_character="="
+    line_character="\u2500"
     line_text=""
     line_color=${C_NONE}
     line_text_color=${C_YELLOW}

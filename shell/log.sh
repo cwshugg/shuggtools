@@ -13,11 +13,12 @@ verbose=0
 function __shuggtool_log_usage()
 {
     echo "Log: a daily work log."
-    echo "Usage: $0 [-d YYYY-MM-DD]"
+    echo "Usage: $0 [options]"
     echo "Invocation arguments:"
     echo "---------------------------------------------------------------------------"
     echo " -h                   Displays this menu."
     echo " -v                   Verbose mode."
+    echo " -l                   List all dates for which a log file exists."
     echo " -d YYYY-MM-DD        Opens a log file for the day specified by YYYY-MM-DD."
     echo " -s SEARCH_STRING     Searches all existing log files for the given text."
     echo "---------------------------------------------------------------------------"
@@ -128,6 +129,25 @@ function __shuggtool_log_search()
     done
 }
 
+# Lists all dates for which a log file already exists.
+function __shuggtool_log_list()
+{
+    # get a summary of all files in the log directory, sorted accordingly
+    for lf in $(ls ${log_dir} | sort -V); do
+        lf_date="${lf%.*}"
+        echo -en "${C_GREEN}${lf_date}${C_NONE}"
+
+        # if verbose mode is on, print a little extra information
+        if [ ${verbose} -ne 0 ]; then
+            lf_path=${log_dir}/${lf}
+            lcount=$(cat ${lf_path} | wc -l)
+            echo " - ${lcount} lines"
+        else
+            echo ""
+        fi
+    done
+}
+
 # Main function
 function __shuggtool_log()
 {
@@ -144,8 +164,9 @@ function __shuggtool_log()
 
     # check for command-line arguments
     search_str=""
+    do_list=0
     local OPTIND h v d s
-    while getopts "hvd:s:" opt; do
+    while getopts "hvld:s:" opt; do
         case ${opt} in
             h)
                 __shuggtool_log_usage
@@ -153,6 +174,9 @@ function __shuggtool_log()
                 ;;
             v)
                 verbose=1
+                ;;
+            l)
+                do_list=1
                 ;;
             d)
                 ds="${OPTARG}"
@@ -170,6 +194,12 @@ function __shuggtool_log()
     # if the search term was set, perform the search and return
     if [ ! -z "${search_str}" ]; then
         __shuggtool_log_search "${search_str}"
+        return 0
+    fi
+
+    # if the list option was selected, we'll list all files in the log directory
+    if [ ${do_list} -ne 0 ]; then
+        __shuggtool_log_list
         return 0
     fi
 
