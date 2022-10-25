@@ -31,6 +31,7 @@ function! FT(...)
 endfunction
 command! -nargs=* FT call FT(<f-args>)
 
+
 " ============================= Helper Functions ============================= "
 " CCO - Capture Command Output. Runs the given command and returns the output
 function! CCO(cmd)
@@ -53,6 +54,7 @@ set softtabstop=4                       " enables backspace to clear out 4 space
 set autoindent                          " forces vim to auto-indent
 filetype indent on
 set number                              " displays page numbers
+set relativenumber                      " displays page numbers relative to current line
 au FileType * set formatoptions-=cro    " disable automatic comment insertion for all file types
 set undolevels=1000                     " LOTS of undos available
 set backspace=indent,eol,start          " make sure backspace works properly
@@ -90,6 +92,7 @@ if has('gui_running')
     if stridx(s:filename, '[No Name]') > -1
         " get the home directory and append 'Desktop' onto it. Assuming
         " this is a windows machine, that means we'll save any new files
+        " to the desktop, rather than to our user home directory
         let s:desktop = s:homedir . '/Desktop'
         let s:cmd = 'cd ' . s:desktop
         execute s:cmd
