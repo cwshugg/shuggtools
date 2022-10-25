@@ -71,7 +71,7 @@ function __shuggtool_log_get_datestring_color()
 {
     ds="$1"
     if [[ "$(__shuggtool_log_get_current_datestring)" == "${ds}" ]]; then
-        echo -n "${C_BLUE}"
+        echo -n "${C_LTGREEN}"
     else
         echo -n "${C_NONE}"
     fi
