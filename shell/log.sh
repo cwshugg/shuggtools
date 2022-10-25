@@ -6,6 +6,7 @@
 # Globals
 log_dir=${HOME}/.daily_log
 log_editor=$(which vim)
+allow_weekends=0
 verbose=0
 
 # Help menu
@@ -192,6 +193,19 @@ function __shuggtool_log()
        [ -z "$(__shuggtool_log_is_number ${day})" ]; then
         __shuggtool_print_error "each part of the date string must be a number."
         return 
+    fi
+    
+    # first, determine if the date is on a weekend day. If it is, we'll check
+    # with the user to see if they still want to proceed with writing a log file
+    weekday="$(date -d "${ds}" +%A)"
+    if [[ "${weekday,,}" == "saturday" ]] || \
+       [[ "${weekday,,}" == "sunday" ]]; then
+        __shuggtool_prompt_yesno "This date is a ${weekday}. Still proceed?"
+        yes=$?
+        # if the user said 'no', don't proceed
+        if [ ${yes} -eq 0 ]; then
+            return 0
+        fi
     fi
 
     # create the path for the log file and initialize it

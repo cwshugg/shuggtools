@@ -65,6 +65,35 @@ function __shuggtool_terminal_size()
     shuggtools_terminal_cols=${tty_size_arr[1]}
 }
 
+# Helper function used to prompt the user for a yes-no answer.
+# Returns 1 for yes and 0 for no.
+function __shuggtool_prompt_yesno()
+{
+    msg="$1"
+    yes=0
+
+    # iterate until a proper answer is given
+    while true; do
+        echo -en "${msg} ${C_LTGRAY}(y/n)${C_NONE}"
+        read -p " " answer
+        # parse the response
+        case ${answer} in
+            [yY])
+                yes=1
+                break
+                ;;
+            [nN])
+                yes=0
+                break
+                ;;
+            *)
+                echo -e "Please enter ${C_GREEN}y${C_NONE} or ${C_RED}n${C_NONE}."
+                ;;
+        esac
+    done
+    return ${yes}
+}
+
 # Helper function that takes in text and prints it centered to the current
 # dimensions of the terminal. Parameters:
 #   $1      The text to print
