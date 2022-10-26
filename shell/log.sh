@@ -129,6 +129,8 @@ function __shuggtool_log_get_datestring_color()
     ds="$1"
     if [[ "$(__shuggtool_log_get_datestring)" == "${ds}" ]]; then
         echo -n "${C_LTGREEN}"
+    elif [ -z "$(find ${log_dir} -name "*${ds}*")" ]; then
+        echo -n "${C_DKGRAY}"
     else
         echo -n "${C_NONE}"
     fi
@@ -248,10 +250,6 @@ function __shuggtool_log_list()
         end_date=$((end_date+86400))
         end_date="$(__shuggtool_log_get_datestring "@${end_date}")"
 
-        echo "FIRST: ${first_date}"
-        echo "LAST: ${last_date}"
-        echo "END: ${end_date}"
-        
         while [[ "${curr_date}" != "${end_date}" ]]; do
             # if a log file exists for this date, print it out as normal
             fp=${curr_date}
