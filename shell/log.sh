@@ -19,6 +19,8 @@ function __shuggtool_log_usage()
     echo " -h                   Displays this menu."
     echo " -v                   Verbose mode."
     echo " -l                   List all dates for which a log file exists."
+    echo " -a                   List ALL dates from the earliest to the latest,"
+    echo "                      regardless if a log file exists or not."
     echo " -d YYYY-MM-DD        Opens a log file for the day specified by YYYY-MM-DD."
     echo " -s SEARCH_STRING     Searches all existing log files for the given text."
     echo "---------------------------------------------------------------------------"
@@ -34,35 +36,58 @@ function __shuggtool_log_is_number()
 }
 
 # Takes in a datestring and echoes out its value in Unix epoch seconds.
-function __shuggtool_log_date_seconds()
+function __shuggtool_log_get_date_seconds()
 {
-    date -d "$1" +%s
+    if [ $# -lt 1 ]; then
+        date +%s
+    else
+        date -d "$1" +%s
+    fi
 }
 
 # Echoes out the current year.
-function __shuggtool_log_get_current_year()
+function __shuggtool_log_get_date_year()
 {
-    date +%Y
+    if [ $# -lt 1 ]; then
+        date +%-Y
+    else
+        date -d "$1" +%-Y
+    fi
 }
 
 # Echoes out the current month.
-function __shuggtool_log_get_current_month()
+function __shuggtool_log_get_date_month()
 {
-    date +%m
+    if [ $# -lt 1 ]; then
+        date +%-m
+    else
+        date -d "$1" +%-m
+    fi
 }
 
 # Echoes out the current day.
-function __shuggtool_log_get_current_day()
+function __shuggtool_log_get_date_day()
 {
-    date +%d
+    if [ $# -lt 1 ]; then
+        date +%-d
+    else
+        date -d "$1" +%-d
+    fi
 }
 
-# Echoes out a datestring representing today.
-function __shuggtool_log_get_current_datestring()
+function __shuggtool_log_get_datestring()
 {
-    year="$(__shuggtool_log_get_current_year)"
-    month="$(__shuggtool_log_get_current_month)"
-    day="$(__shuggtool_log_get_current_day)"
+    ds=""
+    if [ $# -ge 1 ]; then
+        ds="$1"
+    else
+        ds="$(date -d "$(date)")"
+    fi
+    
+    # get the year, month, and day
+    year="$(__shuggtool_log_get_date_year "${ds}")"
+    month="$(__shuggtool_log_get_date_month "${ds}")"
+    day="$(__shuggtool_log_get_date_day "${ds}")"
     echo "${year}-${month}-${day}"
 }
 
@@ -79,10 +104,20 @@ function __shuggtool_log_print_logfile()
     if [ ${verbose} -ne 0 ]; then
         # count the line numbers
         lf_path=${log_dir}/${lf}
-        lcount=$(cat ${lf_path} | wc -l)
+        lcount="${C_DKGRAY}no log exists${C_NONE}"
+        if [ -f ${lf_path} ]; then
+            lcount="${C_LTCYAN}$(cat ${lf_path} | wc -l) lines${C_NONE}"
+        fi
+
         # retrieve the weekday
-        lf_weekday="$(date -d "${lf_date}" +%A)"
-        echo -e " - ${C_LTRED}${lf_weekday}${C_NONE} - ${C_LTCYAN}${lcount} lines${C_NONE}"
+        weekday_color="${C_DKGRAY}"
+        if [ -f ${lf_path} ]; then
+            weekday_color="${C_LTRED}"
+        fi
+        lf_weekday="${weekday_color}$(date -d "${lf_date}" +%A)${C_NONE}"
+
+        # print out the results
+        echo -e " - ${lf_weekday} - ${lcount}"
     else
         echo ""
     fi
@@ -92,7 +127,7 @@ function __shuggtool_log_print_logfile()
 function __shuggtool_log_get_datestring_color()
 {
     ds="$1"
-    if [[ "$(__shuggtool_log_get_current_datestring)" == "${ds}" ]]; then
+    if [[ "$(__shuggtool_log_get_datestring)" == "${ds}" ]]; then
         echo -n "${C_LTGREEN}"
     else
         echo -n "${C_NONE}"
@@ -104,6 +139,18 @@ function __shuggtool_log_get_datestring_color()
 function __shuggtool_log_get_files()
 {
     ls -1 ${log_dir} | sort -V
+}
+
+# Returns the basename of the file with the earliest date.
+function __shuggtool_log_get_earliest_file()
+{
+    __shuggtool_log_get_files | head -n 1
+}
+
+# Returns the basename of the file with the latest date.
+function __shuggtool_log_get_latest_file()
+{
+    __shuggtool_log_get_files | tail -n 1
 }
 
 # Takes in a file path and initializes it (if necessary) to hold default logfile
@@ -185,8 +232,43 @@ function __shuggtool_log_search()
 # Lists all dates for which a log file already exists.
 function __shuggtool_log_list()
 {
-    # get a summary of all files in the log directory, sorted accordingly
-    for lf in $(ls ${log_dir} | sort -V); do
+    list_all_dates=$1
+
+    # if we're listing all dates, we'll start at the earliest file and iterate
+    # *every* day until we get to the last day
+    if [ ${list_all_dates} -eq 1 ]; then
+        first_date="$(basename $(__shuggtool_log_get_earliest_file))"
+        first_date="${first_date%.*}"
+        last_date="$(basename $(__shuggtool_log_get_latest_file))"
+        last_date="${last_date%.*}"
+        curr_date="${first_date}"
+
+        # compute an ending date string
+        end_date=$(__shuggtool_log_get_date_seconds "${last_date}")
+        end_date=$((end_date+86400))
+        end_date="$(__shuggtool_log_get_datestring "@${end_date}")"
+
+        echo "FIRST: ${first_date}"
+        echo "LAST: ${last_date}"
+        echo "END: ${end_date}"
+        
+        while [[ "${curr_date}" != "${end_date}" ]]; do
+            # if a log file exists for this date, print it out as normal
+            fp=${curr_date}
+            #fp=$(find ${log_dir} -name "*${curr_date}*" | head -n 1)
+            __shuggtool_log_print_logfile ${fp}.md
+
+            # increment the current date by one day
+            curr_date=$(__shuggtool_log_get_date_seconds "${curr_date}")
+            curr_date=$((curr_date+86400))
+            curr_date="$(__shuggtool_log_get_datestring "@${curr_date}")"
+        done
+        return 0
+    fi
+
+    # otherwise, get a summary of all files in the log directory, sorted
+    # accordingly
+    for lf in $(__shuggtool_log_get_files); do
         __shuggtool_log_print_logfile ${lf}
     done
 }
@@ -200,13 +282,13 @@ function __shuggtool_log()
     fi
 
     # take the current day and form a datestring
-    ds="$(__shuggtool_log_get_current_datestring)"
+    ds="$(__shuggtool_log_get_datestring)"
 
     # check for command-line arguments
     search_str=""
     do_list=0
     local OPTIND h v d s
-    while getopts "hvld:s:" opt; do
+    while getopts "hvlad:s:" opt; do
         case ${opt} in
             h)
                 __shuggtool_log_usage
@@ -217,6 +299,9 @@ function __shuggtool_log()
                 ;;
             l)
                 do_list=1
+                ;;
+            a)
+                do_list=2
                 ;;
             d)
                 ds="${OPTARG}"
@@ -239,7 +324,12 @@ function __shuggtool_log()
 
     # if the list option was selected, we'll list all files in the log directory
     if [ ${do_list} -ne 0 ]; then
-        __shuggtool_log_list
+        # depending on if '-a' was given, we'll list all dates (or not)
+        list_all_dates=0
+        if [ ${do_list} -eq 2 ]; then
+            list_all_dates=1
+        fi
+        __shuggtool_log_list ${list_all_dates}
         return 0
     fi
 
