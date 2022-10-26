@@ -66,6 +66,28 @@ function __shuggtool_log_get_current_datestring()
     echo "${year}-${month}-${day}"
 }
 
+# Helper function that prints out a log file, either with or without verbose
+# output.
+function __shuggtool_log_print_logfile()
+{
+    lf="$(basename $1)"
+    lf_date="${lf%.*}"
+    color="$(__shuggtool_log_get_datestring_color "${lf_date}")"
+    echo -en "${color}${lf_date}${C_NONE}"
+
+    # if verbose mode is on, print a little extra information
+    if [ ${verbose} -ne 0 ]; then
+        # count the line numbers
+        lf_path=${log_dir}/${lf}
+        lcount=$(cat ${lf_path} | wc -l)
+        # retrieve the weekday
+        lf_weekday="$(date -d "${lf_date}" +%A)"
+        echo -e " - ${C_LTRED}${lf_weekday}${C_NONE} - ${C_LTCYAN}${lcount} lines${C_NONE}"
+    else
+        echo ""
+    fi
+}
+
 # Takes in a datestring and echoes out the color to use to print it out.
 function __shuggtool_log_get_datestring_color()
 {
@@ -142,16 +164,7 @@ function __shuggtool_log_search()
         results_len=${#results[@]}
         if [ ${results_len} -gt 0 ]; then
             # get the file's basename without its extension
-            lf_base="$(basename ${lf})"
-            lf_base="${lf_base%.*}"
-            color="$(__shuggtool_log_get_datestring_color "${lf_base}")"
-            echo -en "${color}${lf_base}${C_NONE}"
-
-            if [ ${verbose} -eq 0 ]; then
-                echo -e " matches."
-            else
-                echo ""
-            fi
+            __shuggtool_log_print_logfile ${lf}
 
             # echo the matching lines, if we're verbose
             if [ ${verbose} -ne 0 ]; then
@@ -174,21 +187,7 @@ function __shuggtool_log_list()
 {
     # get a summary of all files in the log directory, sorted accordingly
     for lf in $(ls ${log_dir} | sort -V); do
-        lf_date="${lf%.*}"
-        color="$(__shuggtool_log_get_datestring_color "${lf_date}")"
-        echo -en "${color}${lf_date}${C_NONE}"
-
-        # if verbose mode is on, print a little extra information
-        if [ ${verbose} -ne 0 ]; then
-            # count the line numbers
-            lf_path=${log_dir}/${lf}
-            lcount=$(cat ${lf_path} | wc -l)
-            # retrieve the weekday
-            lf_weekday="$(date -d "${lf_date}" +%A)"
-            echo -e " ${C_DKGRAY}(${lf_weekday})${C_NONE} - ${lcount} lines"
-        else
-            echo ""
-        fi
+        __shuggtool_log_print_logfile ${lf}
     done
 }
 
