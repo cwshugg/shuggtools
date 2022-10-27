@@ -6,6 +6,7 @@
 # Globals
 log_dir=${HOME}/.daily_log
 log_editor=$(which vim)
+log_extension=".md"
 allow_weekends=0
 verbose=0
 
@@ -129,7 +130,7 @@ function __shuggtool_log_get_datestring_color()
     ds="$1"
     if [[ "$(__shuggtool_log_get_datestring)" == "${ds}" ]]; then
         echo -n "${C_LTGREEN}"
-    elif [ -z "$(find ${log_dir} -name "*${ds}*")" ]; then
+    elif [ -z "$(find ${log_dir} -name "*${ds}${log_extension}")" ]; then
         echo -n "${C_DKGRAY}"
     else
         echo -n "${C_NONE}"
@@ -254,7 +255,7 @@ function __shuggtool_log_list()
             # if a log file exists for this date, print it out as normal
             fp=${curr_date}
             #fp=$(find ${log_dir} -name "*${curr_date}*" | head -n 1)
-            __shuggtool_log_print_logfile ${fp}.md
+            __shuggtool_log_print_logfile ${fp}${log_extension}
 
             # increment the current date by one day
             curr_date=$(__shuggtool_log_get_date_seconds "${curr_date}")
@@ -367,7 +368,7 @@ function __shuggtool_log()
     fi
 
     # create the path for the log file and initialize it
-    lfpath=${log_dir}/${year}-${month}-${day}.md
+    lfpath=${log_dir}/${year}-${month}-${day}${log_extension}
     __shuggtool_log_file_init ${lfpath} "${year}-${month}-${day}"
     
     # open the log file for viewing/editing
