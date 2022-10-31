@@ -36,6 +36,22 @@ function __shuggtool_log_is_number()
     fi
 }
 
+# Useful IP-address-checking function that uses the machine's IP address to
+# determine if I'm in the office or at home/remote.
+function __shuggtool_log_get_location()
+{
+    addr="$( __shuggtool_get_ip_address)"
+
+    # check the IP address against a few known values to determine my location
+    if [[ "${addr}" == "172."* ]]; then
+        echo "in the office"
+    elif [[ "${addr}" == "192.168.*" ]]; then
+        echo "at home"
+    else
+        echo "remote"
+    fi
+}
+
 # Takes in a datestring and echoes out its value in Unix epoch seconds.
 function __shuggtool_log_get_date_seconds()
 {
@@ -177,7 +193,8 @@ function __shuggtool_log_file_init()
     fi
     touch ${fpath}
     weekday="$(date -d "${ds}" +%A)"
-    echo -e "# ${weekday} ${ds}\n\n* \n" > ${fpath}
+    location="$(__shuggtool_log_get_location)"
+    echo -e "# ${weekday} ${ds}\n\n* \n\n**Location:** ${location}.\n" > ${fpath}
 }
 
 # Searches all log files for a specific string.

@@ -122,7 +122,6 @@ function __shuggtool_print_text_centered()
 
     # print the text
     echo -e "${text}"
-
 }
 
 # Helper function that takes in a single string argument and sets a global
@@ -145,4 +144,14 @@ function __shuggtool_hash_string()
     __shuggtool_hash_string_retval=$(echo "$1" | ${hasher} | cut -f 1 -d ' ')
 }
 
+# Uses the 'ip' linux utility to parse and echo out the machine's current IP
+# address.
+function __shuggtool_get_ip_address()
+{
+    # the 'ip route' command produces output formatted like so:
+    #   default via 192.168.0.1 dev eth0
+    #   192.168.0.113/20 dev eth0 proto kernel scope link src 192.168.0.113
+    out="$(ip route | tail -n 1 | cut -d "/" -f 1)"
+    echo "${out}"
+}
 
