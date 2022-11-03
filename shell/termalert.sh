@@ -5,80 +5,49 @@
 #
 #   Connor Shugg
 
-# main function
+# Main function.
 function __shuggtool_terminal_alert()
 {
-    text="HEY! This is an alert. Whatever you just launched is finished."
+    # use the first argument as the alert text (or choose a default)
+    text="$1"
+    if [ -z "${text}" ]; then
+        text="HEY! This is an alert."
+    fi
 
-    # define colors
-    color_text=$C_RED
-    declare -a colors_top=(
-        $C_CYAN
-        $C_LTBLUE
-        $C_GREEN
-        $C_YELLOW
-        $C_YELLOW
-    )
-    declare -a colors_bot=(
-        ${colors_top[4]}
-        ${colors_top[3]}
-        ${colors_top[2]}
-        ${colors_top[1]}
-        ${colors_top[0]}
-    )
+    # determine if 'dialog' is installed
+    dlg=$(which dialog 2> /dev/null)
+    if [ -z "${dlg}" ]; then
+        clear
 
-    # define characters
-    declare -a chars_top=(
-        "."
-        "-"
-        ":"
-        "="
-        "#"
-    )
+        # compute how many lines to enter to meet the middle of the screen
+        __shuggtool_terminal_size
+        rows=${shuggtools_terminal_rows}
+        rows_half=$((rows/2))
+        while [ ${rows} -gt ${rows_half} ]; do
+            echo -en "\n"
+            rows=$((rows-1))
+        done
+        
+        # print the text horizontally-centered on the terminal
+        echo -en "${C_LTRED}"
+        __shuggtool_print_text_centered "${text}"
+        echo -en "${C_NONE}"
 
-    # get the terminal size
-    __shuggtool_terminal_size
-    columns=$shuggtools_terminal_cols
-    
-    # print the top section
-    for (( i=0; i<${#chars_top[@]}; i++ ))
-    do
-        __shuggtool_terminal_alert_line $columns ${chars_top[$i]} ${colors_top[$i]}
-    done
-    
-    # print the text (centered)
-    echo -e "${color_text}"
-    __shuggtool_print_text_centered "$text"
-    echo -e -n "${C_NONE}"
-
-    # print the bottom section
-    for (( i=${#chars_top[@]}; i>=0; i-- ))
-    do
-        __shuggtool_terminal_alert_line $columns ${chars_top[$i]} ${colors_top[$i]}
-    done
-}
-
-# Helper function that draws a line with the given parameters:
-#   $1      the number of columns to draw
-#   $2      the character to draw
-#   $3      the color to draw the line
-function __shuggtool_terminal_alert_line()
-{
-    columns=$1
-    character=$2
-    color=$3
-    
-    line="${color}"
-    for (( c=0; c<$columns; c++ ))
-    do
-        # append the next line character
-        line="$line$character"
-    done
-    
-    # reset the color at the end of the line and echo it out
-    line="$line${C_NONE}"
-    echo -e $line
+        # print the remaining newlines
+        while [ ${rows} -gt 0 ]; do
+            echo -en "\n"
+            rows=$((rows-1))
+        done
+    else
+        # if dialog IS installed, clear and show one
+        clear
+        ${dlg} --title "ALERT" \
+               --clear \
+               --msgbox "${text}" 0 0
+        clear
+    fi
 }
 
 # pass all args to main function
 __shuggtool_terminal_alert "$@"
+
