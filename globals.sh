@@ -76,6 +76,12 @@ function __shuggtool_prompt_yesno()
     while true; do
         echo -en "${msg} ${C_LTGRAY}(${C_GREEN}y${C_LTGRAY}/${C_RED}n${C_LTGRAY})${C_NONE}"
         read -p " " answer
+        
+        # if the response is blank, just re-loop
+        if [ -z "${answer}" ]; then
+            continue
+        fi
+
         # parse the response
         case ${answer} in
             [yY])
