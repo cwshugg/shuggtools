@@ -94,6 +94,77 @@ function __shuggtool_prompt_yesno()
     return ${yes}
 }
 
+# Helper function that prompts the user to choose from a number of string
+# options, stored in the below global variable.
+# To use this, first set the below global variable to hold all the possible
+# options, then pass in the following arguments:
+#   $1      The prompt message to display
+#   $2      0 or 1, specifying if user is allowed to type in something else
+#           entirely as an "other" option
+__shuggtool_prompt_choices=("you" "must" "set" "this" "global" "array" "first")
+__shuggtool_prompt_choice_retval=""
+function __shuggtool_prompt_choice()
+{
+    msg="$1"
+    allow_other=$2
+
+    # zero-out the return value
+    __shuggtool_prompt_choice_retval=""
+    
+    # count the number of options, then output the prompt message
+    ccount="${#__shuggtool_prompt_choices[@]}"
+    if [ ${ccount} -le 0 ]; then
+        __shuggtool_print_error "zero options were specified."
+        return
+    fi
+    echo -en "${msg} (enter ${C_LTBLUE}1-${ccount}${C_NONE}"
+    if [ ${allow_other} -ne 0 ]; then
+        echo -en ", or enter something else entirely"
+    fi
+    echo -e ")"
+
+    # echo out all the possible choices to the user
+    for (( i=0; i<${ccount}; i++ )); do
+        choice="${__shuggtool_prompt_choices[${i}]}"
+        prefix="${STAB_TREE2}"
+        if [ ${i} -eq $((ccount-1)) ]; then
+            prefix="${STAB_TREE1}"
+        fi
+        echo -e "${C_DKGRAY}${prefix}${C_LTBLUE}$((i+1)).${C_NONE} ${choice}"
+    done
+    
+    # read the user's answer until a proper one is given
+    while true; do
+        read -p "" answer
+        # if the answer is blank, re-loop
+        if [ -z "${answer}" ]; then
+            continue
+        fi
+        
+        # if the answer was a number, we'll see if it's in the correct range
+        if [[ "${answer}" =~ ^[0-9]+$ ]]; then
+            # if a number was given, check the range
+            if [ ${answer} -le 0 ] || [ ${answer} -gt ${ccount} ]; then
+                echo -e "Your choice must be between ${C_LTBLUE}1-${ccount}${C_NONE} (inclusive)."
+                continue
+            fi
+
+            # otherwise, set the return value global and return
+            __shuggtool_prompt_choice_retval="${__shuggtool_prompt_choices[$((answer-1))]}"
+            return
+        fi 
+
+        # otherwise, if 'other' isn't allowed, forbid it
+        if [ ${allow_other} -eq 0 ]; then
+            echo -e "You must enter a choice between ${C_LTBLUE}1-${ccount}${C_NONE} (inclusive)."
+            continue
+        fi
+        # set the return value global and return
+        __shuggtool_prompt_choice_retval="${answer}"
+        return
+    done
+}
+
 # Helper function that takes in text and prints it centered to the current
 # dimensions of the terminal. Parameters:
 #   $1      The text to print

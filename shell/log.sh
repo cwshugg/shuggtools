@@ -38,18 +38,16 @@ function __shuggtool_log_is_number()
 
 # Useful IP-address-checking function that uses the machine's IP address to
 # determine if I'm in the office or at home/remote.
+__shuggtool_log_get_location_retval=""
 function __shuggtool_log_get_location()
 {
-    addr="$( __shuggtool_get_ip_address)"
+    __shuggtool_log_get_location_retval=""
 
-    # check the IP address against a few known values to determine my location
-    if [[ "${addr}" == "172."* ]]; then
-        echo "in the office"
-    elif [[ "${addr}" == "192.168.*" ]]; then
-        echo "at home"
-    else
-        echo "remote"
-    fi
+    # ask the user what their location is (not as automated and fun, but much
+    # more reliable)
+    __shuggtool_prompt_choices=("in the office" "at home")
+    __shuggtool_prompt_choice "Where are you working from today?" 1
+    __shuggtool_log_get_location_retval="${__shuggtool_prompt_choice_retval}"
 }
 
 # Takes in a datestring and echoes out its value in Unix epoch seconds.
@@ -193,7 +191,8 @@ function __shuggtool_log_file_init()
     fi
     touch ${fpath}
     weekday="$(date -d "${ds}" +%A)"
-    location="$(__shuggtool_log_get_location)"
+    __shuggtool_log_get_location
+    location="${__shuggtool_log_get_location_retval}"
     echo -e "# ${weekday} ${ds}\n\n* \n\n**Location:** ${location}.\n" > ${fpath}
 }
 
