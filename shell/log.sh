@@ -189,10 +189,21 @@ function __shuggtool_log_file_init()
     if [ ${verbose} -ne 0 ]; then
         echo "Creating log file ${fpath}."
     fi
-    touch ${fpath}
-    weekday="$(date -d "${ds}" +%A)"
+
+    # start by retreiving the location from the user. If the user doesn't
+    # give a location, abort 
     __shuggtool_log_get_location
     location="${__shuggtool_log_get_location_retval}"
+    if [ -z "${location}" ]; then
+        if [ ${verbose} -ne 0 ]; then
+            echo "No location given. Aborting."
+        fi
+        return 0
+    fi
+    
+    # create the file, retrieve the weekday, and write a template into the file
+    touch ${fpath}
+    weekday="$(date -d "${ds}" +%A)"
     echo -e "# ${weekday} ${ds}\n\n* \n\n**Location:** ${location}.\n" > ${fpath}
 }
 
