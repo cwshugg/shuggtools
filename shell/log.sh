@@ -285,9 +285,18 @@ function __shuggtool_log_list()
             __shuggtool_log_print_logfile ${fp}${log_extension}
 
             # increment the current date by one day
-            curr_date=$(__shuggtool_log_get_date_seconds "${curr_date}")
-            curr_date=$((curr_date+86400))
-            curr_date="$(__shuggtool_log_get_datestring "@${curr_date}")"
+            prev_date="${curr_date}"
+            curr_date_secs=$(__shuggtool_log_get_date_seconds "${curr_date}")
+            curr_date_secs=$((curr_date_secs+86400))
+            curr_date="$(__shuggtool_log_get_datestring "@${curr_date_secs}")"
+            # in some cases (such as daylight savings), adding 86400 seconds
+            # might not push us to the next calendar day. In case that happens,
+            # we'll check here to see if we need to increment more. We'll do
+            # so by small increments
+            while [[ "${prev_date}" == "${curr_date}" ]]; do
+                curr_date_secs=$((curr_date_secs+300))
+                curr_date="$(__shuggtool_log_get_datestring "@${curr_date_secs}")"
+            done
         done
         return 0
     fi
