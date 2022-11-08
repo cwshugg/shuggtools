@@ -125,7 +125,7 @@ function __shuggtool_prompt_choice()
     fi
     echo -en "${msg} (enter ${C_LTBLUE}1-${ccount}${C_NONE}"
     if [ ${allow_other} -ne 0 ]; then
-        echo -en ", or enter something else entirely"
+        echo -en ", or something else entirely"
     fi
     echo -e ")"
 
