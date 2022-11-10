@@ -90,6 +90,7 @@ function __shuggtool_log_get_date_day()
     fi
 }
 
+# Takes in a date and spits out a formatted YYYY-MM-DD datestring.
 function __shuggtool_log_get_datestring()
 {
     ds=""
@@ -104,6 +105,34 @@ function __shuggtool_log_get_datestring()
     month="$(__shuggtool_log_get_date_month "${ds}")"
     day="$(__shuggtool_log_get_date_day "${ds}")"
     echo "${year}-${month}-${day}"
+}
+
+# Takes in a datestring and converts any known keywords to valid datestrings.
+function __shuggtool_log_translate_keyword()
+{
+    # grab the input and convert it to lowercase
+    arg="$1"
+    str="${arg,,}"
+    
+    # get the current time in seconds and as a datestring
+    now_secs=$(__shuggtool_log_get_date_seconds)
+    now_str="$(__shuggtool_log_get_datestring "@${now_secs}")"
+    
+    # SPECIAL KEYWORD 1: 'yesterday'
+    if [[ "${str}" == "yesterday" ]] || [[ "${str}" == "yd" ]]; then
+        yd_secs=$((now_secs-86400))
+        yd_str="$(__shuggtool_log_get_datestring "@${yd_secs}")"
+        # walk backwards until we for-sure hit yesterday
+        while [[ "${yd_str}" == "${now_str}" ]]; do
+            yd_secs=$((yd_secs-3600))
+            yd_str="$(__shuggtool_log_get_datestring "@${yd_secs}")"
+        done
+        echo "${yd_str}"
+        return
+    fi
+
+    # if all else fails, just echo the string back out
+    echo "${arg}"
 }
 
 # Helper function that prints out a log file, either with or without verbose
@@ -294,7 +323,7 @@ function __shuggtool_log_list()
             # we'll check here to see if we need to increment more. We'll do
             # so by small increments
             while [[ "${prev_date}" == "${curr_date}" ]]; do
-                curr_date_secs=$((curr_date_secs+300))
+                curr_date_secs=$((curr_date_secs+3600))
                 curr_date="$(__shuggtool_log_get_datestring "@${curr_date_secs}")"
             done
         done
@@ -367,6 +396,10 @@ function __shuggtool_log()
         __shuggtool_log_list ${list_all_dates}
         return 0
     fi
+
+    # pass the datestring through a function to convert any special keywords
+    # into valid datestrings
+    ds="$(__shuggtool_log_translate_keyword "${ds}")"
 
     # check the datestring for validity
     ds_array=(${ds//-/ })
