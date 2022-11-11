@@ -128,7 +128,7 @@ function! DL(...)
     " set local and global defaults
     let g:dl_msg = ''
     let g:dl_column_max = 80
-    "let g:dl_line_mid = ''
+    let g:dl_line_mid = '='
     "let g:dl_line_prefix = ''
     "let g:dl_line_suffix = ''
 
