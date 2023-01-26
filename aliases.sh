@@ -23,8 +23,8 @@ if [ -z "${bat_binary}" ]; then
     bat_binary="$(which bat 2> /dev/null)"
 fi
 if [ ! -z "${bat_binary}" ]; then
-    alias cat="${bat_binary} --paging=never"
-    alias pcat="${bat_binary}"
+    alias cat="${bat_binary} --style=plain --paging=never"
+    alias pcat="${bat_binary} --style=plain"
 fi
 
 # coding/debugging aliases
