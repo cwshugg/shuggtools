@@ -27,6 +27,11 @@ function __shuggtool_tmux_config()
     echo "# force window name format"                   >> $config_location
     echo "set -g pane-border-format \"#{pane_index} #{pane_current_command}\"" >> $config_location
     echo "set -g allow-rename off"                 >> $config_location
+    echo "# use vim key bindings for switching windows" >> $config_location
+    echo "bind h select-pane -L"                        >> $config_location
+    echo "bind j select-pane -D"                        >> $config_location
+    echo "bind k select-pane -U"                        >> $config_location
+    echo "bind l select-pane -R"                        >> $config_location
     
     #echo "set -g visual-activity on" >> $config_location
     #echo "setw -g monitor-activity on" >> $config_location
