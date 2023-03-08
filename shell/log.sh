@@ -441,7 +441,7 @@ function __shuggtool_log()
     __shuggtool_log_file_init ${lfpath} "${year}-${month}-${day}"
     
     # open the log file for viewing/editing
-    ${log_editor} ${lfpath}
+    ${log_editor} ${lfpath} -c ":3"
 }
 
 # pass all args to main function
