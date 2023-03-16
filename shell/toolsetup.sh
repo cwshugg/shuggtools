@@ -11,12 +11,28 @@ function __shuggtool_toolsetup_print_helper()
 {
     msg="$1"
     color="$2"
-    echo -e "${C_LTBLUE}[${color}${__shuggtool_toolsetup_print_prefix}${C_LTBLUE}]${C_NONE} ${msg}"
+
+    # create and print the prefix, then pad with spaces
+    prefix="${C_LTBLUE}[${color}${__shuggtool_toolsetup_print_prefix}${C_LTBLUE}]${C_NONE} "
+    prefix_len=${#__shuggtool_toolsetup_print_prefix}
+    prefix_len=$((prefix_len+2))
+    max_len=8
+    if [ ${prefix_len} -gt ${max_len} ]; then
+        max_len=$((prefix_len+1))
+    fi
+    printf "${prefix}"
+    while [ ${prefix_len} -lt ${max_len} ]; do
+        printf " "
+        prefix_len=$((prefix_len+1))
+    done
+    
+    # print the message
+    printf "${msg}\n" "${prefix}"
 }
 
 function __shuggtool_toolsetup_print_note()
 {
-    __shuggtool_toolsetup_print_helper "$1" "${C_WHITE}"
+    __shuggtool_toolsetup_print_helper "$1" "${C_NONE}"
 }
 
 function __shuggtool_toolsetup_print_good()
