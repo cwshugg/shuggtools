@@ -13,6 +13,7 @@ Contained in this repository is the following:
 * `shell/` - a directory containing various shell scripts I've written
 * `vim/` - a directory containing any Vim scripts I've written
 * `gdb/` - a directory containing any GDB scripts I've written
+* `remind/` - a directory containing any files I've written for the [remind](https://dianne.skoll.ca/wiki/Remind) Linux utility.
 
 # Setup
 

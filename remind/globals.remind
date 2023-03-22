@@ -1,0 +1,15 @@
+# A simple remind file that sets up a few helper globals/functions.
+#
+# Dianne Skoll's wiki for the tool is found here:
+# https://dianne.skoll.ca/wiki/Remind
+#
+#   Connor Shugg
+
+# Weekday functions
+fset __is_weekday(dt) wkdaynum(dt) > 0 && wkdaynum(dt) < 6
+fset __is_monday(dt) wkdaynum(dt) == 1
+fset __is_tuesday(dt) wkdaynum(dt) == 2
+fset __is_wednesday(dt) wkdaynum(dt) == 3
+fset __is_thursday(dt) wkdaynum(dt) == 4
+fset __is_friday(dt) wkdaynum(dt) == 5
+
