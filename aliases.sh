@@ -27,6 +27,13 @@ if [ ! -z "${bat_binary}" ]; then
     alias pcat="${bat_binary} --style=plain"
 fi
 
+# aliasing ttydo, my command-line task tracker
+ttydo_binary="$(which ttydo 2> /dev/null)"
+if [ ! -z "${ttydo_binary}" ]; then
+    alias td="${ttydo_binary}"
+    alias ctd="clear; ${ttydo_binary}"
+fi
+
 # coding/debugging aliases
 alias valgfull="valgrind -v --leak-check=full --show-leak-kinds=all --track-origins=yes"
 alias gdb="gdb -q" # quiet-mode GDB (don't print intro)
