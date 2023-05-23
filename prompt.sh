@@ -2,93 +2,168 @@
 #
 #   Connor Shugg
 
-# prompt toggle - set to any values in the below if-statement to adjust what
-# prompt is being displayed
-ptoggle=0
+# knobs to adjust the prompt building
+__shuggtool_prompt_show_jobs=1              # show jobs in background
+__shuggtool_prompt_show_git=1               # enables git repo stats
+__shuggtool_prompt_show_git_repo_name=1     # shows git repo name
+__shuggtool_prompt_show_git_repo_branch=1   # shows git branch name
+__shuggtool_prompt_show_git_repo_diff=1     # show git diffs
 
-# fancy prompt variables
-bgc="48;2"          # prefix for background colors
-fgc="38;2"          # prefix for foreground colors
+# other globals
+__shuggtool_prompt_bg_format="48;2"         # prefix for background colors
+__shuggtool_prompt_fg_format="38;2"         # prefix for foreground colors
 
-# set up three arrays of colors choices, for the three prompt colors
-#                        dark blue  dark purple dark blue-green
-declare -a pc1_choices=("0;30;128" "68;51;113" "14;59;67")
-#                        dark red    magenta      medium blue
-declare -a pc2_choices=("180;17;33" "145;31;160" "25;70;150")
-#                        yellow      light blue   light pink
-declare -a pc3_choices=("210;129;7" "152;213;231" "235;186;179")
+# Helper function that creates a PS1-friendly string that represents a colored
+# block containing given text, then adds it to PS1.
+function __shuggtool_prompt_block()
+{
+    # get the three required arguments
+    bgc="$1" # background (block) color
+    fgc="$2" # foreground (text) color
+    txt="$3" # text to display
 
+    # form the format string
+    format=""
+    if [ "${bgc}" != "0" ]; then
+        format="${format}${__shuggtool_prompt_bg_format};${bgc}"
+        # add a semicolon in between background and foreground formatting
+        if [ "${fgc}" != "0" ]; then
+            format="${format};"
+        fi
+    fi
+    if [ "${fgc}" != "0" ]; then
+        format="${format}${__shuggtool_prompt_fg_format};${fgc}"
+    fi
 
-pc_black="0;0;0"    # black
-pc_white="255;255;255" # white
-pc_none="0"         # none
-b_line="$(echo -e '\u2501')"
-b_fork="$(echo -e '\u2533')"
-b_corner="$(echo -e '\u2517')"
+    # create the final string and add it to PS1
+    PS1="${PS1}\[\033[${format}m\]${txt}\[\033[0m\]"
+}
 
-# get a hash value of the username (if the username is one of my own, I'll
-# manually set it so I get my favorite colors in the prompt)
-special_usernames=("cwshugg" "connor" "connorshugg")
-username="$(whoami)"
-if [ ! -z "$(echo ${special_usernames[@]} | grep "${username}")" ]; then
-    username="cwshugg"
-fi
-__shuggtool_hash_string "${username}"
-username_hash=$__shuggtool_hash_string_retval
+# Function to update PS1 after each command.
+function __shuggtool_prompt_command()
+{
+    # reset PS1
+    PS1=""
 
-# choose default values
-text_color1=${pc_white}
-text_color2=${pc_white}
-text_color3=${pc_black}
-prompt_color1="${pc1_choices[0]}"
-prompt_color2="${pc2_choices[0]}"
-prompt_color3="${pc3_choices[0]}"
+    # add username block to PS1
+    username_bgc="0;30;128"
+    username_fgc="255;255;255"
+    __shuggtool_prompt_block "${username_bgc}" "${username_fgc}" " \u "
 
-# if the hash worked, we'll pick pseudo-random values
-if [ $username_hash -ne 0 ]; then
-    # compute three indexes from the hashed value
-    index1=$(((username_hash / 23) % 3))
-    index2=$(((username_hash / 125) % 3))
-    index3=$(((username_hash / 4) % 3))
-    prompt_color1=${pc1_choices[$index1]}
-    prompt_color2=${pc2_choices[$index2]}
-    prompt_color3=${pc3_choices[$index3]}
-fi
-# make adjustments if we're the root user
-if [[ "${username}" == "root" ]]; then
-    ptoggle=1
-    text_color1="0;255;0"       # green username text
-    text_color2="0;255;0"       # green text
-    text_color3="128;255;128"   # green text
-    prompt_color1="14;49;57"    # dark blue-green
-    prompt_color2="32;32;32"    # dark gray
-    prompt_color3="40;40;40"    # not-as-dark gray
-fi
+    # add hostname block
+    hostname_bgc="180;17;33"
+    hostname_fgc="255;255;255"
+    __shuggtool_prompt_block "${hostname_bgc}" "${hostname_fgc}" " \h "
 
+    # add current directory block
+    pwd_bgc="210;129;7"
+    pwd_fgc="0;0;0"
+    __shuggtool_prompt_block "${pwd_bgc}" "${pwd_fgc}" " \W "
 
-# make the color formatter strings
-prompt_format1="${bgc};${prompt_color1};${fgc};${text_color1}"
-prompt_format2="${bgc};${prompt_color2};${fgc};${text_color2}"
-prompt_format3="${bgc};${prompt_color3};${fgc};${text_color3}"
+    # check for active jobs and append to PS1 if there are pending ones
+    if [ ${__shuggtool_prompt_show_jobs} -ne 0 ]; then
+        job_count="$(jobs | wc -l)"
+        if [ ${job_count} -gt 0 ]; then
+            # add a prefix
+            pfx="$(echo -e "\u2501")"
+            pfx_bgc="0"
+            pfx_fgc="150;150;150"
+            __shuggtool_prompt_block "${pfx_bgc}" "${pfx_fgc}" "${pfx}"
+            
+            # add the job count itself
+            job_bgc="75;75;75"
+            job_fgc="225;50;50"
+            __shuggtool_prompt_block "${job_bgc}" "${job_fgc}" " ${job_count} "
+        fi
+    fi
 
+    # check for the current git repo
+    if [ ${__shuggtool_prompt_show_git} -ne 0 ]; then
+        repo_url="$(git remote get-url origin 2> /dev/null)"
+        if [ ! -z "${repo_url}" ]; then
+            git_bgc="175;175;175"
 
-if [ $ptoggle -eq 0 ]; then
-    # fancy prompt 1
-    PS1="\[\033[${prompt_format1}m\] \u \[\033[${prompt_format2}m\] \h \[\033[${prompt_format3}m\] \W \[\033[${pc_none}m\] "
-elif [ $ptoggle -eq 1 ]; then
-    # fancy prompt 2
-    # compute number of spaces needed for the second line
-    space_count=${#username}
-    space_count=$((space_count + 3))
-    spaces="$(printf "%*s" ${space_count})"
-    PS1="\[\033[${prompt_format1}m\] \u \[\033[${pc_none}m\]${b_line}${b_fork}${b_line}\[\033[${prompt_format2}m\] \h \[\033[${prompt_format3}m\] \w \[\033[${pc_none}m\]\[\033[${fgc};${prompt_color3}m\]\[\033[${pc_none}m\]\n${spaces}${b_corner}${b_line} "
-else
-    # standard colored prompt
-    PS1="[\[\033[${fgc};${prompt_color1}m\]\u\[\033[${pc_none}m\]@\[\033[${fgc};${prompt_color2}m\]\h\[\033[${pc_none}m\]: \[\033[${fgc};${prompt_color3}m\]\W\[\033[${pc_none}m\]] "
-    # colorless prompt
-    #PS1="[\! \u@\h: \W] "
-fi
+            # add a prefix
+            pfx="$(echo -e "\u2501")"
+            pfx_bgc="0"
+            pfx_fgc="150;150;150"
+            __shuggtool_prompt_block "${pfx_bgc}" "${pfx_fgc}" "${pfx}"
 
-# add the pingfile check to the PROMPT_COMMAND bash variable
-pf="$(which pf)"
-PROMPT_COMMAND="${pf}"
+            # format the repo name and add it
+            if [ ${__shuggtool_prompt_show_git_repo_name} -ne 0 ]; then
+                repo_name="$(basename ${repo_url})"
+                repo_name="${repo_name%.*}"
+                
+                repo_name_bgc="${git_bgc}"
+                repo_name_fgc="0;30;128"
+                __shuggtool_prompt_block "${repo_name_bgc}" "${repo_name_fgc}" " ${repo_name}"
+            fi
+            
+            # format the repo branch and add it
+            if [ ${__shuggtool_prompt_show_git_repo_branch} -ne 0 ]; then
+                repo_branch="$(git rev-parse --abbrev-ref HEAD)"
+
+                # add a separator between the repo name and branch name
+                if [ ${__shuggtool_prompt_show_git_repo_name} -ne 0 ]; then
+                    sep_bgc="${git_bgc}"
+                    sep_fgc="0;0;0"
+                    __shuggtool_prompt_block "${sep_bgc}" "${sep_fgc}" " ->"
+                fi
+
+                repo_branch_bgc="${git_bgc}"
+                repo_branch_fgc="14;59;67"
+                __shuggtool_prompt_block "${repo_branch_bgc}" "${repo_branch_fgc}" " ${repo_branch}"
+            fi
+            
+            # format the various changes in the file and add it
+            if [ ${__shuggtool_prompt_show_git_repo_diff} -ne 0 ]; then
+                # add a separator between the branch name and stats
+                if [ ${__shuggtool_prompt_show_git_repo_branch} -ne 0 ]; then
+                    sep_bgc="${git_bgc}"
+                    sep_fgc="0;0;0"
+                    __shuggtool_prompt_block "${sep_bgc}" "${sep_fgc}" " ->"
+                fi
+
+                # get number of modified files and other stats
+                stat="$(git diff --shortstat)"
+                stat_files="$(echo ${stat} | cut -d "," -f 1 | xargs | cut -d " " -f 1)"
+                stat_adds="$(echo ${stat} | cut -d "," -f 2 | xargs | cut -d " " -f 1)"
+                stat_dels="$(echo ${stat} | cut -d "," -f 3 | xargs | cut -d " " -f 1)"
+
+                # add the number of files changed
+                if [ ! -z "${stat_files}" ] && [ ${stat_files} -gt 0 ]; then
+                    bgc="${git_bgc}"
+                    fgc="60;10;75"
+                    pfx="$(echo -e "\u2022")"
+                    __shuggtool_prompt_block "${bgc}" "${fgc}" " ${pfx}${stat_files}"
+                fi
+
+                # add the number of additions
+                if [ ! -z "${stat_adds}" ] && [ ${stat_adds} -gt 0 ]; then
+                    bgc="${git_bgc}"
+                    fgc="50;75;10"
+                    pfx="+"
+                    __shuggtool_prompt_block "${bgc}" "${fgc}" " ${pfx}${stat_adds}"
+                fi
+
+                # add the number of deletions
+                if [ ! -z "${stat_dels}" ] && [ ${stat_dels} -gt 0 ]; then
+                    bgc="${git_bgc}"
+                    fgc="100;10;10"
+                    pfx="-"
+                    __shuggtool_prompt_block "${bgc}" "${fgc}" " ${pfx}${stat_dels}"
+                fi
+            fi
+
+            # add a final space to the git section
+            __shuggtool_prompt_block "${git_bgc}" "0;0;0" " "
+        fi
+    fi
+    
+    # add a space at the end of the prompt
+    PS1="${PS1} "
+}
+__shuggtool_prompt_command
+
+PROMPT_COMMAND="__shuggtool_prompt_command"
+
