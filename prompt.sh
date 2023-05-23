@@ -113,6 +113,22 @@ function __shuggtool_prompt_command()
                 repo_branch_bgc="${git_bgc}"
                 repo_branch_fgc="14;59;67"
                 __shuggtool_prompt_block "${repo_branch_bgc}" "${repo_branch_fgc}" " ${repo_branch}"
+
+                # get the number of commits the local branch is ahead (or behind)
+                # the remote end
+                commit_diff=$(git rev-list --count HEAD...@{upstream})
+                if [ ${commit_diff} -ne 0 ]; then
+                    # use "+" or "-" to indicate branch diff
+                    pfx="+"
+                    commit_fgc="30;75;10"
+                    if [ ${commit_diff} -lt 0 ]; then
+                        pfx="-"
+                        commit_fgc="100;10;10"
+                    fi
+
+                    commit_bgc="${git_bgc}"
+                    __shuggtool_prompt_block "${commit_bgc}" "${commit_fgc}" " ${pfx}${commit_diff}"
+                fi
             fi
             
             # format the various changes in the file and add it
