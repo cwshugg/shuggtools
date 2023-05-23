@@ -1,0 +1,46 @@
+[diff]
+    tool = vimdiff
+
+[difftool]
+    prompt = false
+
+[alias]
+    d = difftool
+
+    # log views
+    l = log --date=format:'%m-%d-%Y' --pretty=format:"%h%x20%as%x09%an%x09%s%d" -n 15
+    ll = log --date=format:'%m-%d-%Y' --pretty=format:"%h%x20%as%x09%an%x09%s%d"
+    log-diff = log --color -u
+
+    # status and file displays
+    st = status -uno
+    files = log --name-only --oneline -n2
+    tracked = ls-tree -r HEAD --name-only
+
+    # pushing to remote end for first time
+    publish = !git push -u origin $(git rev-parse --abbrev-ref HEAD)
+    unpublish = !git push origin :$(git rev-parse --abbrev-ref HEAD)
+    
+    # wipe all currently unstage changes and files
+    wipe = reset --hard HEAD
+
+    # unstage ALL currently staged changes
+    unstage = reset HEAD --
+    
+    # view all aliases
+    aliases = !sh -c 'git config --get-regexp ^alias\\. | sort'
+
+    # show origin repo URL
+    origin = config --get remote.origin.url
+
+[core]
+    excludesfile = ~/.gitignore
+    editor = vim
+
+[pull]
+    rebase = false
+
+#[user]
+    #name = "Your Name"
+    #email = "Your Email Address"
+
