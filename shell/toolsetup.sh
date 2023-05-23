@@ -229,7 +229,7 @@ function __shuggtool_toolsetup_cat()
     binary="$(which bat 2> /dev/null)"
     binary2="$(which batcat 2> /dev/null)"
     if [ ! -z "${binary}" ] || [ ! -z "${binary2}" ]; then
-        __shuggtool_toolsetup_print_good "${C_GREEN}already installed.${C_NONE}"
+        __shuggtool_toolsetup_print_good "${C_GREEN}Already installed.${C_NONE}"
         __shuggtool_toolsetup_print_good "Try running ${C_YELLOW}bat${C_NONE} or ${C_YELLOW}batcat${C_NONE}."
         return
     fi
@@ -251,25 +251,47 @@ function __shuggtool_toolsetup_cat()
 }
 
 
+# =================================== Git ==================================== #
+# Installs my git config settings.
+function __shuggtool_toolsetup_git()
+{
+    git_config_src=${sthome}/git/.gitconfig
+    git_config_dst=~/.gitconfig
+
+    __shuggtool_toolsetup_print_note "Installing my git config... "
+    if [ ! -f ${git_config_src} ]; then
+        __shuggtool_toolsetup_print_bad "${C_RED}Couldn't find .gitconfig.${C_NONE}"
+    else
+        cp ${git_config_src} ${git_config_dst}
+        __shuggtool_toolsetup_print_good "${C_GREEN}Success.${C_NONE}"
+    fi
+
+    __shuggtool_toolsetup_print_note "Installed to ${C_YELLOW}${git_config_dst}${C_NONE}."
+    __shuggtool_toolsetup_print_note "Make sure you fill in your name and email address."
+}
 
 
 # =================================== Main =================================== #
 function __shuggtool_toolsetup()
 {
-    __shuggtool_toolsetup_print_prefix="VIM"
+    __shuggtool_toolsetup_print_prefix="vim"
     __shuggtool_toolsetup_vim
     echo ""
 
-    __shuggtool_toolsetup_print_prefix="TMUX"
+    __shuggtool_toolsetup_print_prefix="tmux"
     __shuggtool_toolsetup_tmux
     echo ""
 
-    __shuggtool_toolsetup_print_prefix="GDB"
+    __shuggtool_toolsetup_print_prefix="gdb"
     __shuggtool_toolsetup_gdb
     echo ""
 
-    __shuggtool_toolsetup_print_prefix="CAT"
+    __shuggtool_toolsetup_print_prefix="cat"
     __shuggtool_toolsetup_cat
+    echo ""
+
+    __shuggtool_toolsetup_print_prefix="git"
+    __shuggtool_toolsetup_git
 }
 
 __shuggtool_toolsetup "$@"
