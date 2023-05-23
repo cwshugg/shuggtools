@@ -132,19 +132,23 @@ function __shuggtool_prompt_command()
             fi
             
             # format the various changes in the file and add it
-            if [ ${__shuggtool_prompt_show_git_repo_diff} -ne 0 ]; then
-                # add a separator between the branch name and stats
-                if [ ${__shuggtool_prompt_show_git_repo_branch} -ne 0 ]; then
-                    sep_bgc="${git_bgc}"
-                    sep_fgc="0;0;0"
-                    __shuggtool_prompt_block "${sep_bgc}" "${sep_fgc}" " ->"
-                fi
-
+            if [ ${__shuggtool_prompt_show_git_repo_diff} -ne 0 ]; then 
                 # get number of modified files and other stats
                 stat="$(git diff --shortstat)"
                 stat_files="$(echo ${stat} | cut -d "," -f 1 | xargs | cut -d " " -f 1)"
                 stat_adds="$(echo ${stat} | cut -d "," -f 2 | xargs | cut -d " " -f 1)"
                 stat_dels="$(echo ${stat} | cut -d "," -f 3 | xargs | cut -d " " -f 1)"
+
+                # if at least one statistic is non-empty, we'll add a separator
+                if [ ${__shuggtool_prompt_show_git_repo_branch} -ne 0 ] || \
+                   [ ${__shuggtool_prompt_show_git_repo_name} -ne 0 ]; then
+                    if [ ! -z "${stat_files}" ] || [ ! -z "${stat_adds}" ] || [ ! -z "${stat_dels}" ]; then
+                    # add a separator between the branch name and stats
+                        sep_bgc="${git_bgc}"
+                        sep_fgc="0;0;0"
+                        __shuggtool_prompt_block "${sep_bgc}" "${sep_fgc}" " ->"
+                    fi
+                fi
 
                 # add the number of files changed
                 if [ ! -z "${stat_files}" ] && [ ${stat_files} -gt 0 ]; then
