@@ -81,7 +81,7 @@ function __shuggtool_prompt_command()
     if [ ${__shuggtool_prompt_show_git} -ne 0 ]; then
         repo_url="$(git remote get-url origin 2> /dev/null)"
         if [ ! -z "${repo_url}" ]; then
-            git_bgc="175;175;175"
+            git_bgc="200;200;200"
 
             # add a prefix
             pfx="$(echo -e "\u2501")"
