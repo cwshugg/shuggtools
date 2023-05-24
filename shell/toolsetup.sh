@@ -59,21 +59,19 @@ function __shuggtool_toolsetup_vim_theme()
 
     # make the '.vim' directory if it doesn't already exist
     if [ ! -d ${vim_dir} ]; then
-        __shuggtool_toolsetup_print_note "Making ${C_YELLOW}${vim_dir}${C_NONE}..."
         mkdir ${vim_dir}
+        __shuggtool_toolsetup_print_note "Created ${C_YELLOW}${vim_dir}${C_NONE}."
     else
         rm -rf ${theme_repo_dir}
     fi
 
     # first, we'll attempt to clone a repository containing the theme into our
     # ~/.vim directory
-    __shuggtool_toolsetup_print_note "Cloning theme repository: ${C_YELLOW}${theme_repo_url}${C_NONE}..."
     git clone ${theme_repo_url}.git ${theme_repo_dir} > /dev/null 2> /dev/null
     
     # check for the existence of the repo. If it failed, stop trying
     if [ ! -d ${theme_repo_dir} ]; then
-        msg="${C_RED}Clone failed.${C_NONE}"
-        msg="${msg} Using default theme: ${C_YELLOW}${__shuggtool_toolsetup_vim_theme}${C_NONE}"
+        msg="Failed to clone theme from repository: ${C_YELLOW}${theme_repo_dir}${C_NONE}."
         __shuggtool_toolsetup_print_bad "${msg}"
         return
     fi
@@ -87,36 +85,37 @@ function __shuggtool_toolsetup_vim_theme()
     # locate the '.vim' file
     color_file=$(find ${theme_repo_dir} -name "*.vim" | grep -v "airline" | head -n 1)
     if [ -z ${color_file} ]; then
-        msg="Couldn't find ${C_YELLOW}.vim${C_NONE} file."
-        msg="${msg} Using default theme: ${C_YELLOW}${__shuggtool_toolsetup_vim_theme}${C_NONE}"
+        msg="Failed to find theme ${C_YELLOW}.vim${C_NONE} file."
         __shuggtool_toolsetup_print_bad "${msg}"
         return
     fi
 
     # copy the color file into the vim color subdirectory, and update the
     # global color variable
-    cp ${color_file} ${vim_color_dir}/${theme_name}.vim
+    theme_dst=${vim_color_dir}/${theme_name}.vim
+    cp ${color_file} ${theme_dst}
     __shuggtool_toolsetup_vim_theme_name="${theme_name}"
+    __shuggtool_toolsetup_print_note "Theme repository: ${C_YELLOW}${theme_repo_url}${C_NONE}."
+    __shuggtool_toolsetup_print_good "Installed ${theme_name} theme at: ${C_LTBLUE}${theme_dst}${C_NONE}."
 
     # look for an airline vim theme
     airline_file=$(find ${theme_repo_dir} -name "*airline*.vim" | head -n 1)
     if [ -z "${airline_file}" ] || [ ! -f "${airline_file}" ]; then
-        __shuggtool_toolsetup_print_bad "Couldn't find airline theme ${C_YELLOW}.vim${C_NONE} file."
+        __shuggtool_toolsetup_print_bad "Failed to find airline theme ${C_YELLOW}.vim${C_NONE} file."
     else
         # look for the existence of the vim-airline-themes directory into which
         # we can copy the file
         #airline_theme_dir=${vim_dir}/bundle/vim-airline-themes/autoload/airline/themes
-        airline_theme_dir=$(find ${vim_dir} -wholename "airline/themes" | head -n 1)
+        airline_theme_dir=$(find ${vim_dir} -wholename "*vim-airline-themes/*/themes" | head -n 1)
         if [ -z "${airline_theme_dir}" ] || [ ! -d "${airline_theme_dir}" ]; then
             # tell the user to first install the plugins
-            msg="Couldn't find airline theme directory. "
-            msg="${msg}Try running ${C_YELLOW}vim${C_NONE} then running ${C_YELLOW}:PluginInstall${C_NONE} to install ${C_YELLOW}vim-airline-themes${C_NONE} first."
+            msg="Failed to find airline theme directory. "
             __shuggtool_toolsetup_print_bad "${msg}"
         else
             # copy the theme file into the correct location
             dst="${airline_theme_dir}/dwarrowdelf.vim"
             cp ${airline_file} ${dst}
-            __shuggtool_toolsetup_print_good "Installed ${theme_name} airline theme at ${C_YELLOW}${dst}${C_NONE}."
+            __shuggtool_toolsetup_print_good "Installed ${theme_name} airline theme at ${C_LTBLUE}${dst}${C_NONE}."
         fi
     fi
     
@@ -174,40 +173,42 @@ function __shuggtool_toolsetup_vim_vundle()
     if [ -d ${vundle_dir} ]; then
         rm -rf ${vundle_dir}
     fi
-    __shuggtool_toolsetup_print_note "Installing vundle to ${C_LTBLUE}${vundle_dir}${C_NONE}..."
     git clone ${vundle_url} ${vundle_dir} > /dev/null 2> /dev/null
 
     # check that the directory has been filled up with files from vundle
     if [ ! -z "$(ls ${vundle_dir})" ]; then
-        msg="Vundle installed. Run vim and execute the ${C_YELLOW}:PluginInstall${C_NONE}"
-        msg="${msg} command to install the plugins defined in your .vimrc."
-        __shuggtool_toolsetup_print_good "${msg}"
+        __shuggtool_toolsetup_print_good "Installed vundle to ${C_LTBLUE}${vundle_dir}${C_NONE}."
     else
-        __shuggtool_toolsetup_print_bad "${C_RED}failure${C_NONE}"
+        __shuggtool_toolsetup_print_bad "Failed to install vundle."
     fi
 }
 
 # main function
 function __shuggtool_toolsetup_vim()
 {
-    # first, try to install a theme
-    __shuggtool_toolsetup_vim_theme
-    
     vimrc_location=~/.vimrc
     vimrc_source=${sthome}/vim/vimrc.vim
-    __shuggtool_toolsetup_print_note "Installing .vimrc to ${C_LTBLUE}${vimrc_location}${C_NONE}..."
 
     # copy the vimrc file to the correct location
     if [ ! -f ${vimrc_source} ]; then
-        __shuggtool_toolsetup_print_bad "couldn't find source vimrc at ${C_LTBLUE}${vimrc_source}${C_NONE}"
+        __shuggtool_toolsetup_print_bad "Failed to find source vimrc at ${C_LTBLUE}${vimrc_source}${C_NONE}"
     else
         cp ${vimrc_source} ${vimrc_location}
     fi
-    __shuggtool_toolsetup_print_good "Installed .vimrc successfully."
+    __shuggtool_toolsetup_print_good "Installed .vimrc to ${C_LTBLUE}${vimrc_location}${C_NONE}."
     
     # next we'll install any plugins we have
     __shuggtool_toolsetup_vim_plugins
     __shuggtool_toolsetup_vim_vundle
+
+    # with all the added changes, launch vim and attempt to run ':PluginInstall'
+    # to ensure all plugins and themes are installed correctly
+    $(which vim) -c "PluginInstall" -c "qa!"
+    __shuggtool_toolsetup_print_note "Launched vim and executed ${C_YELLOW}:PluginInstall${C_NONE}."
+
+    # finally, try to install the theme
+    __shuggtool_toolsetup_vim_theme
+    
 }
 
 
@@ -218,10 +219,8 @@ function __shuggtool_toolsetup_tmux()
     config_src=${sthome}/tmux/tmux.conf
     config_dst=~/.tmux.conf
 
-    __shuggtool_toolsetup_print_note "Writing to ${C_GREEN}${config_dst}${C_NONE}..."
     cp ${config_src} ${config_dst}
-    
-    __shuggtool_toolsetup_print_good "${C_GREEN}${config_dst}${C_NONE} written successfully."
+    __shuggtool_toolsetup_print_good "Installed config file at ${C_LTBLUE}${config_dst}${C_NONE}."
 }
 
 
@@ -234,9 +233,8 @@ function __shuggtool_toolsetup_gdb()
     gdbinit_src=${sthome}/gdb/.gdbinit
     gdbinit_dest=~/.gdbinit
 
-    __shuggtool_toolsetup_print_note "Installing GDB init file to ${C_LTBLUE}${gdbinit_dest}${C_NONE}"
     cp ${gdbinit_src} ${gdbinit_dest}
-    __shuggtool_toolsetup_print_good "${C_GREEN}Installation successful.${C_NONE}"
+    __shuggtool_toolsetup_print_good "Installed GDB init file to ${C_LTBLUE}${gdbinit_dest}${C_NONE}."
 }
 
 
@@ -247,15 +245,12 @@ function __shuggtool_toolsetup_cat()
     repo_url="https://github.com/sharkdp/bat"
 
     # look for 'bat' or 'batcat'
-    __shuggtool_toolsetup_print_note "Looking for ${C_YELLOW}bat${C_NONE}... "
     binary="$(which bat 2> /dev/null)"
     binary2="$(which batcat 2> /dev/null)"
     if [ ! -z "${binary}" ] || [ ! -z "${binary2}" ]; then
-        __shuggtool_toolsetup_print_good "${C_GREEN}Already installed.${C_NONE}"
-        __shuggtool_toolsetup_print_good "Try running ${C_YELLOW}bat${C_NONE} or ${C_YELLOW}batcat${C_NONE}."
+        __shuggtool_toolsetup_print_good "Already installed. Try running ${C_YELLOW}bat${C_NONE} or ${C_YELLOW}batcat${C_NONE}."
         return
     fi
-    __shuggtool_toolsetup_print_note "${C_RED}not installed.${C_NONE}"
     
     # determine if we have user permissions
     __shuggtool_prompt_yesno "Do you have ${C_YELLOW}sudo${C_NONE} permissions?"
@@ -280,16 +275,13 @@ function __shuggtool_toolsetup_git()
     git_config_src=${sthome}/git/.gitconfig
     git_config_dst=~/.gitconfig
 
-    __shuggtool_toolsetup_print_note "Installing my git config... "
     if [ ! -f ${git_config_src} ]; then
-        __shuggtool_toolsetup_print_bad "${C_RED}Couldn't find .gitconfig.${C_NONE}"
+        __shuggtool_toolsetup_print_bad "Failed to find source ${C_LTBLUE}.gitconfig${C_NONE}."
     else
         cp ${git_config_src} ${git_config_dst}
-        __shuggtool_toolsetup_print_good "${C_GREEN}Success.${C_NONE}"
+        __shuggtool_toolsetup_print_good "Installed config to ${C_LTBLUE}${git_config_dst}${C_NONE}."
+        __shuggtool_toolsetup_print_good "Make sure you fill in your name and email address."
     fi
-
-    __shuggtool_toolsetup_print_note "Installed to ${C_YELLOW}${git_config_dst}${C_NONE}."
-    __shuggtool_toolsetup_print_note "Make sure you fill in your name and email address."
 }
 
 
