@@ -85,7 +85,7 @@ function __shuggtool_toolsetup_vim_theme()
     fi
     
     # locate the '.vim' file
-    color_file=$(find ${theme_repo_dir} -name "*.vim" | head -n 1)
+    color_file=$(find ${theme_repo_dir} -name "*.vim" | grep -v "airline" | head -n 1)
     if [ -z ${color_file} ]; then
         msg="Couldn't find ${C_YELLOW}.vim${C_NONE} file."
         msg="${msg} Using default theme: ${C_YELLOW}${__shuggtool_toolsetup_vim_theme}${C_NONE}"
@@ -97,6 +97,28 @@ function __shuggtool_toolsetup_vim_theme()
     # global color variable
     cp ${color_file} ${vim_color_dir}/${theme_name}.vim
     __shuggtool_toolsetup_vim_theme_name="${theme_name}"
+
+    # look for an airline vim theme
+    airline_file=$(find ${theme_repo_dir} -name "*airline*.vim" | head -n 1)
+    if [ -z "${airline_file}" ] || [ ! -f "${airline_file}" ]; then
+        __shuggtool_toolsetup_print_bad "Couldn't find airline theme ${C_YELLOW}.vim${C_NONE} file."
+    else
+        # look for the existence of the vim-airline-themes directory into which
+        # we can copy the file
+        #airline_theme_dir=${vim_dir}/bundle/vim-airline-themes/autoload/airline/themes
+        airline_theme_dir=$(find ${vim_dir} -wholename "airline/themes" | head -n 1)
+        if [ -z "${airline_theme_dir}" ] || [ ! -d "${airline_theme_dir}" ]; then
+            # tell the user to first install the plugins
+            msg="Couldn't find airline theme directory. "
+            msg="${msg}Try running ${C_YELLOW}vim${C_NONE} then running ${C_YELLOW}:PluginInstall${C_NONE} to install ${C_YELLOW}vim-airline-themes${C_NONE} first."
+            __shuggtool_toolsetup_print_bad "${msg}"
+        else
+            # copy the theme file into the correct location
+            dst="${airline_theme_dir}/dwarrowdelf.vim"
+            cp ${airline_file} ${dst}
+            __shuggtool_toolsetup_print_good "Installed ${theme_name} airline theme at ${C_YELLOW}${dst}${C_NONE}."
+        fi
+    fi
     
     # once finished, remove the repository directory
     rm -rf ${theme_repo_dir}

@@ -6,15 +6,16 @@ filetype off                            " required by vundle
 set rtp+=$HOME/.vim/bundle/Vundle.vim   " add vundle to vim's runtime path
 call vundle#begin()
 
-" ------------- Plugins -------------- "
+" Plugin installation
 Plugin 'VundleVim/Vundle.vim'           " required by vundle
 Plugin 'https://github.com/lambdalisue/fern.vim'
+Plugin 'https://github.com/vim-airline/vim-airline'
+Plugin 'https://github.com/vim-airline/vim-airline-themes'
 
 call vundle#end()                       " finish vundle setup
 filetype plugin indent on               " required by vundle
 
-
-" ------------------------------ Fern Shortcuts ------------------------------ "
+" ---------------------------- Fern Configuration ---------------------------- "
 " FT - File Tree. Utilizes Fern to open a 'project-drawer'-style file tree next
 " to the current editor window.
 function! FT(...)
@@ -30,6 +31,11 @@ function! FT(...)
     execute 'Fern ' . l:file_tree_dir . ' -drawer'
 endfunction
 command! -nargs=* FT call FT(<f-args>)
+
+
+" -------------------------- Airline Configuration --------------------------- "
+let g:airline#extensions#tabline#enabled = 1
+let g:airline_theme='dwarrowdelf'
 
 
 " ============================= Helper Functions ============================= "
