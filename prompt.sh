@@ -116,18 +116,18 @@ function __shuggtool_prompt_command()
 
                 # get the number of commits the local branch is ahead (or behind)
                 # the remote end
-                commit_diff=$(git rev-list --count HEAD...@{upstream} 2> /dev/null)
-                if [ ! -z "${commit_diff}" ] && [ ${commit_diff} -ne 0 ]; then
-                    # use "+" or "-" to indicate branch diff
-                    pfx="+"
-                    commit_fgc="30;75;10"
-                    if [ ${commit_diff} -lt 0 ]; then
-                        pfx="-"
-                        commit_fgc="100;10;10"
-                    fi
-
-                    commit_bgc="${git_bgc}"
-                    __shuggtool_prompt_block "${commit_bgc}" "${commit_fgc}" " ${pfx}${commit_diff}"
+                commit_counts=($(git rev-list --count --left-right HEAD...@{upstream} 2> /dev/null))
+                commits_ahead=${commit_counts[0]}
+                commits_behind=${commit_counts[1]}
+                if [ ${commits_behind} -gt 0 ]; then
+                    fgc="100;10;10"
+                    bgc="${git_bgc}"
+                    __shuggtool_prompt_block "${bgc}" "${fgc}" " -${commits_behind}"
+                fi
+                if [ ${commits_ahead} -gt 0 ]; then
+                    fgc="30;75;10"
+                    bgc="${git_bgc}"
+                    __shuggtool_prompt_block "${bgc}" "${fgc}" " +${commits_ahead}"
                 fi
             fi
             
