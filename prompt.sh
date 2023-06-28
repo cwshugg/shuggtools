@@ -103,6 +103,14 @@ function __shuggtool_prompt_command()
             if [ ${__shuggtool_prompt_show_git_repo_branch} -ne 0 ]; then
                 repo_branch="$(git rev-parse --abbrev-ref HEAD)"
 
+                # if the branch name itself is displayed as HEAD, we won't
+                # gather info on how many commits ahead/behind the remote
+                # end we are.
+                is_detached=0
+                if [[ "${repo_branch}" == "HEAD" ]]; then
+                    is_detached=1
+                fi
+
                 # add a separator between the repo name and branch name
                 if [ ${__shuggtool_prompt_show_git_repo_name} -ne 0 ]; then
                     sep_bgc="${git_bgc}"
@@ -115,19 +123,21 @@ function __shuggtool_prompt_command()
                 __shuggtool_prompt_block "${repo_branch_bgc}" "${repo_branch_fgc}" " ${repo_branch}"
 
                 # get the number of commits the local branch is ahead (or behind)
-                # the remote end
-                commit_counts=($(git rev-list --count --left-right HEAD...@{upstream} 2> /dev/null))
-                commits_ahead=${commit_counts[0]}
-                commits_behind=${commit_counts[1]}
-                if [ ${commits_behind} -gt 0 ]; then
-                    fgc="100;10;10"
-                    bgc="${git_bgc}"
-                    __shuggtool_prompt_block "${bgc}" "${fgc}" " -${commits_behind}"
-                fi
-                if [ ${commits_ahead} -gt 0 ]; then
-                    fgc="30;75;10"
-                    bgc="${git_bgc}"
-                    __shuggtool_prompt_block "${bgc}" "${fgc}" " +${commits_ahead}"
+                # the remote end (as long as we're not in a detached state)
+                if [ ${is_detached} -eq 0 ]; then
+                    commit_counts=($(git rev-list --count --left-right HEAD...@{upstream} 2> /dev/null))
+                    commits_ahead=${commit_counts[0]}
+                    commits_behind=${commit_counts[1]}
+                    if [ ${commits_behind} -gt 0 ]; then
+                        fgc="100;10;10"
+                        bgc="${git_bgc}"
+                        __shuggtool_prompt_block "${bgc}" "${fgc}" " -${commits_behind}"
+                    fi
+                    if [ ${commits_ahead} -gt 0 ]; then
+                        fgc="30;75;10"
+                        bgc="${git_bgc}"
+                        __shuggtool_prompt_block "${bgc}" "${fgc}" " +${commits_ahead}"
+                    fi
                 fi
             fi
             
