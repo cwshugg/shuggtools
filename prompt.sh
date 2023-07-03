@@ -125,9 +125,18 @@ function __shuggtool_prompt_command()
                 # get the number of commits the local branch is ahead (or behind)
                 # the remote end (as long as we're not in a detached state)
                 if [ ${is_detached} -eq 0 ]; then
+                    # parse out the number of commits AHEAD and BEHIND the
+                    # remote end (default to 0 if we don't get any output)
                     commit_counts=($(git rev-list --count --left-right HEAD...@{upstream} 2> /dev/null))
-                    commits_ahead=${commit_counts[0]}
-                    commits_behind=${commit_counts[1]}
+                    commits_ahead=0
+                    commits_behind=0
+                    if [ ! -z "${commit_counts}" ]; then
+                        commits_ahead=${commit_counts[0]}
+                        commits_behind=${commit_counts[1]}
+                    fi
+                    
+                    # based on the AHEAD and BEHIND values, add blocks onto the
+                    # prompt to display this value
                     if [ ${commits_behind} -gt 0 ]; then
                         fgc="100;10;10"
                         bgc="${git_bgc}"
