@@ -34,7 +34,7 @@ command! -nargs=* FT call FT(<f-args>)
 
 
 " -------------------------- Airline Configuration --------------------------- "
-let g:airline#extensions#tabline#enabled = 1
+"let g:airline#extensions#tabline#enabled = 1
 let g:airline_theme='dwarrowdelf'
 
 
