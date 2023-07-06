@@ -13,7 +13,7 @@
     log-diff = log --color -u
 
     # status and file displays
-    st = status -uno
+    s = status -uno
     files = log --name-only --oneline -n2
     tracked = ls-tree -r HEAD --name-only
 
