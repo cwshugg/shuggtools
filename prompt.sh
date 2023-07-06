@@ -180,7 +180,7 @@ function __shuggtool_prompt_command()
                 # add the number of additions
                 if [ ! -z "${stat_adds}" ] && [ ${stat_adds} -gt 0 ]; then
                     bgc="${git_bgc}"
-                    fgc="50;75;10"
+                    fgc="30;75;10"
                     pfx="+"
                     __shuggtool_prompt_block "${bgc}" "${fgc}" " ${pfx}${stat_adds}"
                 fi
