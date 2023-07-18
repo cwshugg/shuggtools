@@ -13,10 +13,11 @@ function __shuggtool_toolsetup_print_helper()
     color="$2"
 
     # create and print the prefix, then pad with spaces
-    prefix="${C_LTBLUE}[${color}${__shuggtool_toolsetup_print_prefix}${C_LTBLUE}]${C_NONE} "
+    prefix="${color}•${C_NONE} ${C_DKGRAY}${__shuggtool_toolsetup_print_prefix}${C_NONE} "
     prefix_len=${#__shuggtool_toolsetup_print_prefix}
     prefix_len=$((prefix_len+2))
     max_len=8
+    
     if [ ${prefix_len} -gt ${max_len} ]; then
         max_len=$((prefix_len+1))
     fi
@@ -43,6 +44,11 @@ function __shuggtool_toolsetup_print_good()
 function __shuggtool_toolsetup_print_bad()
 {
     __shuggtool_toolsetup_print_helper "$1" "${C_RED}"
+}
+
+function __shuggtool_toolsetup_print_alert()
+{
+    __shuggtool_toolsetup_print_helper "$1" "${C_PURPLE}"
 }
 
 
@@ -186,6 +192,15 @@ function __shuggtool_toolsetup_vim_vundle()
 # main function
 function __shuggtool_toolsetup_vim()
 {
+    # check for vim install
+    vim_bin="$(which vim 2> /dev/null)"
+    if [ -z "${vim_bin}" ]; then
+        __shuggtool_toolsetup_print_bad "Couldn't find vim. Is it installed?"
+        __shuggtool_toolsetup_print_alert "Make sure it's installed to at least version 8.1."
+    else
+        __shuggtool_toolsetup_print_note "Found ${C_YELLOW}$(${vim_bin} --version | head -n 1)${C_NONE}."
+    fi
+
     vimrc_location=~/.vimrc
     vimrc_source=${sthome}/vim/vimrc.vim
 
@@ -219,6 +234,16 @@ function __shuggtool_toolsetup_tmux()
     config_src=${sthome}/tmux/tmux.conf
     config_dst=~/.tmux.conf
 
+    # check for tmux install
+    tmux_bin="$(which tmux 2> /dev/null)"
+    if [ -z "${tmux_bin}" ]; then
+        __shuggtool_toolsetup_print_bad "Couldn't find tmux. Is it installed?"
+        __shuggtool_toolsetup_print_alert "Make sure it's installed to at least version 3.0."
+    else
+        __shuggtool_toolsetup_print_note "Found ${C_YELLOW}$(${tmux_bin} -V)${C_NONE}."
+    fi
+    
+    # install tmux config
     cp ${config_src} ${config_dst}
     __shuggtool_toolsetup_print_good "Installed config file at ${C_LTBLUE}${config_dst}${C_NONE}."
 }
@@ -280,7 +305,7 @@ function __shuggtool_toolsetup_git()
     else
         cp ${git_config_src} ${git_config_dst}
         __shuggtool_toolsetup_print_good "Installed config to ${C_LTBLUE}${git_config_dst}${C_NONE}."
-        __shuggtool_toolsetup_print_good "Make sure you fill in your name and email address."
+        __shuggtool_toolsetup_print_alert "Make sure you fill in your name and email address."
     fi
 }
 
