@@ -141,8 +141,13 @@ function __shuggtool_log_print_logfile()
 {
     lf="$(basename $1)"
     lf_date="${lf%.*}"
-    color="$(__shuggtool_log_get_datestring_color "${lf_date}")"
-    echo -en "${color}${lf_date}${C_NONE}"
+    color1=""
+    color2=""
+    if [ ${verbose} -ne 0 ]; then
+        color1="$(__shuggtool_log_get_datestring_color "${lf_date}")"
+        color2="${C_NONE}"
+    fi
+    echo -en "${color1}${lf_date}${color2}"
 
     # if verbose mode is on, print a little extra information
     if [ ${verbose} -ne 0 ]; then
