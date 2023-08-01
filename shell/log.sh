@@ -39,7 +39,6 @@ function __shuggtool_log_pad_number()
     num_width=${#num}
     diff=$((width-num_width))
     while [ ${diff} -gt 0 ]; do
-        echo "ADDING ZERO TO ${num}" 1>&2
         result="0${result}"
         diff=$((diff-1))
     done
