@@ -27,6 +27,26 @@ function __shuggtool_log_usage()
     echo "---------------------------------------------------------------------------"
 }
 
+# Takes in a number and pads it with a leading zero, if necessary.
+function __shuggtool_log_pad_number()
+{
+    num="$1"
+    width="$2"
+    
+    # compare the length of the number to the expected width, then compensate
+    # by prepending zeroes to the resulting string
+    result="${num}"
+    num_width=${#num}
+    diff=$((width-num_width))
+    while [ ${diff} -gt 0 ]; do
+        echo "ADDING ZERO TO ${num}" 1>&2
+        result="0${result}"
+        diff=$((diff-1))
+    done
+    
+    echo "${result}"
+}
+
 # Helper function that checks if a string is a number. Echoes a message if the given
 # string *is* a number.
 function __shuggtool_log_is_number()
@@ -36,8 +56,7 @@ function __shuggtool_log_is_number()
     fi
 }
 
-# Useful IP-address-checking function that uses the machine's IP address to
-# determine if I'm in the office or at home/remote.
+# Prompts the user to reveal where he/she is working from.
 __shuggtool_log_get_location_retval=""
 function __shuggtool_log_get_location()
 {
@@ -104,6 +123,12 @@ function __shuggtool_log_get_datestring()
     year="$(__shuggtool_log_get_date_year "${ds}")"
     month="$(__shuggtool_log_get_date_month "${ds}")"
     day="$(__shuggtool_log_get_date_day "${ds}")"
+    
+    # pad with zeroes
+    year="$(__shuggtool_log_pad_number "${year}" 4)"
+    month="$(__shuggtool_log_pad_number "${month}" 2)"
+    day="$(__shuggtool_log_pad_number "${day}" 2)"
+
     echo "${year}-${month}-${day}"
 }
 
@@ -428,6 +453,11 @@ function __shuggtool_log()
         return 
     fi
     
+    # pad all numbers with zeroes
+    year="$(__shuggtool_log_pad_number "${year}" 4)"
+    month="$(__shuggtool_log_pad_number "${month}" 2)"
+    day="$(__shuggtool_log_pad_number "${day}" 2)"
+
     # first, determine if the date is on a weekend day. If it is, we'll check
     # with the user to see if they still want to proceed with writing a log file
     weekday="$(date -d "${ds}" +%A)"
