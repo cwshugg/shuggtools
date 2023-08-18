@@ -102,6 +102,7 @@ function __shuggtool_prompt_command()
             # format the repo branch and add it
             if [ ${__shuggtool_prompt_show_git_repo_branch} -ne 0 ]; then
                 repo_branch="$(git rev-parse --abbrev-ref HEAD)"
+                repo_tag=""
 
                 # if the branch name itself is displayed as HEAD, we won't
                 # gather info on how many commits ahead/behind the remote
@@ -109,6 +110,7 @@ function __shuggtool_prompt_command()
                 is_detached=0
                 if [[ "${repo_branch}" == "HEAD" ]]; then
                     is_detached=1
+                    repo_tag="$(git describe --tags)"
                 fi
 
                 # add a separator between the repo name and branch name
@@ -118,9 +120,18 @@ function __shuggtool_prompt_command()
                     __shuggtool_prompt_block "${sep_bgc}" "${sep_fgc}" " ->"
                 fi
 
+
+                # if the repo is in a detached state, we'll use the tag name
+                # instead of the branch name (prefixed to indicate it's detached)
                 repo_branch_bgc="${git_bgc}"
                 repo_branch_fgc="14;59;67"
-                __shuggtool_prompt_block "${repo_branch_bgc}" "${repo_branch_fgc}" " ${repo_branch}"
+                if [ ${is_detached} -ne 0 ]; then
+                    repo_tag_fgc="67;39;14"
+                    __shuggtool_prompt_block "${repo_branch_bgc}" "${repo_tag_fgc}" " ¦"
+                    __shuggtool_prompt_block "${repo_branch_bgc}" "${repo_branch_fgc}" "${repo_tag}"
+                else
+                    __shuggtool_prompt_block "${repo_branch_bgc}" "${repo_branch_fgc}" " ${repo_branch}"
+                fi
 
                 # get the number of commits the local branch is ahead (or behind)
                 # the remote end (as long as we're not in a detached state)
