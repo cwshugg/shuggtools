@@ -14,8 +14,7 @@
 
     # status and file displays
     s = status -uno
-    files = log --name-only --oneline -n2
-    tracked = ls-tree -r HEAD --name-only
+    st = status
 
     # pushing to remote end for first time
     publish = !git push -u origin $(git rev-parse --abbrev-ref HEAD)
