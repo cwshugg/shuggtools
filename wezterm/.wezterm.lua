@@ -57,6 +57,53 @@ config.visual_bell = {
     fade_out_duration_ms = 50
 }
 
+-- Key Bindings
+config.keys = {
+    -- TODO
+}
+
+-- Mouse Bindings
+config.mouse_bindings = {
+    -- Make left-click select text (NOT follow hyperlinks)
+    {
+        event = {Up = {streak = 1, button = "Left"}},
+        mods = "NONE",
+        action = wezterm.action.CompleteSelection "ClipboardAndPrimarySelection"
+    },
+    -- Make CTRL + left-click follow hyperlinks
+    {
+        event = {Up = {streak = 1, button = "Left"}},
+        mods = "CTRL",
+        action = wezterm.action.OpenLinkAtMouseCursor
+    },
+
+    -- Make right-click copy selected text
+    {
+        event = {Up = {streak = 1, button = "Right"}},
+        mods = "NONE",
+        action = wezterm.action.CopyTo "ClipboardAndPrimarySelection"
+    },
+    -- Make DOUBLE right-click paste the selected text immediately
+    {
+        event = {Up = {streak = 2, button = "Right"}},
+        mods = "NONE",
+        action = wezterm.action.PasteFrom "PrimarySelection"
+    },
+
+    -- Make CTRL + scroll-up increase the font size
+    {
+        event = {Down = {streak = 1, button = {WheelUp = 1}}},
+        mods = "CTRL",
+        action = wezterm.action.IncreaseFontSize
+    },
+    -- Make CTRL + scroll-down decrease the font size
+    {
+        event = {Down = {streak = 1, button = {WheelDown = 1}}},
+        mods = "CTRL",
+        action = wezterm.action.DecreaseFontSize
+    }
+}
+
 ------------------------------ Custom Appearance -------------------------------
 config.color_schemes = {
     ["Dwarrowdelf"] = {
@@ -102,7 +149,7 @@ config.color_schemes = {
         },
         
         -- Visual bell
-        visual_bell = "#EFFFFF"
+        visual_bell = "#6C6C6C"
     }
 }
 config.color_scheme = "Dwarrowdelf"
