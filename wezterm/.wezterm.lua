@@ -70,6 +70,7 @@ config.mouse_bindings = {
         mods = "NONE",
         action = wezterm.action.CompleteSelection "ClipboardAndPrimarySelection"
     },
+
     -- Make CTRL + left-click follow hyperlinks
     {
         event = {Up = {streak = 1, button = "Left"}},
@@ -77,12 +78,18 @@ config.mouse_bindings = {
         action = wezterm.action.OpenLinkAtMouseCursor
     },
 
-    -- Make right-click copy selected text
+    -- Make right-click copy selected text and clear the selection
     {
         event = {Up = {streak = 1, button = "Right"}},
         mods = "NONE",
         action = wezterm.action.CopyTo "ClipboardAndPrimarySelection"
     },
+    {
+        event = {Up = {streak = 1, button = "Right"}},
+        mods = "NONE",
+        action = wezterm.action.ClearSelection
+    },
+
     -- Make DOUBLE right-click paste the selected text immediately
     {
         event = {Up = {streak = 2, button = "Right"}},
@@ -96,6 +103,7 @@ config.mouse_bindings = {
         mods = "CTRL",
         action = wezterm.action.IncreaseFontSize
     },
+
     -- Make CTRL + scroll-down decrease the font size
     {
         event = {Down = {streak = 1, button = {WheelDown = 1}}},
@@ -149,7 +157,7 @@ config.color_schemes = {
         },
         
         -- Visual bell
-        visual_bell = "#545454"
+        visual_bell = "#343434"
     }
 }
 config.color_scheme = "Dwarrowdelf"
