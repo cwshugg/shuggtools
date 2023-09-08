@@ -52,9 +52,9 @@ end
 config.audible_bell = "Disabled"
 config.visual_bell = {
     fade_in_function = "EaseIn",
-    fade_in_duration_ms = 50,
+    fade_in_duration_ms = 25,
     fade_out_function = "EaseOut",
-    fade_out_duration_ms = 50
+    fade_out_duration_ms = 100
 }
 
 -- Key Bindings
@@ -149,7 +149,7 @@ config.color_schemes = {
         },
         
         -- Visual bell
-        visual_bell = "#6C6C6C"
+        visual_bell = "#545454"
     }
 }
 config.color_scheme = "Dwarrowdelf"
