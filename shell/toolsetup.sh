@@ -301,11 +301,27 @@ function __shuggtool_toolsetup_git()
     git_config_dst=~/.gitconfig
 
     if [ ! -f ${git_config_src} ]; then
-        __shuggtool_toolsetup_print_bad "Failed to find source ${C_LTBLUE}.gitconfig${C_NONE}."
+        __shuggtool_toolsetup_print_bad "Failed to find source ${C_LTBLUE}$(basename ${git_config_src})${C_NONE}."
     else
         cp ${git_config_src} ${git_config_dst}
         __shuggtool_toolsetup_print_good "Installed config to ${C_LTBLUE}${git_config_dst}${C_NONE}."
         __shuggtool_toolsetup_print_alert "Make sure you fill in your name and email address."
+    fi
+}
+
+
+# ================================= Wezterm ================================== #
+# Installs my wezterm configurations.
+function __shuggtool_toolsetup_wezterm()
+{
+    wez_config_src=${sthome}/wezterm/wezterm.lua
+    wez_config_dst=~/.wezterm.lua
+
+    if [ ! -f ${wez_config_src} ]; then
+        __shuggtool_toolsetup_print_bad "Failed to find source ${C_LTBLUE}$(basename ${wez_config_src})${C_NONE}."
+    else
+        cp ${wez_config_src} ${wez_config_dst}
+        __shuggtool_toolsetup_print_good "Installed config to ${C_LTBLUE}${wez_config_dst}${C_NONE}."
     fi
 }
 
@@ -331,6 +347,10 @@ function __shuggtool_toolsetup()
 
     __shuggtool_toolsetup_print_prefix="git"
     __shuggtool_toolsetup_git
+    echo ""
+
+    __shuggtool_toolsetup_print_prefix="wezterm"
+    __shuggtool_toolsetup_wezterm
 }
 
 __shuggtool_toolsetup "$@"
