@@ -16,7 +16,7 @@ function __shuggtool_toolsetup_print_helper()
     prefix="${color}•${C_NONE} ${C_DKGRAY}${__shuggtool_toolsetup_print_prefix}${C_NONE} "
     prefix_len=${#__shuggtool_toolsetup_print_prefix}
     prefix_len=$((prefix_len+2))
-    max_len=8
+    max_len=12
     
     if [ ${prefix_len} -gt ${max_len} ]; then
         max_len=$((prefix_len+1))
@@ -317,6 +317,14 @@ function __shuggtool_toolsetup_wezterm()
     wez_config_src=${sthome}/wezterm/wezterm.lua
     wez_config_dst=~/.wezterm.lua
 
+    # if wezterm isn't installed, skip this
+    wez_bin="$(which wezterm 2> /dev/null)"
+    if [ -z "${wez_bin}" ]; then
+        __shuggtool_toolsetup_print_note "Wezterm doesn't appear to be installed. Skipping configuration."
+        return
+    fi
+    
+    # copy config file into the correct spot
     if [ ! -f ${wez_config_src} ]; then
         __shuggtool_toolsetup_print_bad "Failed to find source ${C_LTBLUE}$(basename ${wez_config_src})${C_NONE}."
     else
