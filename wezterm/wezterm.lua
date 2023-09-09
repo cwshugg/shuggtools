@@ -166,7 +166,7 @@ config.color_scheme = "Dwarrowdelf"
 config.font = wezterm.font_with_fallback {
     "JetBrains Mono"
 }
-config.font_size = 10
+config.font_size = 11
 
 -- FINAL LINE - return config object
 return config
