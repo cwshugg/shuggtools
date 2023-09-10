@@ -58,7 +58,7 @@ config.visual_bell = {
 }
 
 -- Word separator characters (used when selecting text with the mouse)
-config.selection_word_boundary = "{}[]()<>\"',.!?|:; \t"
+config.selection_word_boundary = "{}[]()<>\"',!?|:; \t"
 
 -- Key Bindings
 config.keys = {
