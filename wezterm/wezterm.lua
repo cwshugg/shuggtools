@@ -57,6 +57,9 @@ config.visual_bell = {
     fade_out_duration_ms = 100
 }
 
+-- Word separator characters (used when selecting text with the mouse)
+config.selection_word_boundary = "{}[]()\"',.!?|:;"
+
 -- Key Bindings
 config.keys = {
     -- TODO
