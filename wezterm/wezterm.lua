@@ -58,7 +58,7 @@ config.visual_bell = {
 }
 
 -- Word separator characters (used when selecting text with the mouse)
-config.selection_word_boundary = "{}[]()\"',.!?|:;"
+config.selection_word_boundary = "{}[]()<>\"',.!?|:; \t"
 
 -- Key Bindings
 config.keys = {
@@ -72,6 +72,20 @@ config.mouse_bindings = {
         event = {Up = {streak = 1, button = "Left"}},
         mods = "NONE",
         action = wezterm.action.CompleteSelection "ClipboardAndPrimarySelection"
+    },
+
+    -- Make a double left-click select the current word
+    {
+        event = {Up = {streak = 2, button = "Left"}},
+        mods = "NONE",
+        action = wezterm.action.SelectTextAtMouseCursor "Word"
+    },
+
+    -- Make a triple left-click select the entire line
+    {
+        event = {Up = {streak = 3, button = "Left"}},
+        mods = "NONE",
+        action = wezterm.action.SelectTextAtMouseCursor "Line"
     },
 
     -- Make CTRL + left-click follow hyperlinks
