@@ -101,7 +101,7 @@ function __shuggtool_prompt_command()
             
             # format the repo branch and add it
             if [ ${__shuggtool_prompt_show_git_repo_branch} -ne 0 ]; then
-                repo_branch="$(git rev-parse --abbrev-ref HEAD)"
+                repo_branch="$(git rev-parse --abbrev-ref HEAD 2> /dev/null)"
                 repo_tag=""
 
                 # if the branch name itself is displayed as HEAD, we won't
@@ -110,7 +110,7 @@ function __shuggtool_prompt_command()
                 is_detached=0
                 if [[ "${repo_branch}" == "HEAD" ]]; then
                     is_detached=1
-                    repo_tag="$(git describe --tags)"
+                    repo_tag="$(git describe --tags 2> /dev/null)"
                 fi
 
                 # add a separator between the repo name and branch name
