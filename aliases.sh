@@ -43,3 +43,30 @@ alias dir="ls"
 alias h="history"
 alias bell="echo -e \"\a\""
 
+# CDF: Change Directory Find
+# Searches for a matching file/directory, given a string, and cd's to that
+# location if found.
+function __shuggtool_alias_cdf()
+{
+    name="$1"
+
+    # search for the name; if one isn't found, complain and return
+    result="$(find $(pwd) -name "${name}" 2> /dev/null | head -n 1)"
+    if [ -z "${result}" ]; then
+        __shuggtool_print_error "Failed to find matching file or directory: ${C_GRAY}${name}${C_NONE}"
+        return 1
+    fi
+
+    # if the result is a file, cd to its directory
+    if [ -f "${result}" ]; then
+        cd "$(dirname "${result}")"
+    # if the result is a directory, cd to it
+    elif [ -d "${result}" ]; then
+        cd "${result}"
+    else
+        __shuggtool_print_error "The matched result is neither file nor directory: ${C_GRAY}${result}${C_NONE}"
+        return 1
+    fi
+}    
+alias cdf="__shuggtool_alias_cdf"
+
