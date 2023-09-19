@@ -43,13 +43,16 @@ alias dir="ls"
 alias h="history"
 alias bell="echo -e \"\a\""
 
+
+# ---------------------------- Directory Changes ----------------------------- #
 # CDF: Change Directory Find
-# Searches for a matching file/directory, given a string, and cd's to that
-# location if found.
-function __shuggtool_alias_cdf()
+# Searches for a matching file/directory, given a string, and either changes to
+# the directory or pushes it onto the directory stack (if a match is found).
+function __shuggtool_alias_cdf_helper()
 {
     name="$1"
-
+    do_push=$2 # 0=change, 1=push
+ 
     # search for the name; if one isn't found, complain and return
     result="$(find $(pwd) -name "${name}" 2> /dev/null | head -n 1)"
     if [ -z "${result}" ]; then
@@ -57,16 +60,50 @@ function __shuggtool_alias_cdf()
         return 1
     fi
 
-    # if the result is a file, cd to its directory
     if [ -f "${result}" ]; then
-        cd "$(dirname "${result}")"
-    # if the result is a directory, cd to it
-    elif [ -d "${result}" ]; then
-        cd "${result}"
-    else
+        # if the result is a file, grab its directory (if it's a direcotyr,
+        # we'll# use it as-is)
+        result="$(dirname "${result}")"
+    elif [ ! -d "${result}" ]; then
+        # otherwise, if it's NOT a directory, we've got a problem
         __shuggtool_print_error "The matched result is neither file nor directory: ${C_GRAY}${result}${C_NONE}"
         return 1
     fi
+    
+    # finally, either change or push
+    if [ ${do_push} -ne 0 ]; then
+        pushd "${result}"
+    else
+        cd "${result}"
+    fi
+    return 0
 }    
+
+# cdf: Change Directory Find
+function __shuggtool_alias_cdf()
+{
+    # make sure at least one argument was given
+    if [ $# -lt 1 ]; then
+        __shuggtool_print_error "Please provide the name of a file or directory to search for."
+        return 1
+    fi
+    __shuggtool_alias_cdf_helper "$1" 0
+    return 0
+}
+
+# pushdf: Push Directory Find
+function __shuggtool_alias_pushdf()
+{
+    # make sure at least one argument was given
+    if [ $# -lt 1 ]; then
+        __shuggtool_print_error "Please provide the name of a file or directory to search for."
+        return 1
+    fi
+    __shuggtool_alias_cdf_helper "$1" 1
+    return 0
+}
+
+# directory chance aliases
 alias cdf="__shuggtool_alias_cdf"
+alias pushdf="__shuggtool_alias_pushdf"
 
