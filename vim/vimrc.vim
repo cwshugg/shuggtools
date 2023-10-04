@@ -77,6 +77,10 @@ set hlsearch                            " highlight search results
 set is                                  " highlight searches as you type
 
 
+" ============================== Mouse Settings ============================== "
+set mouse=a                             " enable mouse everywhere
+
+
 " =========================== Remaps and Shortcuts =========================== "
 " the below shortcut allows you to press space to clear highlighted search terms
 " thanks to: https://vim.fandom.com/wiki/Highlight_all_search_pattern_matches
