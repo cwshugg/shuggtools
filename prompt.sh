@@ -12,6 +12,8 @@ __shuggtool_prompt_show_git_repo_diff=1     # show git diffs
 # other globals
 __shuggtool_prompt_bg_format="48;2"         # prefix for background colors
 __shuggtool_prompt_fg_format="38;2"         # prefix for foreground colors
+__shuggtool_prompt_previous_cmdnum=0        # prefix bash command number
+__shuggtool_prompt_previous_retval=0        # return captured during previous prompt generation
 
 # Helper function that creates a PS1-friendly string that represents a colored
 # block containing given text, then adds it to PS1.
@@ -39,9 +41,35 @@ function __shuggtool_prompt_block()
     PS1="${PS1}\[\033[${format}m\]${txt}\[\033[0m\]"
 }
 
+# Helper function that adds a line separator to be placed between two blocks.
+function __shuggtool_prompt_block_separator()
+{
+    # take in the colors and the length (length is optional)
+    bgc="$1"
+    fgc="$2"
+    len=1
+    if [ $# -ge 3 ]; then
+        len=$3
+    fi
+
+    # build the string, based on the length
+    pfx=""
+    for (( i=0; i<${len}; i++ )); do
+        pfx="${pfx}\u2501"
+    done
+    pfx="$(echo -e "${pfx}")"
+
+    __shuggtool_prompt_block "${bgc}" "${fgc}" "${pfx}"
+}
+
 # Function to update PS1 after each command.
 function __shuggtool_prompt_command()
 {
+    # retrieve the last command's return value and number
+    retval=$?
+    cmdnum_str="\#"
+    cmdnum="${cmdnum_str@P}" # expand string as if it was PS1
+
     # reset PS1
     PS1=""
 
@@ -60,34 +88,65 @@ function __shuggtool_prompt_command()
     pwd_fgc="0;0;0"
     __shuggtool_prompt_block "${pwd_bgc}" "${pwd_fgc}" " \W "
 
+    # set color for prefix/separator colors
+    pfx_bgc="0;0;0"
+    pfx_fgc="130;130;130"
+
     # check for active jobs and append to PS1 if there are pending ones
     if [ ${__shuggtool_prompt_show_jobs} -ne 0 ]; then
         job_count="$(jobs | wc -l)"
         if [ ${job_count} -gt 0 ]; then
             # add a prefix
-            pfx="$(echo -e "\u2501")"
-            pfx_bgc="0"
-            pfx_fgc="150;150;150"
-            __shuggtool_prompt_block "${pfx_bgc}" "${pfx_fgc}" "${pfx}"
+            __shuggtool_prompt_block_separator "${pfx_bgc}" "${pfx_fgc}"
             
-            # add the job count itself
+            # add a character indicating that this was the last command's return value
+            retval_bgc="75;75;75"
+            retval_fgc="225;225;225"
+            __shuggtool_prompt_block "${retval_bgc}" "${retval_fgc}" " ↻"
+            
+            # add the job count
             job_bgc="75;75;75"
-            job_fgc="225;50;50"
+            job_fgc="225;200;50"
             __shuggtool_prompt_block "${job_bgc}" "${job_fgc}" " ${job_count} "
         fi
+    fi
+
+    # check the last command's return value and act if:
+    #  - it's non-zero, AND
+    #  - a command was just run (i.e. the user didn't press 'enter' with a blank line)
+    if [ ${retval} -ne 0 ] && [[ "${cmdnum}" != "${__shuggtool_prompt_previous_cmdnum}" ]]; then
+        # add a separator
+        __shuggtool_prompt_block_separator "${pfx_bgc}" "${pfx_fgc}"
+
+        # add a character indicating that this was the last command's return value
+        retval_bgc="75;75;75"
+        retval_fgc="225;225;225"
+        __shuggtool_prompt_block "${retval_bgc}" "${retval_fgc}" " ⚑"
+    
+        # add the return value number block (OR a signal name)
+        retval_fgc="225;50;50"
+        signame="$(__shuggtool_os_signal_retval ${retval})"
+        retval_str="${retval}"
+        if [ ! -z "${signame}" ]; then
+            retval_str="${signame}"
+        fi
+        __shuggtool_prompt_block "${retval_bgc}" "${retval_fgc}" " ${retval_str} "
     fi
 
     # check for the current git repo
     if [ ${__shuggtool_prompt_show_git} -ne 0 ]; then
         repo_url="$(git remote get-url origin 2> /dev/null)"
         if [ ! -z "${repo_url}" ]; then
-            git_bgc="200;200;200"
+            git_bgc="175;175;175"
+            # choose a background color based on where the repo comes from
+            if [[ "${repo_url}" == *"github"* ]]; then
+                git_bgc="160;150;180"
+            elif [[ "${repo_url}" == *"azure"* ]]; then
+                git_bgc="150;150;225"
+            fi
 
             # add a prefix
-            pfx="$(echo -e "\u2501")"
-            pfx_bgc="0"
-            pfx_fgc="150;150;150"
-            __shuggtool_prompt_block "${pfx_bgc}" "${pfx_fgc}" "${pfx}"
+            __shuggtool_prompt_block_separator "${pfx_bgc}" "${pfx_fgc}"
 
             # format the repo name and add it
             if [ ${__shuggtool_prompt_show_git_repo_name} -ne 0 ]; then
@@ -209,6 +268,10 @@ function __shuggtool_prompt_command()
             __shuggtool_prompt_block "${git_bgc}" "0;0;0" " "
         fi
     fi
+
+    # save the captured return value and cmdnum for next iteration
+    __shuggtool_prompt_previous_retval=${retval}
+    __shuggtool_prompt_previous_cmdnum="${cmdnum}"
     
     # add a space at the end of the prompt
     PS1="${PS1} "

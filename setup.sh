@@ -190,3 +190,6 @@ fi
 # invoke the script that writes to the globals file
 __shuggtool_setup_info_file ${setup_dir}/${shuggtools_info_file}
 
+# initialize OS signals
+__shuggtool_os_signal_init
+

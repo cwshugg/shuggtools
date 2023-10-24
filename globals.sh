@@ -32,6 +32,7 @@ STAB_TREE3=" \u2503  "
 # Information file
 shuggtools_info_file=info.txt
 
+
 # ============================ Global Functions ============================= #
 # A small helper function that takes in text as a parameter and prints it out
 # as an error
@@ -230,5 +231,56 @@ function __shuggtool_get_ip_address()
     #   192.168.0.113/20 dev eth0 proto kernel scope link src 192.168.0.113
     out="$(ip route | tail -n 1 | cut -d "/" -f 1)"
     echo "${out}"
+}
+
+# -------------------------------- OS Signals -------------------------------- #
+__shuggtool_os_signal_names=()
+__shuggtool_os_signal_numbers=()
+
+# Initialization function to parse all OS signals and associate each with a
+# signal number.
+function __shuggtool_os_signal_init()
+{
+    # empty out the arrays
+    __shuggtool_os_signal_names=()
+    __shuggtool_os_signal_numbers=()
+
+    # invoke the built-in `kill` command to parse out all signal names
+    for word in $(kill -l | xargs); do
+        # only include the signal names (i.e. starts with "SIG")
+        if [[ "${word}" != *"SIG"* ]]; then
+            continue
+        fi
+        
+        # get the signal's number, then add both to the arrays
+        signum=$(kill -l "${word}")
+        __shuggtool_os_signal_names+=("${word}")
+        __shuggtool_os_signal_numbers+=(${signum})
+    done
+}
+
+# Takes in a bash return code and echoes out the matching signal name, if
+# applicable.
+function __shuggtool_os_signal_retval()
+{
+    retval=$1
+
+    # bash indicates a signal as a return value of 128 + X, where X is the
+    # signal number. So, if the retval isn't greater than 128, don't continue
+    if [ ${retval} -le 128 ]; then
+        return 0
+    fi
+    signum=$((retval-128))
+
+    # iterate through all signals to determine if the retval matches
+    for (( i=0; i<${#__shuggtool_os_signal_names[@]}; i++ )); do
+        name="${__shuggtool_os_signal_names[${i}]}"
+        num=${__shuggtool_os_signal_numbers[${i}]}
+        # if the number matches, echo the signal name and exit
+        if [ ${num} -eq ${signum} ]; then
+            echo -n "${name}"
+            return 0
+        fi
+    done
 }
 
