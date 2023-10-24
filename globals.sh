@@ -29,6 +29,10 @@ STAB_TREE1=" \u2514\u2500 "
 STAB_TREE2=" \u251c\u2500 "
 STAB_TREE3=" \u2503  "
 
+# Bash version
+__shuggtool_bash_version_major=$(echo ${BASH_VERSION} | cut -d "." -f 1)
+__shuggtool_bash_version_minor=$(echo ${BASH_VERSION} | cut -d "." -f 2)
+
 # Information file
 shuggtools_info_file=info.txt
 

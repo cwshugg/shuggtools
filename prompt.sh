@@ -67,8 +67,24 @@ function __shuggtool_prompt_command()
 {
     # retrieve the last command's return value and number
     retval=$?
-    cmdnum_str="\#"
-    cmdnum="${cmdnum_str@P}" # expand string as if it was PS1
+
+    # if the bash version is 4.4 or greater, we can use '@P' expansion to force
+    # PS1-style expansion of the "\#" string
+    bash_version_4_4=0
+    if [ ${__shuggtool_bash_version_major} -gt 4 ]; then
+        bash_version_4_4=1
+    elif [ ${__shuggtool_bash_version_major} -eq 4 ] && [ ${__shuggtool_bash_version_minor} -ge 4 ]; then
+        bash_version_4_4=1
+    fi
+    
+    if [ ${bash_version_4_4} -ne 0 ]; then
+        cmdnum_str="\#"
+        cmdnum="${cmdnum_str@P}" # expand string as if it was PS1
+    else
+        # if '@P' isn't available, we'll grab the last history command value
+        # instead
+        cmdnum="$(history 1 | xargs | cut -d " " -f 1)"
+    fi
 
     # reset PS1
     PS1=""
