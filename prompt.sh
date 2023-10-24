@@ -158,7 +158,7 @@ function __shuggtool_prompt_command()
             if [[ "${repo_url}" == *"github"* ]]; then
                 git_bgc="160;150;180"
             elif [[ "${repo_url}" == *"azure"* ]]; then
-                git_bgc="150;150;225"
+                git_bgc="150;150;200"
             fi
 
             # add a prefix
