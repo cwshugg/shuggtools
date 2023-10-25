@@ -4,6 +4,7 @@
 
 # knobs to adjust the prompt building
 __shuggtool_prompt_show_jobs=1              # show jobs in background
+__shuggtool_prompt_show_exitcode=1          # show exit codes
 __shuggtool_prompt_show_git=1               # enables git repo stats
 __shuggtool_prompt_show_git_repo_name=1     # shows git repo name
 __shuggtool_prompt_show_git_repo_branch=1   # shows git branch name
@@ -65,8 +66,9 @@ function __shuggtool_prompt_block_separator()
 # Function to update PS1 after each command.
 function __shuggtool_prompt_command()
 {
-    # retrieve the last command's return value and number
+    # retrieve the last command's return value and the current shell PID
     retval=$?
+    shell_pid="$$"
 
     # if the bash version is 4.4 or greater, we can use '@P' expansion to force
     # PS1-style expansion of the "\#" string
@@ -110,7 +112,13 @@ function __shuggtool_prompt_command()
 
     # check for active jobs and append to PS1 if there are pending ones
     if [ ${__shuggtool_prompt_show_jobs} -ne 0 ]; then
-        job_count="$(jobs | wc -l)"
+        # count the number of child PIDs reported from pgrep
+        job_count=0
+        for cpid in $(pgrep -P "${shell_pid}"); do
+            job_count=$((job_count+1))
+        done
+
+        # if there's at least one child proces...
         if [ ${job_count} -gt 0 ]; then
             # add a prefix
             __shuggtool_prompt_block_separator "${pfx_bgc}" "${pfx_fgc}"
@@ -130,7 +138,9 @@ function __shuggtool_prompt_command()
     # check the last command's return value and act if:
     #  - it's non-zero, AND
     #  - a command was just run (i.e. the user didn't press 'enter' with a blank line)
-    if [ ${retval} -ne 0 ] && [[ "${cmdnum}" != "${__shuggtool_prompt_previous_cmdnum}" ]]; then
+    if [ ${__shuggtool_prompt_show_exitcode} -ne 0 ] && \
+       [ ${retval} -ne 0 ] && \
+       [[ "${cmdnum}" != "${__shuggtool_prompt_previous_cmdnum}" ]]; then
         # add a separator
         __shuggtool_prompt_block_separator "${pfx_bgc}" "${pfx_fgc}"
 
