@@ -113,8 +113,9 @@ function __shuggtool_prompt_command()
     # check for active jobs and append to PS1 if there are pending ones
     if [ ${__shuggtool_prompt_show_jobs} -ne 0 ]; then
         # count the number of child PIDs reported from pgrep
-        job_count=0
-        for cpid in $(pgrep -P "${shell_pid}"); do
+        job_count=-1 # start at negative one to offset 'ps' reporting itself
+        children=$(ps --no-header --ppid "${shell_pid}" -o pid)
+        for cpid in ${children[@]}; do
             job_count=$((job_count+1))
         done
 
