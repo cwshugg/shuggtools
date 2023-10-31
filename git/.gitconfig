@@ -8,8 +8,8 @@
     d = difftool
 
     # log views
-    l = log --date=format:'%m-%d-%Y' --pretty=format:"%h%x20%as%x09%an%x09%s%d" -n 15
-    ll = log --date=format:'%m-%d-%Y' --pretty=format:"%h%x20%as%x09%an%x09%s%d"
+    l = log --date=format:'%m-%d-%Y' --pretty=format:"%C(#ffce60)%h%C(reset)%x20%C(#5f87ff)%as%C(reset)%x20%C(#ffffff)%ae%C(reset)%x09%C(#8787af)%s%C(reset)%C(#d75f00)%d%C(reset)" -n 15
+    ll = log --date=format:'%m-%d-%Y' --pretty=format:"%C(#ffce60)%h%C(reset)%x20%C(#5f87ff)%as%C(reset)%x20%C(#ffffff)%ae%C(reset)%x09%C(#8787af)%s%C(reset)%C(#d75f00)%d%C(reset)"
     log-diff = log --color -u
 
     # status and file displays
