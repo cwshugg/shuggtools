@@ -42,6 +42,7 @@ alias gdb="gdb -q" # quiet-mode GDB (don't print intro)
 alias dir="ls"
 alias h="history"
 alias bell="echo -en \"\a\""
+alias g="git"
 
 
 # ---------------------------- Directory Changes ----------------------------- #

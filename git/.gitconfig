@@ -7,10 +7,20 @@
 [alias]
     d = difftool
 
+    # shortened commands
+    a = add
+    c = commit
+    cl = clone
+    ps = push
+    pl = pull
+
     # log views
     l = log --date=format:'%m-%d-%Y' --pretty=format:"%C(#ffce60)%h%C(reset)%x20%C(#5f87ff)%as%C(reset)%x20%C(#ffffff)%ae%C(reset)%x09%C(#8787af)%s%C(reset)%C(#d75f00)%d%C(reset)" -n 15
     ll = log --date=format:'%m-%d-%Y' --pretty=format:"%C(#ffce60)%h%C(reset)%x20%C(#5f87ff)%as%C(reset)%x20%C(#ffffff)%ae%C(reset)%x09%C(#8787af)%s%C(reset)%C(#d75f00)%d%C(reset)"
     log-diff = log --color -u
+
+    # view changes for a particular commit
+    commit-diff = "!__git_commit_diff() { commit=\"HEAD~1\"; if [ $# -ge 1 ]; then commit=\"$1\"; fi; git diff ${commit}~ ${commit}; }; __git_commit_diff | less"
 
     # status and file displays
     s = status -uno
@@ -21,7 +31,7 @@
     unpublish = !git push origin :$(git rev-parse --abbrev-ref HEAD)
 
     # compare two branches (requires my script)
-    branchdiff = !sh git-branchdiff $@
+    branch-diff = !sh git-branchdiff $@
     
     # wipe all currently unstage changes and files
     wipe = reset --hard HEAD
@@ -37,12 +47,12 @@
 
 [core]
     excludesfile = ~/.gitignore
-    editor = vim
+	editor = '/home/connorshugg/.local/bin/vim'
 
 [pull]
     rebase = false
 
-#[user]
-    #name = "Your Name"
-    #email = "Your Email Address"
+[user]
+    name = "Connor Shugg"
+    email = "connorshugg@microsoft.com"
 
