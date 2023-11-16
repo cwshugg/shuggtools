@@ -52,7 +52,7 @@
 [pull]
     rebase = false
 
-[user]
-    name = "Connor Shugg"
-    email = "connorshugg@microsoft.com"
+#[user]
+    #name = "USERNAME"
+    #email = "EMAIL"
 
