@@ -79,7 +79,7 @@ function __shuggtool_tmux_shared()
     cmds=""
     cmds="${cmds} clear; clear;"
     cmds="${cmds} echo -e \"Shared your tmux session by having others run this command:\n\";"
-    cmds="${cmds} echo -e \"${STAB}${C_BLUE}tmux -S ${socket_path} -t ${session_name}${C_NONE}\n\";"
+    cmds="${cmds} echo -e \"${STAB}${C_BLUE}tmux -S ${socket_path} attach-session -t ${session_name}${C_NONE}\n\";"
     cmds="${cmds} echo -e \"If you don't want to let them type commands or interact, add ${C_BLUE}-r${C_NONE}.\";"
     tmux -S "${socket_path}" send-keys -t "${session_name}" "${cmds} " ENTER
 
