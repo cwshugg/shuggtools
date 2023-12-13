@@ -38,6 +38,26 @@ shuggtools_info_file=info.txt
 
 
 # ============================ Global Functions ============================= #
+# Takes in three values (red, green, blue) and returns a foreground color
+# string.
+function __shuggtool_color_rgb_fg()
+{
+    red="$1"
+    green="$2"
+    blue="$3"
+    echo -en "\033[38;2;${red};${green};${blue}m"
+}
+
+# Takes in three values (red, green, blue) and returns a background color
+# string.
+function __shuggtool_color_rgb_bg()
+{
+    red="$1"
+    green="$2"
+    blue="$3"
+    echo -en "\033[48;2;${red};${green};${blue}m"
+}
+
 # A small helper function that takes in text as a parameter and prints it out
 # as an error
 function __shuggtool_print_error()
