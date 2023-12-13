@@ -110,6 +110,17 @@ function __shuggtool_prompt_command()
     pfx_bgc="0;0;0"
     pfx_fgc="130;130;130"
 
+    # check for a virtual environment
+    if [ ! -z "${VIRTUAL_ENV}" ]; then
+        # add a prefix
+        __shuggtool_prompt_block_separator "${pfx_bgc}" "${pfx_fgc}"
+        
+        # add an indicator showing we're in a virtual environment
+        retval_bgc="0;95;135"
+        retval_fgc="255;255;255"
+        __shuggtool_prompt_block "${retval_bgc}" "${retval_fgc}" " V "
+    fi
+
     # check for active jobs and append to PS1 if there are pending ones
     if [ ${__shuggtool_prompt_show_jobs} -ne 0 ]; then
         # count the number of child PIDs reported from pgrep
@@ -119,7 +130,7 @@ function __shuggtool_prompt_command()
             job_count=$((job_count+1))
         done
 
-        # if there's at least one child proces...
+        # if there's at least one child process...
         if [ ${job_count} -gt 0 ]; then
             # add a prefix
             __shuggtool_prompt_block_separator "${pfx_bgc}" "${pfx_fgc}"
