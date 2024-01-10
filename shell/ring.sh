@@ -4,19 +4,131 @@
 #
 #   Connor Shugg
 
-# help menu
+# Globals
+__shuggtool_ring_file_home="${HOME}"
+
+# Help menu
 function __shuggtool_ring_usage()
 {
     echo "Ring: Repeatedly sends the bell character to the terminal."
     echo ""
     echo "Usage: ring [-r RATE_SECONDS]"
     echo "Invocation arguments:"
-    echo "------------------------------------------------------------------------"
+    echo "-------------------------------------------------------------------------"
     echo " -h               Shows this help menu"
     echo " -r RATE_SECONDS  Specifies the number of seconds to wait between bells."
     echo " -t TEXT          Specifies the text to display when ringing."
     echo " -q               Enables \"quiet mode\", which disables text printing."
-    echo "------------------------------------------------------------------------"
+    echo " -d               Dumps out a summary of all currently-ringing terminals."
+    echo "-------------------------------------------------------------------------"
+}
+
+# Writes information into a "ring file", which is used to provide information
+# to the user if `ring` is executed in check mode.
+# "Check mode" will go and find all the existing ring files and print out
+# information about the ringing terminal. Information such as:
+#   - The machine the ringing is occurring on
+#   - The tmux session (and other info) the ringing is occurring on
+#   - The text that is being displayed
+#   - The last time the ringing terminal rang.
+function __shuggtool_ring_file_write()
+{
+    # retrieve information about the current terminal instance
+    text="$1"
+    pid="$$"
+    
+    # generate a unique file name and form the full file path
+    ring_hash="$(echo "${pid}${text}" | cksum | cut -d " " -f 1)"
+    rf="${__shuggtool_ring_file_home}/.shuggtool_ring_${ring_hash}"
+
+    # write into the file
+    echo -n ""                      > ${rf}
+    echo "machine:$(hostname)"      >> ${rf}
+    echo "pid:${pid}"               >> ${rf}
+    echo "text:${text}"             >> ${rf}
+
+    # write tmux info into the file, if applicable
+    if [ ! -z "${TMUX}" ]; then
+        echo "tmux_session:$(tmux display-message -p "#{session_name}")"    >> ${rf}
+        echo "tmux_window:$(tmux display-message -p "#{window_index}")"     >> ${rf}
+        echo "tmux_pane:$(tmux display-message -p "#{pane_index}")"         >> ${rf}
+    fi
+}
+
+# Takes in a path to a ring file and dumps out its information.
+function __shuggtool_ring_file_dump()
+{
+    rf="$1"
+
+    machine="?"
+    pid="?"
+    text="?"
+    date="$(date -r "${rf}" "+%s")"
+    tmux_session="?"
+    tmux_window="?"
+    tmux_pane="?"
+
+    cdate="$(date "+%s")"
+    date_diff=$((cdate-date))
+
+    # read the file, line by line
+    while read -r line; do
+        # extract the field and value pairs
+        field="$(echo "${line}" | cut -d ":" -f 1)"
+        value="$(echo "${line}" | cut -d ":" -f 2-)"
+
+        # match up field names to variable to save
+        if [[ "${field}" == "machine" ]]; then
+            machine="${value}"
+        elif [[ "${field}" == "pid" ]]; then
+            pid="${value}"
+        elif [[ "${field}" == "text" ]]; then
+            text="${value}"
+        elif [[ "${field}" == "tmux_session" ]]; then
+            tmux_session="${value}"
+        elif [[ "${field}" == "tmux_window" ]]; then
+            tmux_window="${value}"
+        elif [[ "${field}" == "tmux_pane" ]]; then
+            tmux_pane="${value}"
+        fi
+    done < "${rf}"
+
+    # print out all retrieved fields
+    echo -e "${C_WHITE}$(basename ${rf})${C_NONE}"
+    echo -e "${STAB_TREE2}${C_DKGRAY}Message:${C_NONE}      ${C_LTBLUE}${text}${C_NONE}"
+    echo -e "${STAB_TREE2}${C_DKGRAY}Machine:${C_NONE}      ${machine}"
+    echo -e "${STAB_TREE2}${C_DKGRAY}PID:${C_NONE}          ${pid}"
+
+    # print out the tmux fields
+    if [ ! -z "${tmux_session}" ]; then
+        echo -e "${STAB_TREE2}${C_DKGRAY}Tmux Info:${C_NONE}   " \
+                "session ${C_LTGREEN}${tmux_session}${C_NONE}," \
+                "window ${C_LTGREEN}${tmux_window}${C_NONE}," \
+                "pane ${C_LTGREEN}${tmux_pane}${C_NONE}"
+    fi
+
+    # print out the latest ring time
+    date_diff_unit="s"
+    date_diff_color="${C_GREEN}"
+    if [ ${date_diff} -ge 3600 ]; then
+        date_diff_unit="h"
+        date_diff_color="${C_NONE}"
+        date_diff=$((date_diff/3600))
+    elif [ ${date_diff} -ge 60 ]; then
+        date_diff_unit="m"
+        date_diff_color="${C_NONE}"
+        date_diff=$((date_diff/60))
+    fi
+    date_diff_str="${date_diff}${date_diff_unit} ago"
+    echo -e "${STAB_TREE1}${C_DKGRAY}Last Rung:${C_NONE}   " \
+            "$(date -d "@${date}" "+%Y-%m-%d %I:%M:%S %p")" \
+            "(${date_diff_color}${date_diff_str}${C_NONE})"
+}
+
+# Goes and deletes all the existing ring files.
+function __shuggtool_ring_file_prune()
+{
+    rm -f ${__shuggtool_ring_file_home}/.shuggtool_ring_*
 }
 
 # Writes a header that goes at the front of the line.
@@ -110,10 +222,11 @@ function __shuggtool_ring()
     bell_rate=1
     bell_text="ringing..."
     bell_quiet=0
+    do_dump=0
     
     # first, check for command-line arguments
     local OPTIND h c t
-    while getopts "hr:t:q" opt; do
+    while getopts "hr:t:qd" opt; do
         case ${opt} in
             h)
                 __shuggtool_ring_usage
@@ -133,6 +246,9 @@ function __shuggtool_ring()
             q)
                 bell_quiet=1
                 ;;
+            d)
+                do_dump=1
+                ;;
             *)
                 __shuggtool_ring_usage
                 return 1
@@ -140,11 +256,26 @@ function __shuggtool_ring()
         esac
     done
 
+    # if the dump was specified, perform it and exit
+    if [ ${do_dump} -ne 0 ]; then
+        # iterate through all files in the home directory
+        for rf in $(find ${__shuggtool_ring_file_home} -maxdepth 1 -name ".shuggtool_ring_*"); do
+            __shuggtool_ring_file_dump "${rf}"
+        done
+        __shuggtool_ring_file_prune
+        return 0
+    fi
+
+    # delete any old ring files before beginning to ring (helps keep things
+    # tidy)
+    __shuggtool_ring_file_prune
+
     # repeatedly bell
     c_idx_last=-1
     while true; do
         if [ ${bell_quiet} -eq 0 ]; then
             __shuggtool_ring_print_frame "${bell_text}"
+            __shuggtool_ring_file_write "${bell_text}"
         else
             echo -en "\a"
         fi
