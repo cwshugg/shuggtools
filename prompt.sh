@@ -91,35 +91,37 @@ function __shuggtool_prompt_command()
     # reset PS1
     PS1=""
 
-    # add username block to PS1
+    # set colors for the main three blocks of the prompt
     username_bgc="0;30;128"
     username_fgc="255;255;255"
-    __shuggtool_prompt_block "${username_bgc}" "${username_fgc}" " \u "
-
-    # add hostname block
     hostname_bgc="180;17;33"
     hostname_fgc="255;255;255"
+    pwd_bgc="210;129;7"
+    pwd_fgc="0;0;0"
+
+    # if we're currently inside a virtual environment, we'll modify the prompt
+    # coloring to indicate it
+    if [ ! -z "${VIRTUAL_ENV}" ]; then
+        username_bgc="50;50;50"
+        username_fgc="255;255;255"
+        hostname_bgc="48;105;152"
+        hostname_fgc="255;255;255"
+        pwd_bgc="235;192;39"
+        pwd_fgc="0;0;0"
+    fi
+
+    # add a username block to PS1
+    __shuggtool_prompt_block "${username_bgc}" "${username_fgc}" " \u "
+    
+    # add a hostname block
     __shuggtool_prompt_block "${hostname_bgc}" "${hostname_fgc}" " \h "
 
     # add current directory block
-    pwd_bgc="210;129;7"
-    pwd_fgc="0;0;0"
     __shuggtool_prompt_block "${pwd_bgc}" "${pwd_fgc}" " \W "
 
     # set color for prefix/separator colors
     pfx_bgc="0;0;0"
     pfx_fgc="130;130;130"
-
-    # check for a virtual environment
-    if [ ! -z "${VIRTUAL_ENV}" ]; then
-        # add a prefix
-        __shuggtool_prompt_block_separator "${pfx_bgc}" "${pfx_fgc}"
-        
-        # add an indicator showing we're in a virtual environment
-        retval_bgc="0;95;135"
-        retval_fgc="255;255;255"
-        __shuggtool_prompt_block "${retval_bgc}" "${retval_fgc}" " V "
-    fi
 
     # check for active jobs and append to PS1 if there are pending ones
     if [ ${__shuggtool_prompt_show_jobs} -ne 0 ]; then
@@ -135,7 +137,7 @@ function __shuggtool_prompt_command()
             # add a prefix
             __shuggtool_prompt_block_separator "${pfx_bgc}" "${pfx_fgc}"
             
-            # add a character indicating that this was the last command's return value
+            # add a character indicating an alive process
             retval_bgc="75;75;75"
             retval_fgc="225;225;225"
             __shuggtool_prompt_block "${retval_bgc}" "${retval_fgc}" " ↻"
