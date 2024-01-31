@@ -209,7 +209,7 @@ function __shuggtool_prompt_command()
                 is_detached=0
                 if [[ "${repo_branch}" == "HEAD" ]]; then
                     is_detached=1
-                    repo_tag="$(git describe --tags 2> /dev/null)"
+                    repo_tag="$(git describe --tags --abbrev=0 2> /dev/null)"
                 fi
 
                 # add a separator between the repo name and branch name
