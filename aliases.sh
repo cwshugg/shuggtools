@@ -5,6 +5,9 @@
 # force bash to expand environment variables when using tab complete
 shopt -s direxpand
 
+# set editor to vim
+export EDITOR="vim"
+
 # cscope adjustments (if it's installed)
 cscope_exists="$(which cscope 2>&1)"
 if [[ ${cscope_exists} != *"no cscope"* ]]; then
