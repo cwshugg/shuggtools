@@ -48,7 +48,7 @@ alias bell="echo -en \"\a\""
 alias g="git"
 
 # todo-related aliases
-alias do="grep \"@\\<do\\>\" -R 2> /dev/null"
+alias todos="grep \"@\\<do\\>\" -R 2> /dev/null"
 
 
 # ---------------------------- Directory Changes ----------------------------- #
