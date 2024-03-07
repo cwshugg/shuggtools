@@ -38,7 +38,7 @@ if [ ! -z "${ttydo_binary}" ]; then
 fi
 
 # coding/debugging aliases
-alias valgfull="valgrind -v --leak-check=full --show-leak-kinds=all --track-origins=yes"
+alias valg="valgrind -v --leak-check=full --show-leak-kinds=all --track-origins=yes"
 alias gdb="gdb -q" # quiet-mode GDB (don't print intro)
 
 # other alises
