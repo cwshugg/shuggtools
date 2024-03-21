@@ -11,6 +11,7 @@ Plugin 'VundleVim/Vundle.vim'           " required by vundle
 Plugin 'https://github.com/lambdalisue/fern.vim'
 Plugin 'https://github.com/vim-airline/vim-airline'
 Plugin 'https://github.com/vim-airline/vim-airline-themes'
+Plugin 'https://github.com/gcmt/taboo.vim'
 
 call vundle#end()                       " finish vundle setup
 filetype plugin indent on               " required by vundle
@@ -38,6 +39,11 @@ command! -nargs=* FT call FT(<f-args>)
 let g:airline_theme='dwarrowdelf'
 
 
+" --------------------------- Taboo Configuration ---------------------------- "
+let g:taboo_tab_format=' %N %f%m '
+let g:taboo_renamed_tab_format=' %N %l%m '
+
+
 " ============================= Helper Functions ============================= "
 " CCO - Capture Command Output. Runs the given command and returns the output
 function! CCO(cmd)
@@ -49,6 +55,12 @@ function! CCO(cmd)
     " trim off any whitespace and return
     let s:cco_out = trim(s:cco_out)
     return s:cco_out
+endfunction
+
+" YF - Yank File. Stores the full path of the current file we are editing in
+" the unnamed register.
+function! YF()
+    let @" = expand("%:p")
 endfunction
 
 
@@ -65,6 +77,7 @@ au FileType * set formatoptions-=cro    " disable automatic comment insertion fo
 set undolevels=1000                     " LOTS of undos available
 set backspace=indent,eol,start          " make sure backspace works properly
 set ruler                               " enable the bottom-right set of numbers
+set sessionoptions+=tabpages,globals    " additional information to save to sessions
 
 
 " ========================= Line/Column Highlighting ========================= "
@@ -86,12 +99,16 @@ set mouse=a                             " enable mouse everywhere
 " thanks to: https://vim.fandom.com/wiki/Highlight_all_search_pattern_matches
 nnoremap <silent> <Space> :nohlsearch<Bar>:echo<CR>
 
+" Yanks the file name into the unnamed register.
+command! -nargs=* YF call YF(<f-args>)
+
 
 " ============================== gVim Settings =============================== "
 if has('gui_running')
     set guifont=Consolas:h11            " set gvim font
-    set guioptions -=m                  " remove menu bar
-    set guioptions -=T                  " remove toolbar
+    set guioptions-=m                   " remove menu bar
+    set guioptions-=T                   " remove toolbar
+    set guioptions-=e                   " remove GUI tabs and use terminal tabs
 
     " remap visual and normal mode yanks (copies) to the system clipboard
     nnoremap y "+y                      
