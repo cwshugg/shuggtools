@@ -5,6 +5,9 @@
 # force bash to expand environment variables when using tab complete
 shopt -s direxpand
 
+# set editor to vim
+export EDITOR="vim"
+
 # cscope adjustments (if it's installed)
 cscope_exists="$(which cscope 2>&1)"
 if [[ ${cscope_exists} != *"no cscope"* ]]; then
@@ -35,7 +38,7 @@ if [ ! -z "${ttydo_binary}" ]; then
 fi
 
 # coding/debugging aliases
-alias valgfull="valgrind -v --leak-check=full --show-leak-kinds=all --track-origins=yes"
+alias valg="valgrind -v --leak-check=full --show-leak-kinds=all --track-origins=yes"
 alias gdb="gdb -q" # quiet-mode GDB (don't print intro)
 
 # other alises
@@ -43,6 +46,9 @@ alias dir="ls"
 alias h="history"
 alias bell="echo -en \"\a\""
 alias g="git"
+
+# todo-related aliases
+alias todos="grep \"@\\<do\\>\" -R 2> /dev/null"
 
 
 # ---------------------------- Directory Changes ----------------------------- #
