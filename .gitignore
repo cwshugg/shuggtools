@@ -5,3 +5,6 @@ links
 # Ignore the 'info.txt' file produced by setup.sh
 info.txt
 
+# Vim swapfiles
+.*.swp
+

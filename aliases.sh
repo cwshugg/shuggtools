@@ -47,8 +47,49 @@ alias h="history"
 alias bell="echo -en \"\a\""
 alias g="git"
 
-# todo-related aliases
-alias todos="grep \"@\\<do\\>\" -R 2> /dev/null"
+
+# ------------------------------ Task Tracking ------------------------------- #
+# I am currently working on writing my own advanced task tracking tool, but in
+# the meantime, I need something to work with. This is a simple solution.
+
+function __grep_for_tag()
+{
+    name="$1"
+    grep "@\\<${name}\\>" -R 2> /dev/null
+    return 0
+}
+
+function __do_all()
+{
+    color="$(__shuggtool_color_rgb_fg 100 150 255)"
+
+    # show "eventually" tasks
+    echo -e "${color}•${C_NONE} Tasks that need to be done ${color}eventually${C_NONE}:"
+    __grep_for_tag "eventually"
+    
+    # show tasks for this month
+    echo -e "${color}•${C_NONE} Tasks that need to be done ${color}this month${C_NONE}:"
+    __grep_for_tag "month"
+    
+    # show tasks for this week
+    echo -e "${color}•${C_NONE} Tasks that need to be done ${color}this week${C_NONE}:"
+    __grep_for_tag "week"
+    
+    # show tasks for tomorrow
+    echo -e "${color}•${C_NONE} Tasks that need to be done ${color}tomorrow${C_NONE}:"
+    __grep_for_tag "tomorrow"
+    
+    # show tasks for today
+    echo -e "${color}•${C_NONE} Tasks that need to be done ${color}today${C_NONE}:"
+    __grep_for_tag "today"
+}
+
+alias todos="__do_all"
+alias do-today="__grep_for_tag today"
+alias do-tomorrow="__grep_for_tag tomorrow"
+alias do-this-week="__grep_for_tag week"
+alias do-this-month="__grep_for_tag month"
+alias do-eventually="__grep_for_tag eventually"
 
 
 # ---------------------------- Directory Changes ----------------------------- #
