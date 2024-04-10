@@ -56,7 +56,8 @@ function __grep_for_tag()
 {
     name="$1"
     grep "@\\<${name}\\>" -R 2> /dev/null
-    return 0
+    grep_result=$?
+    return ${grep_result}
 }
 
 function __do_all()
@@ -66,30 +67,50 @@ function __do_all()
     # show "eventually" tasks
     echo -e "${color}•${C_NONE} Tasks that need to be done ${color}eventually${C_NONE}:"
     __grep_for_tag "eventually"
+    result=$?
+    if [ ${result} -eq 0 ]; then
+        echo ""
+    fi
     
     # show tasks for this month
     echo -e "${color}•${C_NONE} Tasks that need to be done ${color}this month${C_NONE}:"
     __grep_for_tag "month"
+    result=$?
+    if [ ${result} -eq 0 ]; then
+        echo ""
+    fi
     
     # show tasks for this week
     echo -e "${color}•${C_NONE} Tasks that need to be done ${color}this week${C_NONE}:"
     __grep_for_tag "week"
+    result=$?
+    if [ ${result} -eq 0 ]; then
+        echo ""
+    fi
     
     # show tasks for tomorrow
     echo -e "${color}•${C_NONE} Tasks that need to be done ${color}tomorrow${C_NONE}:"
     __grep_for_tag "tomorrow"
+    result=$?
+    if [ ${result} -eq 0 ]; then
+        echo ""
+    fi
     
     # show tasks for today
     echo -e "${color}•${C_NONE} Tasks that need to be done ${color}today${C_NONE}:"
     __grep_for_tag "today"
+    result=$?
+    if [ ${result} -eq 0 ]; then
+        echo ""
+    fi
 }
 
 alias todos="__do_all"
-alias do-today="__grep_for_tag today"
-alias do-tomorrow="__grep_for_tag tomorrow"
-alias do-this-week="__grep_for_tag week"
-alias do-this-month="__grep_for_tag month"
-alias do-eventually="__grep_for_tag eventually"
+alias todos-today="__grep_for_tag today"
+alias todos-tomorrow="__grep_for_tag tomorrow"
+alias todos-this-week="__grep_for_tag week"
+alias todos-this-month="__grep_for_tag month"
+alias todos-eventually="__grep_for_tag eventually"
 
 
 # ---------------------------- Directory Changes ----------------------------- #
