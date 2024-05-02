@@ -40,6 +40,9 @@ alias h="history"
 alias bell="echo -en \"\a\""
 alias g="git"
 
+# tmux aliases
+alias tmux-pane="tmux display -pt \"${TMUX_PANE:?}\" \"#{pane_index}\""
+
 
 # ------------------------------ Task Tracking ------------------------------- #
 # I am currently working on writing my own advanced task tracking tool, but in
