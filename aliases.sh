@@ -30,13 +30,6 @@ if [ ! -z "${bat_binary}" ]; then
     alias pcat="${bat_binary} --style=plain"
 fi
 
-# aliasing ttydo, my command-line task tracker
-ttydo_binary="$(which ttydo 2> /dev/null)"
-if [ ! -z "${ttydo_binary}" ]; then
-    alias td="${ttydo_binary}"
-    alias ctd="clear; ${ttydo_binary}"
-fi
-
 # coding/debugging aliases
 alias valg="valgrind -v --leak-check=full --show-leak-kinds=all --track-origins=yes"
 alias gdb="gdb -q" # quiet-mode GDB (don't print intro)
@@ -52,7 +45,7 @@ alias g="git"
 # I am currently working on writing my own advanced task tracking tool, but in
 # the meantime, I need something to work with. This is a simple solution.
 
-function __grep_for_tag()
+function __todos_grep_for_tag()
 {
     name="$1"
     grep "@\\<${name}\\>" -R 2> /dev/null
@@ -60,58 +53,61 @@ function __grep_for_tag()
     return ${grep_result}
 }
 
-function __do_all()
+function __todos_show()
+{
+    tag="$1"
+    description="$2"
+
+    echo -e "${color}•${C_NONE} Tasks that need to be done ${color}${description}${C_NONE}:"
+    __todos_grep_for_tag "${tag}"
+}
+
+function __todos_all()
 {
     color="$(__shuggtool_color_rgb_fg 100 150 255)"
 
     # show "eventually" tasks
-    echo -e "${color}•${C_NONE} Tasks that need to be done ${color}eventually${C_NONE}:"
-    __grep_for_tag "eventually"
+    __todos_show "eventually" "eventually"
     result=$?
     if [ ${result} -eq 0 ]; then
         echo ""
     fi
     
     # show tasks for this month
-    echo -e "${color}•${C_NONE} Tasks that need to be done ${color}this month${C_NONE}:"
-    __grep_for_tag "month"
+    __todos_show "month" "this month"
     result=$?
     if [ ${result} -eq 0 ]; then
         echo ""
     fi
     
     # show tasks for this week
-    echo -e "${color}•${C_NONE} Tasks that need to be done ${color}this week${C_NONE}:"
-    __grep_for_tag "week"
+    __todos_show "week" "this week"
     result=$?
     if [ ${result} -eq 0 ]; then
         echo ""
     fi
     
     # show tasks for tomorrow
-    echo -e "${color}•${C_NONE} Tasks that need to be done ${color}tomorrow${C_NONE}:"
-    __grep_for_tag "tomorrow"
+    __todos_show "tomorrow" "tomorrow"
     result=$?
     if [ ${result} -eq 0 ]; then
         echo ""
     fi
     
     # show tasks for today
-    echo -e "${color}•${C_NONE} Tasks that need to be done ${color}today${C_NONE}:"
-    __grep_for_tag "today"
+    __todos_today "today" "today"
     result=$?
     if [ ${result} -eq 0 ]; then
         echo ""
     fi
 }
 
-alias todos="__do_all"
-alias todos-today="__grep_for_tag today"
-alias todos-tomorrow="__grep_for_tag tomorrow"
-alias todos-this-week="__grep_for_tag week"
-alias todos-this-month="__grep_for_tag month"
-alias todos-eventually="__grep_for_tag eventually"
-
+alias todos="__todos_all"
+alias today="__todos_grep_for_tag today"
+alias tomorrow="__todos_grep_for_tag tomorrow"
+alias this-week="__todos_grep_for_tag week"
+alias this-month="__todos_grep_for_tag month"
+alias eventually="__todos_grep_for_tag eventually"
 
 # ---------------------------- Directory Changes ----------------------------- #
 # CDF: Change Directory Find
