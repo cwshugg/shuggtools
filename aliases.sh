@@ -98,7 +98,7 @@ function __todos_all()
     fi
     
     # show tasks for today
-    __todos_today "today" "today"
+    __todos_show "today" "today"
     result=$?
     if [ ${result} -eq 0 ]; then
         echo ""
