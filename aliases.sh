@@ -51,8 +51,27 @@ alias tmux-pane="tmux display -pt \"${TMUX_PANE:?}\" \"#{pane_index}\""
 function __todos_grep_for_tag()
 {
     name="$1"
-    grep "@\\<${name}\\>" -R --color=always 2> /dev/null
+    result="$(grep "@\\<${name}\\>" -R --color=never 2> /dev/null)"
     grep_result=$?
+
+    # if grep succeeded and we found output, we'll create a nicely-formatted
+    # output string to print
+    if [ ! -z "${result}" ]; then
+        # iterate through the output, line-by-line
+        echo "${result}" | while read line; do
+            # split the output so we retrieve the file name and the grepped
+            # line within the file
+            fpath="$(echo "${line}" | cut -d ":" -f 1)"
+            fline="$(echo "${line}" | cut -d ":" -f 2)"
+
+            # generate a deterministic color to color-code the file path
+            fpath_color="$(__shuggtool_color_hash_fg "${fpath}")"
+
+            # echo the new line out
+            echo -e "${fpath_color}${fpath}${C_NONE}: ${fline}"
+        done
+    fi
+
     return ${grep_result}
 }
 

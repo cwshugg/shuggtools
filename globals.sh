@@ -58,6 +58,51 @@ function __shuggtool_color_rgb_bg()
     echo -en "\033[48;2;${red};${green};${blue}m"
 }
 
+# Takes in a string, hashes it, and echoes out a foreground or background color
+# based on the hash.
+function __shuggtool_color_hash_helper()
+{
+    str="$1"
+    do_bg=$2
+
+    # compute the string's hash
+    __shuggtool_hash_string "${str}"
+    str_hash=${__shuggtool_hash_string_retval}
+
+    # find some way to turn the hash integer into three RGB integers
+    red=$(((str_hash/3)%256))
+    green=$(((str_hash/5)%256))
+    blue=$(((str_hash/2)%256))
+
+    # brighten up one of the colors, if needed
+    if [ ${red} -lt 100 ]; then
+        red=100
+    elif [ ${green} -lt 100 ]; then
+        green=100
+    elif [ ${blue} -lt 100 ]; then
+        blue=100
+    fi
+
+    # choose foreground or background
+    if [ ${do_bg} -ne 0 ]; then
+        __shuggtool_color_rgb_bg ${red} ${green} ${blue}
+    else
+        __shuggtool_color_rgb_fg ${red} ${green} ${blue}
+    fi
+}
+
+# Takes in a string, hashes it, and echoes out a foreground color.
+function __shuggtool_color_hash_fg()
+{
+    __shuggtool_color_hash_helper "$1" 0
+}
+
+# Takes in a string, hashes it, and echoes out a background color.
+function __shuggtool_color_hash_bg()
+{
+    __shuggtool_color_hash_helper "$1" 1
+}
+
 # A small helper function that takes in text as a parameter and prints it out
 # as an error
 function __shuggtool_print_error()
@@ -236,14 +281,16 @@ function __shuggtool_hash_string()
     if [ -z ${hasher} ]; then
         hasher=$(which sum)
     fi
+
     # if a suitable executable can't be found, default to 0 and return
     if [ -z ${hasher} ]; then
         __shuggtool_hash_string_retval=0
-        return
+        return ${__shuggtool_hash_string_retval}
     fi
 
     # otherwise, pass the string as input into the hashing program
     __shuggtool_hash_string_retval=$(echo "$1" | ${hasher} | cut -f 1 -d ' ')
+    return ${__shuggtool_hash_string_retval}
 }
 
 # Uses the 'ip' linux utility to parse and echo out the machine's current IP
