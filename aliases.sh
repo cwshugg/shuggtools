@@ -51,7 +51,7 @@ alias tmux-pane="tmux display -pt \"${TMUX_PANE:?}\" \"#{pane_index}\""
 function __todos_grep_for_tag()
 {
     name="$1"
-    grep "@\\<${name}\\>" -R 2> /dev/null
+    grep "@\\<${name}\\>" -R --color=always 2> /dev/null
     grep_result=$?
     return ${grep_result}
 }
@@ -61,44 +61,60 @@ function __todos_show()
     tag="$1"
     description="$2"
 
-    echo -e "${color}•${C_NONE} Tasks that need to be done ${color}${description}${C_NONE}:"
-    __todos_grep_for_tag "${tag}"
+    # search for the result. If none was found, return
+    result="$(__todos_grep_for_tag "${tag}")"
+    retval=$?
+    if [ -z "${result}" ]; then
+        return ${retval}
+    fi
+
+    # use my 'sep' script if it's found, to print a header. Otherwise, print a
+    # message
+    sep="$(which "sep")"
+    if [ ! -z "${sep}" ]; then
+        sep -t "${description}"
+    else
+        color="$(__shuggtool_color_rgb_fg 100 150 255)"
+        echo -e "${color}•${C_NONE} Task Group: ${color}${description}${C_NONE}:"
+    fi
+
+    # echo the grep output and return the grep's return value
+    echo "${result}"
+    return ${retval}
 }
 
 function __todos_all()
 {
-    color="$(__shuggtool_color_rgb_fg 100 150 255)"
-
     # show "eventually" tasks
-    __todos_show "eventually" "eventually"
+    __todos_show "eventually" "EVENTUALLY"
     result=$?
     if [ ${result} -eq 0 ]; then
         echo ""
     fi
     
     # show tasks for this month
-    __todos_show "month" "this month"
+    __todos_show "month" "THIS MONTH"
     result=$?
     if [ ${result} -eq 0 ]; then
         echo ""
     fi
     
     # show tasks for this week
-    __todos_show "week" "this week"
+    __todos_show "week" "THIS WEEK"
     result=$?
     if [ ${result} -eq 0 ]; then
         echo ""
     fi
     
     # show tasks for tomorrow
-    __todos_show "tomorrow" "tomorrow"
+    __todos_show "tomorrow" "TOMORROW"
     result=$?
     if [ ${result} -eq 0 ]; then
         echo ""
     fi
     
     # show tasks for today
-    __todos_show "today" "today"
+    __todos_show "today" "TODAY"
     result=$?
     if [ ${result} -eq 0 ]; then
         echo ""
