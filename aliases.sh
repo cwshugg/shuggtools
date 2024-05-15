@@ -64,6 +64,11 @@ function __todos_grep_for_tag()
             fpath="$(echo "${line}" | cut -d ":" -f 1)"
             fline="$(echo "${line}" | cut -d ":" -f 2)"
 
+            # if the file name has a match, but is binary, skip it
+            if [[ "${fpath,,}" == *"binary file"* ]]; then
+                continue
+            fi
+
             # generate a deterministic color to color-code the file path
             fpath_color="$(__shuggtool_color_hash_fg "${fpath}")"
 
