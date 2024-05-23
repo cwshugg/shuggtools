@@ -68,12 +68,26 @@ function __todos_grep_for_tag()
             if [[ "${fpath,,}" == *"binary file"* ]]; then
                 continue
             fi
+            
+            # separate the file path by slashes - we'll apply a deterministic
+            # color to each one
+            IFS="/" read -ra fpath_pieces <<< "${fpath}"
+            fpp_len=${#fpath_pieces[@]}
+            for ((fpp_idx=0; fpp_idx<${fpp_len}; fpp_idx++)); do
+                fpp="${fpath_pieces[${fpp_idx}]}"
+                
+                # generate a color for this piece, and print it out
+                fpp_color="$(__shuggtool_color_hash_fg "${fpp}")"
+                echo -en "${fpp_color}${fpp}${C_NONE}"
 
-            # generate a deterministic color to color-code the file path
-            fpath_color="$(__shuggtool_color_hash_fg "${fpath}")"
+                # print out a slash, if there's another piece coming up next
+                if [ ${fpp_idx} -lt $((fpp_len-1)) ]; then
+                    echo -en "${C_GRAY}/${C_NONE}"
+                fi
+            done
 
-            # echo the new line out
-            echo -e "${fpath_color}${fpath}${C_NONE}: ${fline}"
+            # print the remainder of the line
+            echo -e ": ${fline}"
         done
     fi
 
