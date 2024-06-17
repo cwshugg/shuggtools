@@ -1,11 +1,28 @@
+[core]
+    excludesfile = ~/.gitignore
+	editor = '/home/connorshugg/.local/bin/vim'
+
+
+# =============================== Diffs/Merges =============================== #
 [diff]
     tool = vimdiff
 
 [difftool]
     prompt = false
 
+[merge]
+    tool = vimdiff
+
+
+# ============================== Other Commands ============================== #
+[pull]
+    rebase = false
+
+
+# ================================= Aliases ================================== #
 [alias]
     d = difftool
+    m = mergetool
 
     # shortened commands
     a = add
@@ -38,19 +55,12 @@
 
     # unstage ALL currently staged changes
     unstage = reset HEAD --
-    
+
     # view all aliases
     aliases = !sh -c 'git config --get-regexp ^alias\\. | sort'
 
     # show origin repo URL
     origin = config --get remote.origin.url
-
-[core]
-    excludesfile = ~/.gitignore
-	editor = '/home/connorshugg/.local/bin/vim'
-
-[pull]
-    rebase = false
 
 #[user]
     #name = "USERNAME"
