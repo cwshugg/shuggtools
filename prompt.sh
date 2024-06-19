@@ -122,6 +122,22 @@ function __shuggtool_prompt_command()
     # set color for prefix/separator colors
     pfx_bgc="0;0;0"
     pfx_fgc="130;130;130"
+        
+    # is the shell currently inside a workspace? If show, we'll add a block to
+    # our prompt to reflect this
+    if [ ! -z "${WORKSPACE}" ]; then
+        __shuggtool_prompt_block_separator "${pfx_bgc}" "${pfx_fgc}"
+
+        # add a workspace symbol
+        ws_bgc="145;185;164"
+        ws_fgc="125;15;15"
+        __shuggtool_prompt_block "${ws_bgc}" "${ws_fgc}" " ⚒"
+
+        # add the workspace name
+        ws_fgc="10;10;10"
+        wsname="$(basename ${WORKSPACE})"
+        __shuggtool_prompt_block "${ws_bgc}" "${ws_fgc}" " ${wsname} "
+    fi
 
     # check for active jobs and append to PS1 if there are pending ones
     if [ ${__shuggtool_prompt_show_jobs} -ne 0 ]; then
