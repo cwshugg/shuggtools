@@ -403,6 +403,44 @@ function __shuggtool_rand_hex()
     fi
 }
 
+# Generates and returns a random english word. This utilizes the dictionary
+# files built into most Linux systems.
+function __shuggtool_rand_word()
+{
+    # look for a dictionary file on the system
+    dictionary_paths=( \
+        "/usr/share/dict/words" \
+        "/etc/dictionaries-common/words" \
+        "/usr/share/dict/american-english" \
+    )
+    dictionary_path=""
+    for path in ${dictionary_paths[@]}; do
+        if [ -f "${path}" ]; then
+            dictionary_file="${path}"
+            break
+        fi
+    done
+    
+    # if we didn't find a dictionary file, output an error
+    if [ -z "${dictionary_file}" ] || [ ! -f "${dictionary_file}" ]; then
+        __shuggtool_print_error "Failed to find a suitable dictionary file on the system."
+        return 1
+    fi
+
+    # repeatedly select random words from the file until we find one that only
+    # contains letters (we don't want punctuation)
+    word="-"
+    while true; do
+        word="$(shuf -n 1 "${dictionary_file}")"
+        if [[ "${word}" =~ ^[a-zA-Z]+$ ]]; then
+            break
+        fi
+    done
+
+    # echo the word out in all lowercase
+    echo -n "${word,,}"
+}
+
 
 # -------------------------------- OS Signals -------------------------------- #
 __shuggtool_os_signal_names=()
