@@ -304,6 +304,106 @@ function __shuggtool_get_ip_address()
     echo "${out}"
 }
 
+
+# ---------------------------- Random Generation ----------------------------- #
+# Generates and echoes random bytes of the specified length.
+function __shuggtool_rand_bytes()
+{
+    len=8
+    if [ $# -ge 1 ]; then
+        len=$1
+    fi
+
+    # read from /dev/urandom
+    val=$(dd if=/dev/urandom bs=1 count=${len} 2> /dev/null)
+    echo -n ${val}
+}
+
+# Returns a random unsigned integer, given the number of bytes to use for
+# generation.
+function __shuggtool_rand_uint()
+{
+    bytes=8
+    if [ $# -ge 1 ]; then
+        bytes=$1
+    fi
+
+    val=$(__shuggtool_rand_bytes ${bytes} | od -t uL -A n | xargs)
+    echo -n ${val}
+}
+
+## Returns a random 8-bit integer.
+function __shuggtool_rand_uint8()
+{
+    __shuggtool_rand_uint 1
+}
+
+# Returns a random 16-bit integer.
+function __shuggtool_rand_uint16()
+{
+    __shuggtool_rand_uint 2
+}
+
+# Returns a random 32-bit integer.
+function __shuggtool_rand_uint32()
+{
+    __shuggtool_rand_uint 4
+}
+
+# Returns a random 64-bit integer.
+function __shuggtool_rand_uint64()
+{
+    __shuggtool_rand_uint 8
+}
+
+# Returns a random number given a range. The lower range is inclusive and the
+# upper range is exclusive.
+function __shuggtool_rand_range()
+{
+    lower=0
+    if [ $# -ge 1 ]; then
+        lower=$1
+    fi
+    upper=0
+    if [ $# -ge 2 ]; then
+        upper=$2
+    fi
+    
+    val=$(__shuggtool_rand_uint32)
+    val=$(expr ${val} % $((upper - lower)))
+    val=$(expr ${val} + ${lower})
+    echo -n ${val}
+}
+
+# Returns a random hex string. The first argument, if specified, sets the
+# number of bytes to generate. Because each byte is represented by two hex
+# characters, the number of produced characters will be double the input
+# argument.
+function __shuggtool_rand_hex()
+{
+    # check for the first argument
+    len=4;
+    if [ $# -ge 1 ]; then
+        len=$1
+    fi
+
+    # check for the second argument; uppercase or lowercase
+    uppercase=0
+    if [ $# -ge 2 ]; then
+        if [ $2 -ne 0 ] || [[ "$2" == *"up"* ]] || [[ "$2" == *"UP"* ]]; then
+            uppercase=1
+        fi
+    fi
+    
+    # run the hexdump command
+    if [ ${uppercase} -ne 0 ]; then
+        hexdump -n ${len} -v -e '"%0X"' < /dev/urandom 2> /dev/null
+    else
+        hexdump -n ${len} -v -e '"%0x"' < /dev/urandom 2> /dev/null
+    fi
+}
+
+
 # -------------------------------- OS Signals -------------------------------- #
 __shuggtool_os_signal_names=()
 __shuggtool_os_signal_numbers=()
