@@ -169,6 +169,7 @@ set undolevels=1000                     " LOTS of undos available
 set backspace=indent,eol,start          " make sure backspace works properly
 set ruler                               " enable the bottom-right set of numbers
 set sessionoptions+=tabpages,globals    " additional information to save to sessions
+set scrolloff=16                        " number of lines to keep above/below cursor when scrolling
 
 
 " ========================= Line/Column Highlighting ========================= "
@@ -189,6 +190,10 @@ set mouse=a                             " enable mouse everywhere
 " the below shortcut allows you to press space to clear highlighted search terms
 " thanks to: https://vim.fandom.com/wiki/Highlight_all_search_pattern_matches
 nnoremap <silent> <Space> :nohlsearch<Bar>:echo<CR>
+
+" Set Ctrl-N to invoking `:Startify`, which populates the current buffer with
+" the Startify home screen.
+nnoremap <C-n> :Startify<cr>
 
 " YF - Yank File. Stores the full path of the current file we are editing in
 " the unnamed register.
