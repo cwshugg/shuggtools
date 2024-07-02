@@ -196,9 +196,9 @@ function __shuggtool_prompt_command()
             git_bgc="175;175;175"
             # choose a background color based on where the repo comes from
             if [[ "${repo_url}" == *"github"* ]]; then
-                git_bgc="160;150;180"
+                git_bgc="170;150;190"
             elif [[ "${repo_url}" == *"azure"* ]]; then
-                git_bgc="150;150;200"
+                git_bgc="150;150;225"
             fi
 
             # add a prefix
