@@ -218,6 +218,10 @@ set mouse=a
 " thanks to: https://vim.fandom.com/wiki/Highlight_all_search_pattern_matches
 nnoremap <silent> <Space> :nohlsearch<Bar>:echo<CR>
 
+" Set Ctrl-N to invoking `:Startify`, which populates the current buffer with
+" the Startify home screen.
+nnoremap <C-n> :Startify<cr>
+
 " YF - Yank File. Stores the full path of the current file we are editing in
 " the unnamed register.
 function! YF()
