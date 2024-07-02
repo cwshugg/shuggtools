@@ -6,18 +6,22 @@
 shopt -s direxpand
 
 # set editor to vim
-export EDITOR="vim"
+vim="$(which vim)"
+export EDITOR="${vim}"
+
+# alias for vim
+alias v="${vim}"
 
 # cscope adjustments (if it's installed)
 cscope_exists="$(which cscope 2>&1)"
 if [[ ${cscope_exists} != *"no cscope"* ]]; then
-    export CSCOPE_EDITOR=$(which vim)
+    export CSCOPE_EDITOR="${vim}"
 fi
 
 # change the git core editor to vim
 git="$(which git 2>&1)"
 if [ ! -z "${git}" ]; then
-    ${git} config --global core.editor "'$(which vim)'"
+    ${git} config --global core.editor "'${vim}'"
 fi
 
 # alias 'bat' or 'batcat' to 'cat' (syntax-highlighting!)
