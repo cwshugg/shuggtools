@@ -41,6 +41,7 @@ Plugin 'https://github.com/vim-airline/vim-airline'
 Plugin 'https://github.com/vim-airline/vim-airline-themes'
 Plugin 'https://github.com/gcmt/taboo.vim'
 Plugin 'https://github.com/mhinz/vim-startify'
+Plugin 'https://github.com/itchyny/vim-cursorword'
 
 call vundle#end()                       " finish vundle setup
 filetype plugin indent on               " required by vundle
