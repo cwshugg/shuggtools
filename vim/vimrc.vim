@@ -1,9 +1,15 @@
 " Connor's Vim Settings
 
 
+" =============================== OS Detection =============================== "
+let s:os_linux = has('unix')
+let s:os_windows = has('win32')
+let s:is_gui = has('gui_running')
+
+
 " ============================= Helper Functions ============================= "
-" CCO - Capture Command Output. Runs the given command and returns the output
-function! CCO(cmd)
+" CaptureCommandOutput - Capture Command Output. Runs the given command and returns the output
+function! CaptureCommandOutput(cmd)
     let s:cco_out = ''
     redir =>> s:cco_out
     silent execute a:cmd
@@ -66,7 +72,6 @@ let g:fern_disable_startup_warnings = 1
 
 
 " -------------------------- Airline Configuration --------------------------- "
-"let g:airline#extensions#tabline#enabled = 1
 let g:airline_theme='dwarrowdelf'
 
 
@@ -154,38 +159,61 @@ endfunction
 " (rather than just a single time when Vim is launched).
 let g:startify_custom_header = 'StartifyMakeHeader()'
 
+" Create a shortcut to bring up Startify on the current buffer via Ctrl-N
+nnoremap <silent> <C-n> :Startify<CR>
+
 
 " ============================= General Settings ============================= "
-syntax on                               " syntax highlighting
-colorscheme dwarrowdelf                 " modifies color scheme
-set tabstop=4 shiftwidth=4 expandtab    " tabs = 4 spaces
-set softtabstop=4                       " enables backspace to clear out 4 spaces
-set autoindent                          " forces vim to auto-indent
+" Enable syntax highlighting and configure my theme.
+syntax on
+colorscheme dwarrowdelf
+
+" Configure Vim to recognize a tab as exactly 4 spaces, and configure the Tab
+" and Backspace key to delete 4 spaces at a time when deleting/inserting tabs.
+set tabstop=4 shiftwidth=4 expandtab
+set softtabstop=4
+
+" Force Vim to auto-indent
+set autoindent
 filetype indent on
-set number                              " displays page numbers
-set relativenumber                      " displays page numbers relative to current line
-au FileType * set formatoptions-=cro    " disable automatic comment insertion for all file types
-set undolevels=1000                     " LOTS of undos available
-set backspace=indent,eol,start          " make sure backspace works properly
-set ruler                               " enable the bottom-right set of numbers
-set sessionoptions+=tabpages,globals    " additional information to save to sessions
 
+" Display page numbers, and make them relative to the current line the cursor
+" is on. (I like this; I use the relative line numbers to know how many lines
+" to jump/delete/yank/etc. from my current cursor position.)
+set number
+set relativenumber
 
-" ========================= Line/Column Highlighting ========================= "
-set cursorline                          " highlight current line cursor is on
-set cursorcolumn                        " highlight current column cursor is on
+" Disable automatic comment insertion for all file types. (This is when you
+" are typing a comment, then press enter, and Vim inserts a comment prefix in
+" the new line.)
+au FileType * set formatoptions-=cro
 
+" Give me LOTS of undos!
+set undolevels=1000
 
-" ============================= Search Settings ============================== "
-set hlsearch                            " highlight search results
-set is                                  " highlight searches as you type
+" Configure backspace to delete automatically-inserted indentation, line
+" breaks, etc.
+set backspace=indent,eol,start
 
+" Turn on the ruler, which shows the line and column number of the cursor in
+" the bottom-right
+set ruler
 
-" ============================== Mouse Settings ============================== "
-set mouse=a                             " enable mouse everywhere
+" Save globals and tag names when Vim sessions are saved
+set sessionoptions+=tabpages,globals
 
+" Highlight the current line AND column the cursor is on:
+set cursorline
+set cursorcolumn
 
-" =========================== Remaps and Shortcuts =========================== "
+" Highlight search results, and highlight/search as you type
+set hlsearch
+set is
+
+" Enable the mouse everywhere in Vim
+set mouse=a
+
+" --------------------------- Remaps and Shortcuts --------------------------- "
 " the below shortcut allows you to press space to clear highlighted search terms
 " thanks to: https://vim.fandom.com/wiki/Highlight_all_search_pattern_matches
 nnoremap <silent> <Space> :nohlsearch<Bar>:echo<CR>
@@ -202,9 +230,8 @@ call CreateCommandAlias("w", "W")
 call CreateCommandAlias("q", "Q")
 
 
-" ============================== gVim Settings =============================== "
-if has('gui_running')
-    set guifont=Consolas:h11            " set gvim font
+" ============================== GVim Settings =============================== "
+if s:is_gui
     set guioptions-=m                   " remove menu bar
     set guioptions-=T                   " remove toolbar
     set guioptions-=e                   " remove GUI tabs and use terminal tabs
@@ -213,12 +240,17 @@ if has('gui_running')
     nnoremap y "+y                      
     vnoremap y "+y
     
-    " if we aren't editing a file, we'll 'cd' to the windows desktop:
-    let s:filename = CCO('file')
-    if stridx(s:filename, '[No Name]') > -1
-        " get the home directory and append 'Desktop' onto it. Assuming
-        " this is a windows machine, that means we'll save any new files
-        " to the desktop, rather than to our user home directory
+    " If we're on Windows, set the font to Consolas
+    if s:os_windows
+        set guifont=Consolas:h11
+    endif
+
+    " If we're on Windows, and we just opened a new buffer that's not attached
+    " to a file, we'll `cd` vim to the Windows desktop. This is where I want
+    " new files to be saved on Windows.
+    let s:filename = CaptureCommandOutput('file')
+    if stridx(s:filename, '[No Name]') > -1 && s:os_windows
+        let s:homedir = '$HOME'
         let s:desktop = s:homedir . '/Desktop'
         let s:cmd = 'cd ' . s:desktop
         execute s:cmd
