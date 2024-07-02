@@ -35,132 +35,134 @@ endfunction
 
 
 " ============================ Vundle and Plugins ============================ "
-set nocompatible                        " vundle requires VIM, not VI
-filetype off                            " required by vundle
-set rtp+=$HOME/.vim/bundle/Vundle.vim   " add vundle to vim's runtime path
-call vundle#begin()
-
-" Plugin installation
-Plugin 'VundleVim/Vundle.vim'           " required by vundle
-Plugin 'https://github.com/lambdalisue/fern.vim'
-Plugin 'https://github.com/vim-airline/vim-airline'
-Plugin 'https://github.com/vim-airline/vim-airline-themes'
-Plugin 'https://github.com/gcmt/taboo.vim'
-Plugin 'https://github.com/mhinz/vim-startify'
-
-call vundle#end()                       " finish vundle setup
-filetype plugin indent on               " required by vundle
-
-" ---------------------------- Fern Configuration ---------------------------- "
-" FT - File Tree. Utilizes Fern to open a 'project-drawer'-style file tree next
-" to the current editor window.
-function! FT(...)
-    let l:file_tree_dir = './'
-
-    " if one or more arguments was passed in, we'll parse the first one as the
-    " directory path to open with fern
-    if a:0 > 0
-        let l:file_tree_dir = a:1
-    endif
-
-    " invoke fern with the selected directory
-    execute 'Fern ' . l:file_tree_dir . ' -drawer'
-endfunction
-command! -nargs=* FT call FT(<f-args>)
-
-let g:fern_disable_startup_warnings = 1
-
-
-" -------------------------- Airline Configuration --------------------------- "
-let g:airline_theme='dwarrowdelf'
-
-
-" --------------------------- Taboo Configuration ---------------------------- "
-let g:taboo_tab_format=' %N %f%m '
-let g:taboo_renamed_tab_format=' %N %l%m '
-set sessionoptions+=tabpages,globals
-
-" Alias a few tab commands
-command! -nargs=* Tab tabe <args>
-command! -nargs=* TabOpen TabooOpen <args>
-command! -nargs=* TabRename TabooRename <args>
-command! -nargs=* TabReset TabooReset <args>
-
-" -------------------------- Startify Configuration -------------------------- "
-" Persist sessions; re-save an existing session when Vim is quit.
-let g:startify_session_persistence = 1
-
-" Specify where to save session files to.
-let g:startify_session_dir = '~/.vim/session'
-
-" Enable the use of unicode box-drawing characters for the default cowsay
-" start screen.
-let g:startify_fortune_use_unicode = 1
-
-" Enable the use of environment variables in file paths.
-let g:startify_use_env = 1
-
-" Set left-hand padding for home page text.
-let g:startify_padding_left = 4
-
-" Returns a list of Git-Modified files for Startify to include on the home
-" page.
-function! s:StartifyGitModified()
-    let s:repo_root = system('git rev-parse --show-toplevel 2> /dev/null')
-    let s:files = systemlist('git ls-files --modified ' . s:repo_root . ' 2> /dev/null')
-    return map(s:files, "{'line': v:val, 'path': v:val}")
-endfunction
-
-" Returns a list of Git-Untracked files for Startify to include on the home
-" page.
-function! s:StartifyGitUntracked()
-    let s:repo_root = system('git rev-parse --show-toplevel 2> /dev/null')
-    let s:files = systemlist('git ls-files --others --exclude-standard ' . s:repo_root . ' 2> /dev/null')
-    return map(s:files, "{'line': v:val, 'path': v:val}")
-endfunction
-
-" Define what lists to display on the home page.
-let g:startify_lists = [
-    \ { 'type': 'sessions',                         'header': ['    ────────────── Sessions ───────────────'] },
-    \ { 'type': 'files',                            'header': ['    ────────────── MRU Files ──────────────'] },
-    \ { 'type': function('s:StartifyGitModified'),  'header': ['    ──────── Git - Modified Files ─────────'] },
-    \ { 'type': function('s:StartifyGitUntracked'), 'header': ['    ──────── Git - Untracked Files ────────'] },
-    \ ]
-
-
-" Function used to generate a header for Startify.
-function StartifyMakeHeader(...)
-    let s:text = [
-        \ ' ___      ___ ___  _____ _______',
-        \ '|\  \    /  /|\  \|\   _ \  _   \',
-        \ '\ \  \  /  / | \  \ \  \\\__\ \  \',
-        \ ' \ \  \/  / / \ \  \ \  \\|__| \  \',
-        \ '  \ \    / /   \ \  \ \  \    \ \  \',
-        \ '   \ \__/ /     \ \__\ \__\    \ \__\',
-        \ '    \|__|/       \|__|\|__|     \|__|',
+if s:os_linux
+    set nocompatible                        " vundle requires VIM, not VI
+    filetype off                            " required by vundle
+    set rtp+=$HOME/.vim/bundle/Vundle.vim   " add vundle to vim's runtime path
+    call vundle#begin()
+    
+    " Plugin installation
+    Plugin 'VundleVim/Vundle.vim'           " required by vundle
+    Plugin 'https://github.com/lambdalisue/fern.vim'
+    Plugin 'https://github.com/vim-airline/vim-airline'
+    Plugin 'https://github.com/vim-airline/vim-airline-themes'
+    Plugin 'https://github.com/gcmt/taboo.vim'
+    Plugin 'https://github.com/mhinz/vim-startify'
+    
+    call vundle#end()                       " finish vundle setup
+    filetype plugin indent on               " required by vundle
+    
+    " -------------------------- Fern Configuration -------------------------- "
+    " FT - File Tree. Utilizes Fern to open a 'project-drawer'-style file tree
+    " next to the current editor window.
+    function! FT(...)
+        let l:file_tree_dir = './'
+    
+        " if one or more arguments was passed in, we'll parse the first one as
+        " the directory path to open with fern
+        if a:0 > 0
+            let l:file_tree_dir = a:1
+        endif
+    
+        " invoke fern with the selected directory
+        execute 'Fern ' . l:file_tree_dir . ' -drawer'
+    endfunction
+    command! -nargs=* FT call FT(<f-args>)
+    
+    let g:fern_disable_startup_warnings = 1
+    
+    
+    " ------------------------ Airline Configuration ------------------------- "
+    let g:airline_theme='dwarrowdelf'
+    
+    
+    " ------------------------- Taboo Configuration -------------------------- "
+    let g:taboo_tab_format=' %N %f%m '
+    let g:taboo_renamed_tab_format=' %N %l%m '
+    set sessionoptions+=tabpages,globals
+    
+    " Alias a few tab commands
+    command! -nargs=* Tab tabe <args>
+    command! -nargs=* TabOpen TabooOpen <args>
+    command! -nargs=* TabRename TabooRename <args>
+    command! -nargs=* TabReset TabooReset <args>
+    
+    " ------------------------ Startify Configuration ------------------------ "
+    " Persist sessions; re-save an existing session when Vim is quit.
+    let g:startify_session_persistence = 1
+    
+    " Specify where to save session files to.
+    let g:startify_session_dir = '~/.vim/session'
+    
+    " Enable the use of unicode box-drawing characters for the default cowsay
+    " start screen.
+    let g:startify_fortune_use_unicode = 1
+    
+    " Enable the use of environment variables in file paths.
+    let g:startify_use_env = 1
+    
+    " Set left-hand padding for home page text.
+    let g:startify_padding_left = 4
+    
+    " Returns a list of Git-Modified files for Startify to include on the home
+    " page.
+    function! s:StartifyGitModified()
+        let s:repo_root = system('git rev-parse --show-toplevel 2> /dev/null')
+        let s:files = systemlist('git ls-files --modified ' . s:repo_root . ' 2> /dev/null')
+        return map(s:files, "{'line': v:val, 'path': v:val}")
+    endfunction
+    
+    " Returns a list of Git-Untracked files for Startify to include on the home
+    " page.
+    function! s:StartifyGitUntracked()
+        let s:repo_root = system('git rev-parse --show-toplevel 2> /dev/null')
+        let s:files = systemlist('git ls-files --others --exclude-standard ' . s:repo_root . ' 2> /dev/null')
+        return map(s:files, "{'line': v:val, 'path': v:val}")
+    endfunction
+    
+    " Define what lists to display on the home page.
+    let g:startify_lists = [
+        \ { 'type': 'sessions',                         'header': ['    ────────────── Sessions ───────────────'] },
+        \ { 'type': 'files',                            'header': ['    ────────────── MRU Files ──────────────'] },
+        \ { 'type': function('s:StartifyGitModified'),  'header': ['    ──────── Git - Modified Files ─────────'] },
+        \ { 'type': function('s:StartifyGitUntracked'), 'header': ['    ──────── Git - Untracked Files ────────'] },
         \ ]
-
-    " Grab some machine-local information
-    let s:machine_name = system('hostname 2> /dev/null | tr -d "\n"')
-    let s:machine_date = system('date "+%Y-%m-%d %H:%M %p" 2> /dev/null | tr -d "\n"')
-    let s:pwd = getcwd()
-
-    let s:text = s:text + [
-        \ '',
-        \ 'Machine Name:        ' . s:machine_name . '',
-        \ 'Machine Datetime:    ' . s:machine_date . '',
-        \ 'Working Directory:   ' . s:pwd . '',
-        \ ]
-    return startify#pad(s:text)
-endfunction
-
-" Define a custom header. By encompassing the function call in a string,
-" Startify will execute it every time the :Startify command is executed
-" (rather than just a single time when Vim is launched).
-let g:startify_custom_header = 'StartifyMakeHeader()'
-
-" Create a shortcut to bring up Startify on the current buffer via Ctrl-N
-nnoremap <silent> <C-n> :Startify<CR>
+    
+    
+    " Function used to generate a header for Startify.
+    function StartifyMakeHeader(...)
+        let s:text = [
+            \ ' ___      ___ ___  _____ _______',
+            \ '|\  \    /  /|\  \|\   _ \  _   \',
+            \ '\ \  \  /  / | \  \ \  \\\__\ \  \',
+            \ ' \ \  \/  / / \ \  \ \  \\|__| \  \',
+            \ '  \ \    / /   \ \  \ \  \    \ \  \',
+            \ '   \ \__/ /     \ \__\ \__\    \ \__\',
+            \ '    \|__|/       \|__|\|__|     \|__|',
+            \ ]
+    
+        " Grab some machine-local information
+        let s:machine_name = system('hostname 2> /dev/null | tr -d "\n"')
+        let s:machine_date = system('date "+%Y-%m-%d %H:%M %p" 2> /dev/null | tr -d "\n"')
+        let s:pwd = getcwd()
+    
+        let s:text = s:text + [
+            \ '',
+            \ 'Machine Name:        ' . s:machine_name . '',
+            \ 'Machine Datetime:    ' . s:machine_date . '',
+            \ 'Working Directory:   ' . s:pwd . '',
+            \ ]
+        return startify#pad(s:text)
+    endfunction
+    
+    " Define a custom header. By encompassing the function call in a string,
+    " Startify will execute it every time the :Startify command is executed
+    " (rather than just a single time when Vim is launched).
+    let g:startify_custom_header = 'StartifyMakeHeader()'
+    
+    " Create a shortcut to bring up Startify on the current buffer via Ctrl-N
+    nnoremap <silent> <C-n> :Startify<CR>
+endif
 
 
 " ============================= General Settings ============================= "
@@ -254,10 +256,21 @@ if s:is_gui
     " new files to be saved on Windows.
     let s:filename = CaptureCommandOutput('file')
     if stridx(s:filename, '[No Name]') > -1 && s:os_windows
-        let s:homedir = '$HOME'
-        let s:desktop = s:homedir . '/Desktop'
-        let s:cmd = 'cd ' . s:desktop
-        execute s:cmd
+        let s:homedir = $HOME
+
+        " look for a desktop location to default to
+        let s:desktop_paths = [
+            \ s:homedir . '/Desktop',
+            \ s:homedir . '/OneDrive - Microsoft/Desktop'
+        \ ]
+        for s:path in s:desktop_paths
+            if isdirectory(s:path)
+                " if we found a directory path that's valid, navigate vim into
+                " the directory
+                execute 'cd ' . s:path
+                break
+            endif
+        endfor
     endif
 endif
 
