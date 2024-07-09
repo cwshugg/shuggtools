@@ -12,8 +12,14 @@ function __shuggtool_toolsetup_print_helper()
     msg="$1"
     color="$2"
 
+    # optional argument: a prefix string
+    prefix_str="•"
+    if [ $# -ge 3 ]; then
+        prefix_str="$3"
+    fi
+
     # create and print the prefix, then pad with spaces
-    prefix="${color}•${C_NONE} ${C_DKGRAY}${__shuggtool_toolsetup_print_prefix}${C_NONE} "
+    prefix="${color}${prefix_str}${C_NONE} ${C_DKGRAY}${__shuggtool_toolsetup_print_prefix}${C_NONE} "
     prefix_len=${#__shuggtool_toolsetup_print_prefix}
     prefix_len=$((prefix_len+2))
     max_len=12
@@ -49,6 +55,29 @@ function __shuggtool_toolsetup_print_bad()
 function __shuggtool_toolsetup_print_alert()
 {
     __shuggtool_toolsetup_print_helper "$1" "${C_PURPLE}"
+}
+
+function __shuggtool_toolsetup_print_question()
+{
+    __shuggtool_toolsetup_print_helper "$1" "${C_LTRED}" "?"
+}
+
+__shuggtool_toolsetup_prompt_result=""
+function __shuggtool_toolsetup_prompt()
+{
+    # print the question/message
+    msg="$1"
+    __shuggtool_toolsetup_print_question "${msg}"
+
+    # read input until a non-blank answer is given
+    text=""
+    while [ -z "${text}" ]; do
+        echo -en "${C_DKGRAY}>${C_NONE} ${C_YELLOW}"
+        text="$(__shuggtool_read_input)"
+        echo -en "${C_NONE}"
+    done
+
+    __shuggtool_toolsetup_prompt_result="${text}"
 }
 
 
@@ -341,14 +370,14 @@ function __shuggtool_toolsetup_git()
         __shuggtool_toolsetup_print_note "Found no user configuration in git config file."
 
         # read the desired username
-        echo -en "${C_PURPLE}?${C_NONE} What username would you like to use for your git config? ${C_YELLOW}"
-        git_config_name="$(__shuggtool_read_input)"
-        echo -en "${C_NONE}"
+        msg="What username would you like to use for your git config?"
+        __shuggtool_toolsetup_prompt "${msg}"
+        git_config_name="${__shuggtool_toolsetup_prompt_result}"
 
         # read the desired email
-        echo -en "${C_PURPLE}?${C_NONE} What email would you like to use for your git config? ${C_YELLOW}"
-        git_config_email="$(__shuggtool_read_input)"
-        echo -en "${C_NONE}"
+        msg="What email would you like to use for your git config?"
+        __shuggtool_toolsetup_prompt "${msg}"
+        git_config_email="${__shuggtool_toolsetup_prompt_result}"
 
         # add the user block with the given values
         echo -e "[user]"                                >> "${git_config_dst}"
