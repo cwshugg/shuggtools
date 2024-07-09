@@ -39,9 +39,16 @@
     # view changes for a particular commit
     commit-diff = "!__git_commit_diff() { commit=\"HEAD~1\"; if [ $# -ge 1 ]; then commit=\"$1\"; fi; git diff ${commit}~ ${commit}; }; __git_commit_diff | less"
 
-    # status and file displays
+    # shorthand status displays
     s = status -uno
     st = status
+
+    # list all modified, deleted, and other files
+    ls = "!git ls-files --modified --deleted --others $(git rev-parse --show-toplevel)"
+
+    # list all modified files
+    lsm = "!git ls-files --modified $(git rev-parse --show-toplevel)"
+    ls-modified = lsm
 
     # "delete" a file, from git's perspective, without actually deleting it
     # from the filesystem
@@ -64,8 +71,9 @@
     # view all aliases
     aliases = !sh -c 'git config --get-regexp ^alias\\. | sort'
 
-    # show origin repo URL
+    # show origin repo URL and repo top
     origin = config --get remote.origin.url
+    top = rev-parse --show-toplevel
 
 #[user]
     #name = "USERNAME"
