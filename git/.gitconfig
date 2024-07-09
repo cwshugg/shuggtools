@@ -1,3 +1,5 @@
+# Connor's Git Config
+
 [core]
     excludesfile = ~/.gitignore
 	editor = '/home/connorshugg/.local/bin/vim'
@@ -74,8 +76,4 @@
     # show origin repo URL and repo top
     origin = config --get remote.origin.url
     top = rev-parse --show-toplevel
-
-#[user]
-    #name = "USERNAME"
-    #email = "EMAIL"
 
