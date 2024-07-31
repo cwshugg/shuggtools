@@ -51,37 +51,110 @@ function! DL_GetFileType()
 endfunction
 
 
-" ============================== Script Options ============================== "
-" Used to print the 'usage' for the command to the vim command line.
-function! DL_Usage()
-    echo 'Usage: DL [msg=MESSAGE] [col=MAX_COLUMN] [char=LINE_CHARACTER] [pfx=LINE_PREFIX] [sfx=LINE_SUFFIX]'
+" ============================= Argumant Parsing ============================= "
+" I'm utilizing Argonaut, my Vim argument parsing plugin, to build an argument
+" parser for this script.
+let s:arg_help = argonaut#arg#new()
+call argonaut#arg#add_argid(s:arg_help, argonaut#argid#new('-', 'h'))
+call argonaut#arg#add_argid(s:arg_help, argonaut#argid#new('--', 'help'))
+call argonaut#arg#set_description(s:arg_help,
+    \ 'Shows this help menu.'
+\ )
+
+" Used to specify the message to place in the middle of the divider line.
+let s:arg_msg = argonaut#arg#new()
+call argonaut#arg#add_argid(s:arg_msg, argonaut#argid#new('-', 'm'))
+call argonaut#arg#add_argid(s:arg_msg, argonaut#argid#new('--', 'message'))
+call argonaut#arg#add_argid(s:arg_msg, argonaut#argid#new('--', 'msg'))
+call argonaut#arg#set_description(s:arg_msg,
+    \ 'Sets the message to place in the middle of the divider line.'
+\ )
+call argonaut#arg#set_value_required(s:arg_msg, 1)
+call argonaut#arg#set_value_hint(s:arg_msg, 'MESSAGE')
+
+" Used to specify the middle character to make up the divider line.
+let s:arg_char = argonaut#arg#new()
+call argonaut#arg#add_argid(s:arg_char, argonaut#argid#new('-', 'c'))
+call argonaut#arg#add_argid(s:arg_char, argonaut#argid#new('--', 'character'))
+call argonaut#arg#add_argid(s:arg_char, argonaut#argid#new('--', 'char'))
+call argonaut#arg#set_description(s:arg_char,
+    \ 'Sets the character that makes up the middle of the divider line.'
+\ )
+call argonaut#arg#set_value_required(s:arg_char, 1)
+call argonaut#arg#set_value_hint(s:arg_char, 'CHARACTER')
+
+" Used to specify the maximum column at which the divider line should end.
+let s:arg_pfx = argonaut#arg#new()
+call argonaut#arg#add_argid(s:arg_pfx, argonaut#argid#new('-', 'p'))
+call argonaut#arg#add_argid(s:arg_pfx, argonaut#argid#new('--', 'prefix'))
+call argonaut#arg#add_argid(s:arg_pfx, argonaut#argid#new('--', 'pfx'))
+call argonaut#arg#set_description(s:arg_pfx,
+    \ 'Sets the prefix string to begin the divier line with.'
+\ )
+call argonaut#arg#set_value_required(s:arg_pfx, 1)
+call argonaut#arg#set_value_hint(s:arg_pfx, 'PREFIX')
+
+" Used to specify the maximum column at which the divider line should end.
+let s:arg_sfx = argonaut#arg#new()
+call argonaut#arg#add_argid(s:arg_sfx, argonaut#argid#new('-', 's'))
+call argonaut#arg#add_argid(s:arg_sfx, argonaut#argid#new('--', 'suffix'))
+call argonaut#arg#add_argid(s:arg_sfx, argonaut#argid#new('--', 'sfx'))
+call argonaut#arg#set_description(s:arg_sfx,
+    \ 'Sets the suffix string to end the divier line with.'
+\ )
+call argonaut#arg#set_value_required(s:arg_sfx, 1)
+call argonaut#arg#set_value_hint(s:arg_sfx, 'SUFFIX')
+
+" Used to specify the maximum column at which the divider line should end.
+let s:arg_col = argonaut#arg#new()
+call argonaut#arg#add_argid(s:arg_col, argonaut#argid#new('-', 'C'))
+call argonaut#arg#add_argid(s:arg_col, argonaut#argid#new('--', 'column'))
+call argonaut#arg#add_argid(s:arg_col, argonaut#argid#new('--', 'col'))
+call argonaut#arg#set_description(s:arg_col,
+    \ 'Sets the maximum column at which the divider line should end.'
+\ )
+call argonaut#arg#set_value_required(s:arg_col, 1)
+call argonaut#arg#set_value_hint(s:arg_col, 'COLUMN_NUMBER')
+
+let s:argset = argonaut#argset#new([
+    \ s:arg_help,
+    \ s:arg_msg,
+    \ s:arg_char,
+    \ s:arg_pfx,
+    \ s:arg_sfx,
+    \ s:arg_col
+\ ])
+
+" Tab-completion function for the command.
+function! DL_ArgumentCompletion(arg, line, pos) abort
+    return argonaut#completion#complete(a:arg, a:line, a:pos, s:argset)
 endfunction
 
-" Function used to get a command-line option of the following format:
-"   key=value
-" This function splits the two and returns them as an array.
-function! DL_GetOption(raw)
-    return split(a:raw, '=')
-endfunction
+" Uses the argument parser to process all arguments.
+function! DL_ProcessArguments(parser) abort
+    let l:extras = argonaut#argparser#get_extra_args(a:parser)
 
-" Function that takes in a key and value for a named option and processes it
-" as needed.
-function! DL_ProcessOption(key, value)
-    if a:key ==? 'msg'
-        let g:dl_msg = a:value
-    elseif a:key ==? 'col'
-        let g:dl_column_max = a:value
-    elseif a:key ==? 'char'
-        let g:dl_line_mid = a:value
-    elseif a:key ==? 'pfx'
-        let g:dl_line_prefix = a:value
-    elseif a:key ==? 'sfx'
-        let g:dl_line_suffix = a:value
-    else
-        call DL_Usage()
-        return 1
+    if argonaut#argparser#has_arg(a:parser, '--message')
+        let g:dl_msg = argonaut#argparser#get_arg(a:parser, '--message')[0]
+    elseif len(l:extras) > 0
+        let g:dl_msg = l:extras[0]
     endif
-    return 0
+
+    if argonaut#argparser#has_arg(a:parser, '--character')
+        let g:dl_line_mid = argonaut#argparser#get_arg(a:parser, '--character')[0]
+    endif
+
+    if argonaut#argparser#has_arg(a:parser, '--prefix')
+        let g:dl_line_prefix = argonaut#argparser#get_arg(a:parser, '--prefix')[0]
+    endif
+
+    if argonaut#argparser#has_arg(a:parser, '--suffix')
+        let g:dl_line_suffix = argonaut#argparser#get_arg(a:parser, '--suffix')[0]
+    endif
+
+    if argonaut#argparser#has_arg(a:parser, '--column')
+        let g:dl_column_max = argonaut#argparser#get_arg(a:parser, '--column')[0]
+    endif
 endfunction
 
 
@@ -122,9 +195,8 @@ function! DL_SetLineCharacters(ft)
 endfunction
 
 " Main function for this plugin. Arguments are as follows:
-"   DL [string_to_put_in_line] [mid_character] [columns]
 " Where all three are optional.
-function! DL(...)
+function! DL(input)
     " set local and global defaults
     let g:dl_msg = ''
     let g:dl_column_max = 80
@@ -136,21 +208,22 @@ function! DL(...)
     let l:ft = DL_GetFileType()
     call DL_SetLineCharacters(l:ft)
 
-    " iterate through the command-line options and check
-    let l:count = 0
-    for raw_arg in a:000
-        " parse the option into a list and account for failures
-        let l:opt = DL_GetOption(raw_arg)
-        if len(l:opt) < 2
-            call DL_Usage()
-            return
-        endif
-        " process the argument, and return on failure
-        let l:result = DL_ProcessOption(l:opt[0], l:opt[1])
-        if l:result != 0
-            return
-        endif
-    endfor
+    " build an argument parser and parse
+    let l:parser = argonaut#argparser#new(s:argset)
+    try
+        call argonaut#argparser#parse(l:parser, a:input)
+    catch
+        echoerr v:exception
+    endtry
+
+    " show the help menu and return, if necessary
+    if argonaut#argparser#has_arg(l:parser, '-h')
+        call argonaut#argparser#show_help(l:parser)
+        return
+    endif
+
+    " otherwise, process all argument values
+    call DL_ProcessArguments(l:parser)
     
     " get the cursor position and extract the horizontal spacing. Print and
     " return on failure
@@ -222,5 +295,9 @@ function! DL(...)
 endfunction
 
 " Command - shortens the use in vim.
-command! -nargs=* DL call DL(<f-args>)
+command!
+    \ -nargs=*
+    \ -complete=customlist,DL_ArgumentCompletion
+    \ DL
+    \ call DL(<q-args>)
 
