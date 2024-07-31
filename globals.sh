@@ -135,6 +135,13 @@ function __shuggtool_terminal_size()
     shuggtools_terminal_cols=${tty_size_arr[1]}
 }
 
+# Awaits user input and echoes it back out.
+function __shuggtool_read_input()
+{
+    read text
+    echo "${text}"
+}
+
 # Helper function used to prompt the user for a yes-no answer.
 # Returns 1 for yes and 0 for no.
 function __shuggtool_prompt_yesno()

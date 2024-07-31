@@ -5,10 +5,19 @@
 # knobs to adjust the prompt building
 __shuggtool_prompt_show_jobs=1              # show jobs in background
 __shuggtool_prompt_show_exitcode=1          # show exit codes
+__shuggtool_prompt_show_workspace=1         # show current workspace
 __shuggtool_prompt_show_git=1               # enables git repo stats
 __shuggtool_prompt_show_git_repo_name=1     # shows git repo name
 __shuggtool_prompt_show_git_repo_branch=1   # shows git branch name
 __shuggtool_prompt_show_git_repo_diff=1     # show git diffs
+
+# knobs to adjust what fields in the prompt to "collapse" (i.e. remove the text
+# and only show a small color block in its place). I added these in to have my
+# prompt take up less room if necessary.
+__shuggtool_prompt_collapse_username=0      # collapse username block
+__shuggtool_prompt_collapse_hostname=0      # collapse hostname block
+__shuggtool_prompt_collapse_pwd=0           # collapse current directory block
+__shuggtool_prompt_collapse_workspace=0     # collapse current workspace
 
 # other globals
 __shuggtool_prompt_bg_format="48;2"         # prefix for background colors
@@ -16,6 +25,77 @@ __shuggtool_prompt_fg_format="38;2"         # prefix for foreground colors
 __shuggtool_prompt_previous_cmdnum=0        # prefix bash command number
 __shuggtool_prompt_previous_retval=0        # return captured during previous prompt generation
 
+
+# ------------------------ Prompt Adjustment Aliases ------------------------- #
+# Takes in a string and uses it to determine what global settings to tweak to
+# collapse a certain section of the prompt.
+function __shuggtool_prompt_configure_collapse_helper()
+{
+    # argument 1: 1 = collapse, 0 = expand
+    collapse=1
+    if [ $# -ge 2 ]; then
+        collapse=$1
+        if [ ${collapse} -ne 0 ]; then
+            collapse=1
+        fi
+    fi
+
+    # argument 2: a string containing keywords to select certain settings
+    target=""
+    if [ $# -ge 1 ]; then
+        target="$2"
+        target="${target,,}"
+    fi
+
+    # if the target is empty, apply the setting to all
+    if [ -z "${target}" ]; then
+        __shuggtool_prompt_collapse_username=${collapse}
+        __shuggtool_prompt_collapse_hostname=${collapse}
+        __shuggtool_prompt_collapse_pwd=${collapse}
+        __shuggtool_prompt_collapse_workspace=${collapse}
+    fi
+    
+    # apply the setting based on the target text
+    if [[ "${target}" == *"username"* ]]; then
+        __shuggtool_prompt_collapse_username=${collapse}
+    fi
+    if [[ "${target}" == *"hostname"* ]]; then
+        __shuggtool_prompt_collapse_hostname=${collapse}
+    fi
+    if [[ "${target}" == *"pwd"* ]]; then
+        __shuggtool_prompt_collapse_pwd=${collapse}
+    fi
+    if [[ "${target}" == *"workspace"* ]]; then
+        __shuggtool_prompt_collapse_workspace=${collapse}
+    fi
+}
+
+# Used for collapsing prompt components.
+function __shuggtool_prompt_configure_collapse()
+{
+    __shuggtool_prompt_configure_collapse_helper 1 "$1"
+}
+
+# Used for expanding prompt components.
+function __shuggtool_prompt_configure_expand()
+{
+    __shuggtool_prompt_configure_collapse_helper 0 "$1"
+}
+
+# Expansion/collapsing aliases
+alias prompt-collapse="__shuggtool_prompt_configure_collapse"
+alias prompt-collapse-username="__shuggtool_prompt_configure_collapse \"username\""
+alias prompt-collapse-hostname="__shuggtool_prompt_configure_collapse \"hostname\""
+alias prompt-collapse-pwd="__shuggtool_prompt_configure_collapse \"pwd\""
+alias prompt-collapse-workspace="__shuggtool_prompt_configure_collapse \"workspace\""
+alias prompt-expand="__shuggtool_prompt_configure_expand"
+alias prompt-expand-username="__shuggtool_prompt_configure_expand \"username\""
+alias prompt-expand-hostname="__shuggtool_prompt_configure_expand \"hostname\""
+alias prompt-expand-pwd="__shuggtool_prompt_configure_expand \"pwd\""
+alias prompt-expand-workspace="__shuggtool_prompt_configure_expand \"workspace\""
+
+
+# -------------------------- Prompt String Building -------------------------- #
 # Helper function that creates a PS1-friendly string that represents a colored
 # block containing given text, then adds it to PS1.
 function __shuggtool_prompt_block()
@@ -111,13 +191,25 @@ function __shuggtool_prompt_command()
     fi
 
     # add a username block to PS1
-    __shuggtool_prompt_block "${username_bgc}" "${username_fgc}" " \u "
+    username_str=" \u "
+    if [ ${__shuggtool_prompt_collapse_username} -ne 0 ]; then
+        username_str="  "
+    fi
+    __shuggtool_prompt_block "${username_bgc}" "${username_fgc}" "${username_str}"
     
     # add a hostname block
-    __shuggtool_prompt_block "${hostname_bgc}" "${hostname_fgc}" " \h "
+    hostname_str=" \h "
+    if [ ${__shuggtool_prompt_collapse_hostname} -ne 0 ]; then
+        hostname_str="  "
+    fi
+    __shuggtool_prompt_block "${hostname_bgc}" "${hostname_fgc}" "${hostname_str}"
 
     # add current directory block
-    __shuggtool_prompt_block "${pwd_bgc}" "${pwd_fgc}" " \W "
+    pwd_str=" \W "
+    if [ ${__shuggtool_prompt_collapse_pwd} -ne 0 ]; then
+        pwd_str="  "
+    fi
+    __shuggtool_prompt_block "${pwd_bgc}" "${pwd_fgc}" "${pwd_str}"
 
     # set color for prefix/separator colors
     pfx_bgc="0;0;0"
@@ -125,18 +217,20 @@ function __shuggtool_prompt_command()
         
     # is the shell currently inside a workspace? If show, we'll add a block to
     # our prompt to reflect this
-    if [ ! -z "${WORKSPACE}" ]; then
+    if [ ! -z "${WORKSPACE}" ] && [ ${__shuggtool_prompt_show_workspace} -ne 0 ]; then
         __shuggtool_prompt_block_separator "${pfx_bgc}" "${pfx_fgc}"
 
         # add a workspace symbol
         ws_bgc="145;185;164"
         ws_fgc="125;15;15"
-        __shuggtool_prompt_block "${ws_bgc}" "${ws_fgc}" " ⚒"
-
-        # add the workspace name
-        ws_fgc="10;10;10"
-        wsname="$(basename ${WORKSPACE})"
-        __shuggtool_prompt_block "${ws_bgc}" "${ws_fgc}" " ${wsname} "
+        __shuggtool_prompt_block "${ws_bgc}" "${ws_fgc}" " ⚒ "
+        
+        if [ ${__shuggtool_prompt_collapse_workspace} -eq 0 ]; then
+            # add the workspace name
+            ws_fgc="10;10;10"
+            wsname="$(basename ${WORKSPACE})"
+            __shuggtool_prompt_block "${ws_bgc}" "${ws_fgc}" "${wsname} "
+        fi
     fi
 
     # check for active jobs and append to PS1 if there are pending ones
@@ -201,11 +295,13 @@ function __shuggtool_prompt_command()
                 git_bgc="150;150;210"
             fi
 
-            # add a prefix
+            # add a prefix and count what we're displaying
             __shuggtool_prompt_block_separator "${pfx_bgc}" "${pfx_fgc}"
+            blocks_added=0
 
             # format the repo name and add it
             if [ ${__shuggtool_prompt_show_git_repo_name} -ne 0 ]; then
+                blocks_added=$((blocks_added+1))
                 repo_name="$(basename ${repo_url})"
                 repo_name="${repo_name%.*}"
                 
@@ -216,6 +312,7 @@ function __shuggtool_prompt_command()
             
             # format the repo branch and add it
             if [ ${__shuggtool_prompt_show_git_repo_branch} -ne 0 ]; then
+                blocks_added=$((blocks_added+1))
                 repo_branch="$(git rev-parse --abbrev-ref HEAD 2> /dev/null)"
                 repo_tag=""
 
@@ -278,6 +375,7 @@ function __shuggtool_prompt_command()
             
             # format the various changes in the file and add it
             if [ ${__shuggtool_prompt_show_git_repo_diff} -ne 0 ]; then 
+                blocks_added=$((blocks_added+1))
                 # get number of modified files and other stats
                 stat="$(git diff --shortstat)"
                 stat_files="$(echo ${stat} | cut -d "," -f 1 | xargs | cut -d " " -f 1)"
@@ -318,6 +416,12 @@ function __shuggtool_prompt_command()
                     pfx="-"
                     __shuggtool_prompt_block "${bgc}" "${fgc}" " ${pfx}${stat_dels}"
                 fi
+            fi
+
+            # if no blocks were added (due to options being disabled), we'll
+            # instead add a single symbol to indicate that we are in a git repo
+            if [ ${blocks_added} -eq 0 ]; then
+                __shuggtool_prompt_block "${git_bgc}" "0;0;0" " git"
             fi
 
             # add a final space to the git section

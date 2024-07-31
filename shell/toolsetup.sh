@@ -12,8 +12,14 @@ function __shuggtool_toolsetup_print_helper()
     msg="$1"
     color="$2"
 
+    # optional argument: a prefix string
+    prefix_str="•"
+    if [ $# -ge 3 ]; then
+        prefix_str="$3"
+    fi
+
     # create and print the prefix, then pad with spaces
-    prefix="${color}•${C_NONE} ${C_DKGRAY}${__shuggtool_toolsetup_print_prefix}${C_NONE} "
+    prefix="${color}${prefix_str}${C_NONE} ${C_DKGRAY}${__shuggtool_toolsetup_print_prefix}${C_NONE} "
     prefix_len=${#__shuggtool_toolsetup_print_prefix}
     prefix_len=$((prefix_len+2))
     max_len=12
@@ -49,6 +55,29 @@ function __shuggtool_toolsetup_print_bad()
 function __shuggtool_toolsetup_print_alert()
 {
     __shuggtool_toolsetup_print_helper "$1" "${C_PURPLE}"
+}
+
+function __shuggtool_toolsetup_print_question()
+{
+    __shuggtool_toolsetup_print_helper "$1" "${C_LTRED}" "?"
+}
+
+__shuggtool_toolsetup_prompt_result=""
+function __shuggtool_toolsetup_prompt()
+{
+    # print the question/message
+    msg="$1"
+    __shuggtool_toolsetup_print_question "${msg}"
+
+    # read input until a non-blank answer is given
+    text=""
+    while [ -z "${text}" ]; do
+        echo -en "${C_DKGRAY}>${C_NONE} ${C_YELLOW}"
+        text="$(__shuggtool_read_input)"
+        echo -en "${C_NONE}"
+    done
+
+    __shuggtool_toolsetup_prompt_result="${text}"
 }
 
 
@@ -302,11 +331,68 @@ function __shuggtool_toolsetup_git()
 
     if [ ! -f ${git_config_src} ]; then
         __shuggtool_toolsetup_print_bad "Failed to find source ${C_LTBLUE}$(basename ${git_config_src})${C_NONE}."
-    else
-        cp ${git_config_src} ${git_config_dst}
-        __shuggtool_toolsetup_print_good "Installed config to ${C_LTBLUE}${git_config_dst}${C_NONE}."
-        __shuggtool_toolsetup_print_alert "Make sure you fill in your name and email address."
+        return 1
     fi
+
+    # we don't want to blindly copy my gitconfig to the destination; we might
+    # overwrite something important an an existing .gitconfig. So, we'll do the
+    # following:
+
+    # first, check to see if a .gitconfig exists at the destination. If it
+    # doesn't, we'll create one
+    if [ ! -f ${git_config_dst} ]; then
+        __shuggtool_toolsetup_print_note "No git config file exists at ${C_LTBLUE}${git_config_dst}${C_NONE}."
+        __shuggtool_toolsetup_print_good "Creating new git config file."
+        touch ${git_config_dst}
+    fi
+
+    # search the file to see if it has an `include` statement pointed at this
+    # file. If it doesn't, we'll add one to the bottom of the file
+    git_config_src_real="$(realpath "${git_config_src}")"
+    if [ -z "$(grep "\[include\]" "${git_config_dst}")" ] ||
+       [ -z "$(grep "path\s*=\s*${git_config_src_real}\s*" "${git_config_dst}")" ]; then
+        msg=""
+        msg="${msg}Found existing git config file at ${C_LTBLUE}${git_config_dst}${C_NONE} "
+        msg="${msg}with no include statement."
+        __shuggtool_toolsetup_print_note "${msg}"
+        
+        # add the line to the git config
+        echo -e "[include]\n    path = ${git_config_src_real}\n" >> "${git_config_dst}"
+        msg=""
+        msg="${msg}Added include statement to ${C_LTBLUE}${git_config_dist}${C_NONE} "
+        msg="${msg}to include configurations from ${C_LTBLUE}${git_config_src}${C_NONE}."
+        __shuggtool_toolsetup_print_good "${msg}"
+    fi
+
+    # search the file to see if it has a username and email field. If it
+    # doesn't, we'll add one
+    if [ -z "$(grep "\[user\]" "${git_config_dst}")" ]; then
+        __shuggtool_toolsetup_print_note "Found no user configuration in git config file."
+
+        # read the desired username
+        msg="What username would you like to use for your git config?"
+        __shuggtool_toolsetup_prompt "${msg}"
+        git_config_name="${__shuggtool_toolsetup_prompt_result}"
+
+        # read the desired email
+        msg="What email would you like to use for your git config?"
+        __shuggtool_toolsetup_prompt "${msg}"
+        git_config_email="${__shuggtool_toolsetup_prompt_result}"
+
+        # add the user block with the given values
+        echo -e "[user]"                                >> "${git_config_dst}"
+        echo -e "    name = \"${git_config_name}\""     >> "${git_config_dst}"
+        echo -e "    email = \"${git_config_email}\""   >> "${git_config_dst}"
+
+        # print a confirmation message
+        msg=""
+        msg="${msg}Added username ${C_YELLOW}${git_config_name}${C_NONE} "
+        msg="${msg}and email ${C_YELLOW}${git_config_email}${C_NONE} "
+        msg="${msg}to git config."
+        __shuggtool_toolsetup_print_good "${msg}"
+    fi
+
+    __shuggtool_toolsetup_print_good "Git config setup complete."
 }
 
 
