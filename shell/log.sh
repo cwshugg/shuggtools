@@ -213,7 +213,7 @@ function __shuggtool_log_get_datestring_color()
 # sorted order by the date each file name specifies.
 function __shuggtool_log_get_files()
 {
-    ls -1 ${log_dir} | sort -V
+    ls -1 ${log_dir} | grep -E "\b[0-9]{4}-[0-9]{2}-[0-9]{2}\b" | sort -V
 }
 
 # Returns the basename of the file with the earliest date.
@@ -369,6 +369,12 @@ function __shuggtool_log_list()
 # Main function
 function __shuggtool_log()
 {
+    # allow the log directory to be overridden, if the correct environment
+    # variable is set
+    if [ ! -z "${LOG_PATH}" ]; then
+        log_dir="$(realpath ${LOG_PATH})"
+    fi
+
     # first, make sure the log directory exists
     if [ ! -d ${log_dir} ]; then
         mkdir ${log_dir}
