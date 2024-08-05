@@ -286,7 +286,16 @@ function __shuggtool_prompt_command()
     # check for the current git repo
     if [ ${__shuggtool_prompt_show_git} -ne 0 ]; then
         repo_url="$(git remote get-url origin 2> /dev/null)"
-        if [ ! -z "${repo_url}" ]; then
+
+        # determine if the repository is bare, if no remote URL was found
+        repo_is_bare=0
+        if [ -z "${repo_url}" ]; then
+            if [[ "$(git rev-parse --is-bare-repository)" == "true" ]]; then
+                repo_is_bare=1
+            fi
+        fi
+
+        if [ ! -z "${repo_url}" ] || [ ${repo_is_bare} -ne 0 ]; then
             git_bgc="175;175;175"
             # choose a background color based on where the repo comes from
             if [[ "${repo_url}" == *"github"* ]]; then
@@ -302,11 +311,20 @@ function __shuggtool_prompt_command()
             # format the repo name and add it
             if [ ${__shuggtool_prompt_show_git_repo_name} -ne 0 ]; then
                 blocks_added=$((blocks_added+1))
-                repo_name="$(basename ${repo_url})"
-                repo_name="${repo_name%.*}"
-                
+
                 repo_name_bgc="${git_bgc}"
                 repo_name_fgc="0;30;128"
+
+                # extract the name from the remote URL, if the repository isn't
+                # bare. If it *IS* bare, we'll use a special name
+                if [ ${repo_is_bare} -eq 0 ]; then
+                    repo_name="$(basename ${repo_url})"
+                    repo_name="${repo_name%.*}"
+                else
+                    repo_name="[BARE]"
+                    repo_name_fgc="128;30;0"
+                fi
+                
                 __shuggtool_prompt_block "${repo_name_bgc}" "${repo_name_fgc}" " ${repo_name}"
             fi
             
@@ -377,7 +395,7 @@ function __shuggtool_prompt_command()
             if [ ${__shuggtool_prompt_show_git_repo_diff} -ne 0 ]; then 
                 blocks_added=$((blocks_added+1))
                 # get number of modified files and other stats
-                stat="$(git diff --shortstat)"
+                stat="$(git diff --shortstat 2> /dev/null)"
                 stat_files="$(echo ${stat} | cut -d "," -f 1 | xargs | cut -d " " -f 1)"
                 stat_adds="$(echo ${stat} | cut -d "," -f 2 | xargs | cut -d " " -f 1)"
                 stat_dels="$(echo ${stat} | cut -d "," -f 3 | xargs | cut -d " " -f 1)"
