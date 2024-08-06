@@ -183,11 +183,11 @@ function __shuggtool_toolsetup_vim_plugins()
     # make a single commit. This is required by Vundle; when you point it at a
     # file-local directory containing a plugin, it expects a git repository to
     # be initialized for it
-    pushd ${vim_plugin_dst}                 > /dev/null
-    git init                                > /dev/null
-    git add .                               > /dev/null
-    git commit -m "LOCAL PLUGIN INSTALL"    > /dev/null
-    popd                                    > /dev/null
+    pushd ${vim_plugin_dst}                 2>&1 > /dev/null
+    git init                                2>&1 > /dev/null
+    git add .                               2>&1 > /dev/null
+    git commit -m "LOCAL PLUGIN INSTALL"    2>&1 > /dev/null
+    popd                                    2>&1 > /dev/null
 
     # print out the result
     pcount=0
