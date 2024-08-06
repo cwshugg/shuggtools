@@ -161,33 +161,42 @@ function __shuggtool_toolsetup_vim_theme()
 # Helper function used to load any plugins I've created or use.
 function __shuggtool_toolsetup_vim_plugins()
 {
-    # in the shuggtools home directory there's a 'vim/' directory containing
-    # plugins I've written. We'll locate it and copy import/read statements
-    # into the vimrc
-    vim_plugin_src=${sthome}/vim/plugin
-    vim_plugin_dst=~/.vim/plugin
-
-    # make the directory if it doesn't exist
+    # set up the source and destination for plugin files
+    vim_plugin_src=${sthome}/vim/shuggtools
+    vim_plugin_dst=~/.vim/shuggtools
     if [ ! -d ${vim_plugin_dst} ]; then
-        mkdir ${vim_plugin_dst}
+        mkdir -p ${vim_plugin_dst}
     fi
+    rm -rf ${vim_plugin_dst}/* ${vim_plugin_dst}/.git
 
-    __shuggtool_toolsetup_print_note "Installing my plugins and vim scripts..."
+    # if the Vundle-based directory exists, delete it
+    vundle_plugin_dir=~/.vim/bundle/shuggtools
+    if [ -d ${vundle_plugin_dir} ]; then
+        rm -rf ${vundle_plugin_dir}
+    fi
+    
+    # copy all plugin files to the destination
+    __shuggtool_toolsetup_print_note "Installing my local plugins..."
+    cp -r ${vim_plugin_src}/* ${vim_plugin_dst}/
+
+    # initialize an empty git repository in this destination directory, and
+    # make a single commit. This is required by Vundle; when you point it at a
+    # file-local directory containing a plugin, it expects a git repository to
+    # be initialized for it
+    pushd ${vim_plugin_dst}                 > /dev/null
+    git init                                > /dev/null
+    git add .                               > /dev/null
+    git commit -m "LOCAL PLUGIN INSTALL"    > /dev/null
+    popd                                    > /dev/null
+
+    # print out the result
     pcount=0
-    for fpath in ${vim_plugin_src}/*.vim; do
-        # if for some reason we're not looking at a file, skip it
-        if [ ! -f ${fpath} ]; then
-            continue
-        fi
-        
-        # copy the vim file into the correct directory
-        fname=shuggtool_$(basename ${fpath})
-        cp ${fpath} ${vim_plugin_dst}/${fname}
-
-        __shuggtool_toolsetup_print_good "${STAB_TREE2}copied ${C_GREEN}${fname}${C_NONE}."
+    for f in ${vim_plugin_dst}/plugin/*.vim; do
+        fname="$(basename "${f}")"
+        __shuggtool_toolsetup_print_good "${STAB_TREE2}installed ${C_GREEN}${fname}${C_NONE}."
         pcount=$((pcount+1))
     done
-    __shuggtool_toolsetup_print_good "${STAB_TREE1}copied ${pcount} plugins from ${C_LTBLUE}${vim_plugin_src}${C_NONE}."
+    __shuggtool_toolsetup_print_good "${STAB_TREE1}installed ${pcount} plugin(s) from ${C_LTBLUE}${vim_plugin_src}${C_NONE}."
 }
 
 # Helper function that installs vundle, a vim plugin manager.
