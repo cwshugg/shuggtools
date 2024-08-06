@@ -184,7 +184,7 @@ function __shuggtool_toolsetup_vim_plugins()
     # file-local directory containing a plugin, it expects a git repository to
     # be initialized for it
     pushd ${vim_plugin_dst}                 2>&1 > /dev/null
-    git init                                2>&1 > /dev/null
+    git init -q                             2>&1 > /dev/null
     git add .                               2>&1 > /dev/null
     git commit -m "LOCAL PLUGIN INSTALL"    2>&1 > /dev/null
     popd                                    2>&1 > /dev/null
