@@ -49,6 +49,7 @@ if s:os_linux
     Plugin 'https://github.com/gcmt/taboo.vim'
     Plugin 'https://github.com/mhinz/vim-startify'
     Plugin 'https://github.com/cwshugg/argonaut.vim'
+    Plugin 'https://github.com/cwshugg/fops.vim'
     
     call vundle#end()                       " finish vundle setup
     filetype plugin indent on               " required by vundle
