@@ -50,6 +50,7 @@ if s:os_linux
     Plugin 'https://github.com/mhinz/vim-startify'
     Plugin 'https://github.com/cwshugg/argonaut.vim'
     Plugin 'https://github.com/cwshugg/fops.vim'
+    Plugin 'file://' . expand('~/.vim/shuggtools')
     
     call vundle#end()                       " finish vundle setup
     filetype plugin indent on               " required by vundle

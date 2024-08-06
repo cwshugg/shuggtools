@@ -16,8 +16,8 @@ let g:dl_line_prefix = ''   " prefix for the line
 let g:dl_line_suffix = ''   " suffix for the line
 
 " ============================= Helper Functions ============================= "
-" DL_CCO - Capture Command Output. Runs the given command and returns the output
-function! DL_CCO(cmd)
+" dl#cco - Capture Command Output. Runs the given command and returns the output
+function! dl#cco(cmd) abort
     let s:cco_out = ''
     redir =>> s:cco_out
     silent execute a:cmd
@@ -29,15 +29,15 @@ function! DL_CCO(cmd)
 endfunction
 
 " Function to get the current cursor position.
-function! DL_CursorPosition()
+function! dl#cursor_position() abort
     let l:pos = getpos('.')
     return l:pos
 endfunction
 
 " Function to get the current file type as a string.
-function! DL_GetFileType()
+function! dl#get_file_type() abort
     " get the filetype that was detected by vim
-    let l:ft = DL_CCO('set filetype?')
+    let l:ft = dl#cco('set filetype?')
     if strlen(l:ft) == 0
         return ""
     endif
@@ -126,12 +126,12 @@ let s:argset = argonaut#argset#new([
 \ ])
 
 " Tab-completion function for the command.
-function! DL_ArgumentCompletion(arg, line, pos) abort
+function! dl#argument_completion(arg, line, pos) abort
     return argonaut#completion#complete(a:arg, a:line, a:pos, s:argset)
 endfunction
 
 " Uses the argument parser to process all arguments.
-function! DL_ProcessArguments(parser) abort
+function! dl#process_arguments(parser) abort
     let l:extras = argonaut#argparser#get_extra_args(a:parser)
 
     if argonaut#argparser#has_arg(a:parser, '--message')
@@ -159,8 +159,8 @@ endfunction
 
 
 " ============================ Main Functionality ============================ "
-" Helper function for DL_SetLineCharacters that simply sets all three globals.
-function! DL_SetLineCharacterGlobals(mid, pfx, sfx)
+" Helper function for dl#set_line_characters that simply sets all three globals.
+function! dl#set_line_character_globals(mid, pfx, sfx) abort
     if strlen(g:dl_line_mid) == 0
         let g:dl_line_mid = a:mid
     endif
@@ -174,29 +174,29 @@ endfunction
 
 " Function that takes in a string representation of the current file type and
 " uses it to set the global variables (declared above) used to draw the line.
-function! DL_SetLineCharacters(ft)
+function! dl#set_line_characters(ft) abort
     if a:ft ==? 'vim'
-        call DL_SetLineCharacterGlobals('=', '"', '"')
+        call dl#set_line_character_globals('=', '"', '"')
     elseif a:ft ==? 'c' ||  a:ft ==? 'cpp' || a:ft ==? 'cc'
-        call DL_SetLineCharacterGlobals('=', '//', '//')
+        call dl#set_line_character_globals('=', '//', '//')
     elseif a:ft ==? 'java' ||  a:ft ==? "javascript"
-        call DL_SetLineCharacterGlobals('=', '//', '//')
+        call dl#set_line_character_globals('=', '//', '//')
     elseif a:ft ==? 'python' || a:ft ==? 'sh'
-        call DL_SetLineCharacterGlobals('=', '#', '#')
+        call dl#set_line_character_globals('=', '#', '#')
     elseif a:ft ==? 'html'
-        call DL_SetLineCharacterGlobals('-', '<!--', '-->')
+        call dl#set_line_character_globals('-', '<!--', '-->')
     else
         " this is the default setting for anything non-detected
         if g:dl_line_mid ==? ''
             let g:dl_line_mid = '='
         endif
-        call DL_SetLineCharacterGlobals(g:dl_line_mid, g:dl_line_prefix, g:dl_line_suffix)
+        call dl#set_line_character_globals(g:dl_line_mid, g:dl_line_prefix, g:dl_line_suffix)
     endif
 endfunction
 
 " Main function for this plugin. Arguments are as follows:
 " Where all three are optional.
-function! DL(input)
+function! dl#main(input) abort
     " set local and global defaults
     let g:dl_msg = ''
     let g:dl_column_max = 80
@@ -205,8 +205,8 @@ function! DL(input)
     "let g:dl_line_suffix = ''
 
     " try to process the current file type
-    let l:ft = DL_GetFileType()
-    call DL_SetLineCharacters(l:ft)
+    let l:ft = dl#get_file_type()
+    call dl#set_line_characters(l:ft)
 
     " build an argument parser and parse
     let l:parser = argonaut#argparser#new(s:argset)
@@ -223,11 +223,11 @@ function! DL(input)
     endif
 
     " otherwise, process all argument values
-    call DL_ProcessArguments(l:parser)
+    call dl#process_arguments(l:parser)
     
     " get the cursor position and extract the horizontal spacing. Print and
     " return on failure
-    let l:cp = DL_CursorPosition()
+    let l:cp = dl#cursor_position()
     if len(l:cp) < 3
         echo 'Failed to get the cursor position. Cannot draw a divider line.'
         return
@@ -293,11 +293,4 @@ function! DL(input)
     " finally, invoke setline() to set the current line's value
     call setline(l:row, l:spaces . l:line)
 endfunction
-
-" Command - shortens the use in vim.
-command!
-    \ -nargs=*
-    \ -complete=customlist,DL_ArgumentCompletion
-    \ DL
-    \ call DL(<q-args>)
 
