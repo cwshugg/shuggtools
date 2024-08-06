@@ -290,7 +290,7 @@ function __shuggtool_prompt_command()
         # determine if the repository is bare, if no remote URL was found
         repo_is_bare=0
         if [ -z "${repo_url}" ]; then
-            if [[ "$(git rev-parse --is-bare-repository)" == "true" ]]; then
+            if [[ "$(git rev-parse --is-bare-repository 2> /dev/null)" == "true" ]]; then
                 repo_is_bare=1
             fi
         fi
