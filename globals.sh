@@ -74,13 +74,18 @@ function __shuggtool_color_hash_helper()
     green=$(((str_hash/5)%256))
     blue=$(((str_hash/2)%256))
 
-    # brighten up one of the colors, if needed
+    # brighten up the colors, if needed
     if [ ${red} -lt 100 ]; then
-        red=100
-    elif [ ${green} -lt 100 ]; then
-        green=100
-    elif [ ${blue} -lt 100 ]; then
-        blue=100
+        increment=$(((str_hash/4)%100))
+        red=$((red+increment))
+    fi
+    if [ ${green} -lt 100 ]; then
+        increment=$(((str_hash/6)%100))
+        green=$((green+increment))
+    fi
+    if [ ${blue} -lt 100 ]; then
+        increment=$(((str_hash/8)%100))
+        blue=$((blue+increment))
     fi
 
     # choose foreground or background
