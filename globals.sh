@@ -76,15 +76,15 @@ function __shuggtool_color_hash_helper()
 
     # brighten up the colors, if needed
     if [ ${red} -lt 100 ]; then
-        increment=$(((str_hash/4)%100))
+        increment=$((((str_hash/7)%50)+25))
         red=$((red+increment))
     fi
     if [ ${green} -lt 100 ]; then
-        increment=$(((str_hash/6)%100))
+        increment=$((((str_hash/9)%50)+25))
         green=$((green+increment))
     fi
     if [ ${blue} -lt 100 ]; then
-        increment=$(((str_hash/8)%100))
+        increment=$((((str_hash/15)%50)+25))
         blue=$((blue+increment))
     fi
 
