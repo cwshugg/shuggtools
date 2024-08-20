@@ -91,7 +91,7 @@ function __todos_grep_for_tag()
             done
 
             # print the remainder of the line
-            echo -e ": ${fline}"
+            echo -e ": $(echo "${fline}" | xargs)"
         done
     fi
 
