@@ -90,8 +90,9 @@ function __todos_grep_for_tag()
                 fi
             done
 
-            # print the remainder of the line
-            echo -e ": $(echo "${fline}" | xargs)"
+            # trim the leading whitespace off the line and print it
+            fline_trimmed="${fline##*( )}"
+            echo -e ": ${fline_trimmed}"
         done
     fi
 
