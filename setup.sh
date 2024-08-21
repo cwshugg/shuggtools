@@ -154,9 +154,21 @@ fi
 # invoke the setup function for all links that will go into the source directory
 __shuggtool_setup_source_dir
 
-# append the source directory to our PATH variable, as well as the current
-# directory (so we can locate executables and other files without having
-# to type './')
+# look for any `bin/` directories I might have on my system. We want to add
+# these to my PATH so I can access the binaries/scripts within from anywhere
+bins=( \
+    "${HOME}/bin" \
+    "${HOME}/toolbox/bin" \
+)
+for bin in ${bins[@]}; do
+    if [ -d "${bin}" ]; then
+        export PATH="${bin}:${PATH}"
+    fi
+done
+
+# append this repo's source directory to our PATH variable, as well as the
+# current directory (so we can locate executables and other files without
+# having to type './')
 PATH=$PATH:${source_dir}
 PATH=$PATH:./
 
