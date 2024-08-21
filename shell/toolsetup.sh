@@ -432,6 +432,10 @@ function __shuggtool_toolsetup_wezterm()
 # =================================== Main =================================== #
 function __shuggtool_toolsetup()
 {
+    __shuggtool_toolsetup_print_prefix="git"
+    __shuggtool_toolsetup_git
+    echo ""
+
     __shuggtool_toolsetup_print_prefix="vim"
     __shuggtool_toolsetup_vim
     echo ""
@@ -446,10 +450,6 @@ function __shuggtool_toolsetup()
 
     __shuggtool_toolsetup_print_prefix="cat"
     __shuggtool_toolsetup_cat
-    echo ""
-
-    __shuggtool_toolsetup_print_prefix="git"
-    __shuggtool_toolsetup_git
     echo ""
 
     __shuggtool_toolsetup_print_prefix="wezterm"
