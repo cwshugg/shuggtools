@@ -185,6 +185,11 @@ config.font = wezterm.font_with_fallback {
 }
 config.font_size = 11
 
+-- Enable the use of EGL to enable Wezterm to run on Windows virtual machines.
+-- See this GitHub issue to understand the issue this resolves:
+--      https://github.com/wez/wezterm/issues/1813
+config.prefer_egl = true
+
 -- FINAL LINE - return config object
 return config
 
