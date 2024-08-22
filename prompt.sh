@@ -318,7 +318,7 @@ function __shuggtool_prompt_command()
                 # extract the name from the remote URL, if the repository isn't
                 # bare. If it *IS* bare, we'll use a special name
                 if [ ${repo_is_bare} -eq 0 ]; then
-                    repo_name="$(basename ${repo_url})"
+                    repo_name="$(basename "${repo_url}")"
                     repo_name="${repo_name%.*}"
                 else
                     repo_name="[BARE]"
