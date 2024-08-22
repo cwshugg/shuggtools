@@ -41,13 +41,16 @@ if s:os_linux
     set rtp+=$HOME/.vim/bundle/Vundle.vim   " add vundle to vim's runtime path
     call vundle#begin()
     
-    " Plugin installation
+    " Vim community plugins
     Plugin 'VundleVim/Vundle.vim'           " required by vundle
     Plugin 'https://github.com/lambdalisue/fern.vim'
     Plugin 'https://github.com/vim-airline/vim-airline'
     Plugin 'https://github.com/vim-airline/vim-airline-themes'
     Plugin 'https://github.com/gcmt/taboo.vim'
     Plugin 'https://github.com/mhinz/vim-startify'
+    Plugin 'https://github.com/rust-lang/rust.vim'
+
+    " My plugins
     Plugin 'https://github.com/cwshugg/argonaut.vim'
     Plugin 'https://github.com/cwshugg/fops.vim'
     Plugin 'file://' . expand('~/.vim/shuggtools')
