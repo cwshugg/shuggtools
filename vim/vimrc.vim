@@ -43,16 +43,17 @@ if s:os_linux
     
     " Vim community plugins
     Plugin 'VundleVim/Vundle.vim'           " required by vundle
-    Plugin 'https://github.com/lambdalisue/fern.vim'
-    Plugin 'https://github.com/vim-airline/vim-airline'
-    Plugin 'https://github.com/vim-airline/vim-airline-themes'
-    Plugin 'https://github.com/gcmt/taboo.vim'
-    Plugin 'https://github.com/mhinz/vim-startify'
-    Plugin 'https://github.com/rust-lang/rust.vim'
+    Plugin 'lambdalisue/fern.vim'
+    Plugin 'vim-airline/vim-airline'
+    Plugin 'vim-airline/vim-airline-themes'
+    Plugin 'gcmt/taboo.vim'
+    Plugin 'mhinz/vim-startify'
+    Plugin 'dense-analysis/ale'
+    Plugin 'rust-lang/rust.vim'
 
     " My plugins
-    Plugin 'https://github.com/cwshugg/argonaut.vim'
-    Plugin 'https://github.com/cwshugg/fops.vim'
+    Plugin 'cwshugg/argonaut.vim'
+    Plugin 'cwshugg/fops.vim'
     Plugin 'file://' . expand('~/.vim/shuggtools')
     
     call vundle#end()                       " finish vundle setup
@@ -168,6 +169,41 @@ if s:os_linux
     
     " Create a shortcut to bring up Startify on the current buffer via Ctrl-N
     nnoremap <silent> <C-n> :Startify<CR>
+
+
+    " -------------------------- ALE Configuration --------------------------- "
+    " Thanks to Peter Malmgren's blog post:
+    " https://petermalmgren.com/rc-batch-day-9/
+
+    " Make the sign column always present, so it doesn't go away when all
+    " linter issues are fixed. This will be visually nice, as the disappearing
+    " of the column will no longer occur, thus not jumping all the characters
+    " left and right whenever linting issues arise and are fixed.
+    let g:ale_sign_column_always = 1
+
+    " Enable color changing of the sign column
+    let g:ale_change_sign_column_color = 1
+
+    " Set up ALE linters
+    let g:ale_linters = {
+        \ 'rust': ['analyzer'],
+    \ }
+
+    " Set up ALE fixers
+    let g:ale_fixers = {
+        \ 'rust': ['rustfmt', 'trim_whitespace', 'remove_trailing_lines'],
+    \ }
+
+    " Enable ALE completion, but set a delay of 1 second, so it's not opened
+    " all the time; only once I've paused from typing.
+    let g:ale_completion_enabled = 1
+    let g:ale_completion_delay = 1000
+
+    " Have ALE automatically import completion results from external modules.
+    let g:ale_completion_autoimport = 1
+
+    " Map Ctrl-LeftClick to invoke 'ALEGoToDefinition'
+    nnoremap <C-LeftMouse> :ALEGoToDefinition<CR>
 endif
 
 
