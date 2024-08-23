@@ -258,6 +258,12 @@ set is
 set mouse=a
 
 " --------------------------- Remaps and Shortcuts --------------------------- "
+" remap ':' to ';', so I can type commands with one less keystroke. (Normally
+" you have to press Shift + Semicolon, but now, I only have to write Semicolon
+" :))
+nnoremap ; :
+vnoremap ; :
+
 " the below shortcut allows you to press space to clear highlighted search terms
 " thanks to: https://vim.fandom.com/wiki/Highlight_all_search_pattern_matches
 nnoremap <silent> <Space> :nohlsearch<Bar>:echo<CR>
