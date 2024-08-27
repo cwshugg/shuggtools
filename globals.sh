@@ -505,3 +505,109 @@ function __shuggtool_os_signal_retval()
     done
 }
 
+
+# ----------------------------------- WSL ------------------------------------ #
+# Echoes a string if this function detects that the Linux system we're running
+# on is WSL. Otherwise, echoes nothing.
+function __shuggtool_wsl_detect()
+{
+    wsl_paths=( \
+        "/proc/sys/fs/binfmt_misc/WSLInterop" \
+        "/run/WSL" \
+    )
+    for path in ${wsl_paths[@]}; do
+        if [ -f "${path}" ]; then
+            echo "WSL DETECTED"
+            return 1
+        fi
+    done
+    return 0
+}
+
+# Attempts to discern my Windows username (if we're running on WSL). If WSL is
+# detected, this function will echo out a string that represents the inferred
+# Windows username.
+#
+# If no username is guessed based on what's present in `/mnt/c/Users/*`, then a
+# long, obviously-not-a-username string is returned instead.
+function __shuggtool_wsl_get_windows_username()
+{
+    # if WSL is not detected, return early
+    if [ -z "$(__shuggtool_wsl_detect)" ]; then
+        return
+    fi
+
+    # otherwise, look at all entries within `/mnt/c/Users` and try to figure
+    # out which one is my Windows username
+    windows_users_dir="/mnt/c/Users"
+    windows_username="WINDOWS_USERNAME_NOT_FOUND"
+    for path in ${windows_users_dir}/*; do
+        name="$(basename "${path}")"
+
+        # skip default/built-in names
+        defaults=( \
+            "All Users" \
+            "Default" \
+            "Default User" \
+            "Public" \
+            "admin" \
+        )
+        skip=0
+        for default in ${defaults[@]}; do
+            if [[ "${name}" == *"${default}"* ]]; then
+                skip=1
+                break
+            fi
+        done
+        if [ ${skip} -ne 0 ]; then
+            continue
+        fi
+
+        # look for any sign of my own name in the string
+        if [[ "${name}" == *"shugg"* ]] ||
+           [[ "${name}" == *"Shugg"* ]] ||
+           [[ "${name}" == *"SHUGG"* ]] ||
+           [[ "${name}" == *"connor"* ]] ||
+           [[ "${name}" == *"Connor"* ]] ||
+           [[ "${name}" == *"CONNOR"* ]]; then
+            # name found!
+            windows_username="${name}"
+            break
+        fi
+    done
+
+    echo -n "${windows_username}"
+}
+
+# Helper function used to find specific folders under my user directory, such
+# as "Desktop", "Documents", etc. Takes in the name of the directory as an
+# argument, and echoes out the full path if found.
+function __shuggtool_wsl_find_user_directory()
+{
+    # if WSL is not detected, return early
+    if [ -z "$(__shuggtool_wsl_detect)" ]; then
+        return
+    fi
+
+    # first, get my windows username and make sure a valid one was found
+    user="$(__shuggtool_wsl_get_windows_username)"
+    user_path="/mnt/c/Users/${user}"
+    if [ ! -d "${user_path}" ]; then
+        return
+    fi
+
+    # next, look for the given directory in a few places. Start by searching
+    # OneDrive, then go to the local directories
+    dname="$1"
+    paths=( \
+        "${user_path}/OneDrive - Microsoft/${dname}" \
+        "${user_path}/${dname}" \
+    )
+    for path in "${paths[@]}"; do
+        if [ -d "${path}" ]; then
+            echo -n "${path}"
+            return
+        fi
+    done
+}
+

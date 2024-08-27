@@ -48,6 +48,16 @@ alias g="git"
 alias tmux-pane="tmux display -pt \"${TMUX_PANE:?}\" \"#{pane_index}\""
 
 
+# ----------------------------------- WSL ------------------------------------ #
+# Set up some paths on the Windows side of things, if WSL is detected.
+if [ ! -z "$(__shuggtool_wsl_detect)" ]; then
+    export WIN_DESKTOP="$(__shuggtool_wsl_find_user_directory "Desktop")"
+    export WIN_DOCUMENTS="$(__shuggtool_wsl_find_user_directory "Documents")"
+    export WIN_PICTURES="$(__shuggtool_wsl_find_user_directory "Pictures")"
+    export WIN_DOWNLOADS="$(__shuggtool_wsl_find_user_directory "Downloads")"
+fi
+
+
 # ------------------------------ Task Tracking ------------------------------- #
 # I am currently working on writing my own advanced task tracking tool, but in
 # the meantime, I need something to work with. This is a simple solution.
