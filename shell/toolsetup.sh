@@ -80,6 +80,18 @@ function __shuggtool_toolsetup_prompt()
     __shuggtool_toolsetup_prompt_result="${text}"
 }
 
+# Asks the user if they have sudo permissions.
+__shuggtool_toolsetup_has_sudo=0
+function __shuggtool_toolsetup_prompt_sudo()
+{
+    __shuggtool_prompt_yesno "Do you have ${C_LTRED}sudo${C_NONE} permissions?"
+    __shuggtool_toolsetup_has_sudo=$?
+    if [ ${__shuggtool_toolsetup_has_sudo} -ne 0 ]; then
+        return 1
+    fi
+    return 0
+}
+
 
 # =================================== Vim ==================================== #
 __shuggtool_toolsetup_vim_theme_name="elflord" # by default, we'll use this theme
@@ -316,9 +328,7 @@ function __shuggtool_toolsetup_cat()
     fi
     
     # determine if we have user permissions
-    __shuggtool_prompt_yesno "Do you have ${C_YELLOW}sudo${C_NONE} permissions?"
-    yes=$?
-    if [ ${yes} -ne 0 ]; then
+    if [ ${__shuggtool_toolsetup_has_sudo} -ne 0 ]; then
         __shuggtool_toolsetup_print_note "Installing ${C_YELLOW}bat${C_NONE} via apt-get."
         sudo apt install bat
         return
@@ -429,9 +439,52 @@ function __shuggtool_toolsetup_wezterm()
 }
 
 
+# ========================== Glow Markdown Renderer ========================== #
+# Installs charm.sh's `glow`, a command-line markdown renderer.
+function __shuggtool_toolsetup_glow()
+{
+    # check if glow is already installed
+    glow="$(which glow 2> /dev/null)"
+    if [ ! -z "${glow}" ]; then
+        __shuggtool_toolsetup_print_good "Glow is already installed."
+        return
+    fi
+
+    # this only works with sudo permissions
+    if [ ${__shuggtool_toolsetup_has_sudo} -eq 0 ]; then
+        __shuggtool_toolsetup_print_bad "Cannot install glow; you do not have ${C_LTRED}sudo${C_NONE} permissions."
+        return
+    fi
+        
+   __shuggtool_toolsetup_print_note "Installing charm.sh GPG to keyring..."
+    keyring_dir="/etc/apt/keyrings"
+    if [ ! -d "${keyring_dir}" ]; then
+        sudo mkdir -p "${keyring_dir}"
+    fi
+    curl -fsSL "https://repo.charm.sh/apt/gpg.key" | \
+        sudo gpg --dearmor -o "${keyring_dir}/charm.gpg"
+    echo "deb [signed-by=/etc/apt/keyrings/charm.gpg] https://repo.charm.sh/apt/ * *" | \
+        sudo tee "/etc/apt/sources.list.d/charm.list"
+
+    __shuggtool_toolsetup_print_note "Updating with charm.sh GPG and installing glow..."
+    sudo apt update
+    sudo apt install glow
+}
+
+
 # =================================== Main =================================== #
 function __shuggtool_toolsetup()
 {
+    echo "Welcome to the tool setup script."
+    __shuggtool_toolsetup_print_prefix=""
+
+    __shuggtool_toolsetup_prompt_sudo
+    if [ ${__shuggtool_toolsetup_has_sudo} -eq 0 ]; then
+        __shuggtool_toolsetup_print_bad "Some tools may not be able to be installed," \
+                                        "since you do not have ${C_LTRED}sudo${C_NONE} permissions."
+    fi
+    echo ""
+
     __shuggtool_toolsetup_print_prefix="git"
     __shuggtool_toolsetup_git
     echo ""
@@ -454,6 +507,13 @@ function __shuggtool_toolsetup()
 
     __shuggtool_toolsetup_print_prefix="wezterm"
     __shuggtool_toolsetup_wezterm
+    echo ""
+    
+    __shuggtool_toolsetup_print_prefix="glow"
+    __shuggtool_toolsetup_glow
+    echo ""
+    
+    echo "Setup complete. Please source your bashrc file."
 }
 
 __shuggtool_toolsetup "$@"
