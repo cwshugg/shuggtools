@@ -34,6 +34,13 @@ if [ ! -z "${bat_binary}" ]; then
     alias pcat="${bat_binary} --style=plain"
 fi
 
+# alias 'md' and 'mdcat' to 'glow'
+glow_binary="$(which glow 2> /dev/null)"
+if [ ! -z "${glow_binary}" ]; then
+    alias md="${glow_binary}"
+    alias mdcat="${glow_binary}"
+fi
+
 # coding/debugging aliases
 alias valg="valgrind -v --leak-check=full --show-leak-kinds=all --track-origins=yes"
 alias gdb="gdb -q" # quiet-mode GDB (don't print intro)
