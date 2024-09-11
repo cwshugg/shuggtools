@@ -70,6 +70,18 @@ function __shuggtool_setup_file_boilerplate()
     /bin/rm ${tfpath}
 }
 
+# Adds the given path string to the end of the PATH environment variable, so
+# long as it already does not appear in PATH.
+function __shuggtool_setup_path_append()
+{
+    p="$(realpath $1)"
+    if [[ "${PATH}" == *"${p}"* ]]; then
+        return
+    fi
+
+    export PATH="$PATH:${p}"
+}
+
 # Optional function that sets up the 'source directory' (the location that gets
 # added to the user's $PATH). This function modifies the scripts within shell/
 # by adding a small boilerplate bit of shell code that sources globals.sh, adds
@@ -169,8 +181,8 @@ done
 # append this repo's source directory to our PATH variable, as well as the
 # current directory (so we can locate executables and other files without
 # having to type './')
-PATH=$PATH:${source_dir}
-PATH=$PATH:./
+__shuggtool_setup_path_append "${source_dir}"
+__shuggtool_setup_path_append "./"
 
 # setup and source our other files - aliases, prompt setup, etc.
 other_files=( aliases.sh prompt.sh )
