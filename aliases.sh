@@ -34,11 +34,11 @@ if [ ! -z "${bat_binary}" ]; then
     alias pcat="${bat_binary} --style=plain"
 fi
 
-# alias 'md' and 'mdcat' to 'glow'
+# alias 'mdcat' and 'mdpcat' to 'glow'
 glow_binary="$(which glow 2> /dev/null)"
 if [ ! -z "${glow_binary}" ]; then
-    alias md="${glow_binary}"
-    alias mdcat="${glow_binary}"
+    alias mdcat="${glow_binary} --width 80"
+    alias mdpcat="${glow_binary} --width 80 --pager"
 fi
 
 # coding/debugging aliases
