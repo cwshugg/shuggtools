@@ -262,6 +262,9 @@ set is
 " Enable the mouse everywhere in Vim
 set mouse=a
 
+" set the leader key to a comma
+let mapleader = ","
+
 " --------------------------- Remaps and Shortcuts --------------------------- "
 " remap ':' to ';', so I can type commands with one less keystroke. (Normally
 " you have to press Shift + Semicolon, but now, I only have to write Semicolon
