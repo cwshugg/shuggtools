@@ -226,6 +226,9 @@ set softtabstop=4
 set autoindent
 filetype indent on
 
+" Show Vim commands as I type them
+set showcmd
+
 " Display page numbers, and make them relative to the current line the cursor
 " is on. (I like this; I use the relative line numbers to know how many lines
 " to jump/delete/yank/etc. from my current cursor position.)
