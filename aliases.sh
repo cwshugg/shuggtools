@@ -18,12 +18,6 @@ if [[ ${cscope_exists} != *"no cscope"* ]]; then
     export CSCOPE_EDITOR="${vim}"
 fi
 
-# change the git core editor to vim
-git="$(which git 2>&1)"
-if [ ! -z "${git}" ]; then
-    ${git} config --global core.editor "'${vim}'"
-fi
-
 # alias 'bat' or 'batcat' to 'cat' (syntax-highlighting!)
 bat_binary="$(which batcat 2> /dev/null)"
 if [ -z "${bat_binary}" ]; then
@@ -54,14 +48,21 @@ alias g="git"
 # tmux aliases
 alias tmux-pane="tmux display -pt \"${TMUX_PANE:?}\" \"#{pane_index}\""
 
+# are we on WSL?
+is_wsl=0
+if [ ! -z "$(__shuggtool_wsl_detect)" ]; then
+    is_wsl=1
+fi
 
 # ----------------------------------- WSL ------------------------------------ #
 # Set up some paths on the Windows side of things, if WSL is detected.
-if [ ! -z "$(__shuggtool_wsl_detect)" ]; then
+if [ ${is_wsl} -ne 0 ]; then
+    # set up environment variables to point at various windows locations
     export WIN_DESKTOP="$(__shuggtool_wsl_find_user_directory "Desktop")"
     export WIN_DOCUMENTS="$(__shuggtool_wsl_find_user_directory "Documents")"
     export WIN_PICTURES="$(__shuggtool_wsl_find_user_directory "Pictures")"
     export WIN_DOWNLOADS="$(__shuggtool_wsl_find_user_directory "Downloads")"
+    export WIN_DEV="$(__shuggtool_wsl_find_user_directory "dev")"
 fi
 
 

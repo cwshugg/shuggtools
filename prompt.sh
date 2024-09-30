@@ -82,6 +82,12 @@ function __shuggtool_prompt_configure_expand()
     __shuggtool_prompt_configure_collapse_helper 0 "$1"
 }
 
+# Used to enable or disable git in the prompt
+function __shuggtool_prompt_configure_git()
+{
+    __shuggtool_prompt_show_git=$1
+}
+
 # Expansion/collapsing aliases
 alias prompt-collapse="__shuggtool_prompt_configure_collapse"
 alias prompt-collapse-username="__shuggtool_prompt_configure_collapse \"username\""
@@ -93,6 +99,8 @@ alias prompt-expand-username="__shuggtool_prompt_configure_expand \"username\""
 alias prompt-expand-hostname="__shuggtool_prompt_configure_expand \"hostname\""
 alias prompt-expand-pwd="__shuggtool_prompt_configure_expand \"pwd\""
 alias prompt-expand-workspace="__shuggtool_prompt_configure_expand \"workspace\""
+alias prompt-enable-git="__shuggtool_prompt_configure_git 1"
+alias prompt-disable-git="__shuggtool_prompt_configure_git 0"
 
 
 # -------------------------- Prompt String Building -------------------------- #
@@ -285,12 +293,21 @@ function __shuggtool_prompt_command()
 
     # check for the current git repo
     if [ ${__shuggtool_prompt_show_git} -ne 0 ]; then
-        repo_url="$(git remote get-url origin 2> /dev/null)"
+        # grab a path to the git binary, determine if it's a Windows executable
+        # (if that's the case we must be on WSL, executing `git` on the Windows
+        # filesystem)
+        git="$(__shuggtool_git_binary)"
+        repo_is_on_windows=0
+        if [[ "${git}" == *".exe" ]]; then
+            repo_is_on_windows=1
+        fi
+
+        repo_url="$("${git}" remote get-url origin 2> /dev/null)"
 
         # determine if the repository is bare, if no remote URL was found
         repo_is_bare=0
         if [ -z "${repo_url}" ]; then
-            if [[ "$(git rev-parse --is-bare-repository 2> /dev/null)" == "true" ]]; then
+            if [[ "$("${git}" rev-parse --is-bare-repository 2> /dev/null)" == "true" ]]; then
                 repo_is_bare=1
             fi
         fi
@@ -307,6 +324,13 @@ function __shuggtool_prompt_command()
             # add a prefix and count what we're displaying
             __shuggtool_prompt_block_separator "${pfx_bgc}" "${pfx_fgc}"
             blocks_added=0
+
+            # if we're running Git on Windows, add an icon to indicate this
+            if [ ${repo_is_on_windows} -ne 0 ]; then
+                repo_windows_bgc="${git_bgc}"
+                repo_windows_fgc="0;164;239"
+                __shuggtool_prompt_block "${repo_windows_bgc}" "${repo_windows_fgc}" " ❖"
+            fi
 
             # format the repo name and add it
             if [ ${__shuggtool_prompt_show_git_repo_name} -ne 0 ]; then
@@ -331,7 +355,7 @@ function __shuggtool_prompt_command()
             # format the repo branch and add it
             if [ ${__shuggtool_prompt_show_git_repo_branch} -ne 0 ]; then
                 blocks_added=$((blocks_added+1))
-                repo_branch="$(git rev-parse --abbrev-ref HEAD 2> /dev/null)"
+                repo_branch="$("${git}" rev-parse --abbrev-ref HEAD 2> /dev/null)"
                 repo_tag=""
 
                 # if the branch name itself is displayed as HEAD, we won't
@@ -340,7 +364,7 @@ function __shuggtool_prompt_command()
                 is_detached=0
                 if [[ "${repo_branch}" == "HEAD" ]]; then
                     is_detached=1
-                    repo_tag="$(git describe --tags --abbrev=0 2> /dev/null)"
+                    repo_tag="$("${git}" describe --tags --abbrev=0 2> /dev/null)"
                 fi
 
                 # add a separator between the repo name and branch name
@@ -368,7 +392,7 @@ function __shuggtool_prompt_command()
                 if [ ${is_detached} -eq 0 ]; then
                     # parse out the number of commits AHEAD and BEHIND the
                     # remote end (default to 0 if we don't get any output)
-                    commit_counts=($(git rev-list --count --left-right HEAD...@{upstream} 2> /dev/null))
+                    commit_counts=($("${git}" rev-list --count --left-right HEAD...@{upstream} 2> /dev/null))
                     commits_ahead=0
                     commits_behind=0
                     if [ ! -z "${commit_counts}" ]; then
@@ -395,7 +419,7 @@ function __shuggtool_prompt_command()
             if [ ${__shuggtool_prompt_show_git_repo_diff} -ne 0 ]; then 
                 blocks_added=$((blocks_added+1))
                 # get number of modified files and other stats
-                stat="$(git diff --shortstat 2> /dev/null)"
+                stat="$("${git}" diff --shortstat 2> /dev/null)"
                 stat_files="$(echo ${stat} | cut -d "," -f 1 | xargs | cut -d " " -f 1)"
                 stat_adds="$(echo ${stat} | cut -d "," -f 2 | xargs | cut -d " " -f 1)"
                 stat_dels="$(echo ${stat} | cut -d "," -f 3 | xargs | cut -d " " -f 1)"

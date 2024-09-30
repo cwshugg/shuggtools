@@ -611,3 +611,33 @@ function __shuggtool_wsl_find_user_directory()
     done
 }
 
+# Returns a path to the git executable that should be used by the shell.
+function __shuggtool_git_binary()
+{
+    # the WSL-based git is very slow when it's executing on files on the
+    # Windows mount (i.e. `/mnt/c/*`). To fix this, we will switch to use
+    # `git.exe` when the shell is under this directory
+    #
+    # Source: https://markentier.tech/posts/2020/10/faster-git-under-wsl2/
+    if [ ! -z "$(__shuggtool_wsl_detect)" ]; then
+        if $(pwd -P | grep -q "^\/mnt\/c\/*"); then
+            git="$(which git.exe 2> /dev/null)"
+            if [ ! -z "${git}" ]; then
+                echo "$(realpath "${git}")"
+                return
+            fi
+        fi
+    fi
+
+    # otherwise, return the standard Linux git
+    echo "$(realpath $(which git))"
+}
+
+# Git helper function.
+function __shuggtool_git()
+{
+    git="$(__shuggtool_git_binary)"
+    ${git} "$@"
+}
+alias git="__shuggtool_git"
+
