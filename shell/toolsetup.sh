@@ -346,70 +346,111 @@ function __shuggtool_toolsetup_cat()
 function __shuggtool_toolsetup_git()
 {
     git_config_src=${sthome}/git/.gitconfig
-    git_config_dst=~/.gitconfig
-
+    git_config_dsts=("${HOME}/.gitconfig")
+    
+    # make sure the source file exists
     if [ ! -f ${git_config_src} ]; then
         __shuggtool_toolsetup_print_bad "Failed to find source ${C_LTBLUE}$(basename ${git_config_src})${C_NONE}."
         return 1
     fi
 
-    # we don't want to blindly copy my gitconfig to the destination; we might
-    # overwrite something important an an existing .gitconfig. So, we'll do the
-    # following:
-
-    # first, check to see if a .gitconfig exists at the destination. If it
-    # doesn't, we'll create one
-    if [ ! -f ${git_config_dst} ]; then
-        __shuggtool_toolsetup_print_note "No git config file exists at ${C_LTBLUE}${git_config_dst}${C_NONE}."
-        __shuggtool_toolsetup_print_good "Creating new git config file."
-        touch ${git_config_dst}
+    # are we on WSL? If that's the case, we also want to adjust the
+    # `.gitconfig` that lives on the Windows filesystem
+    is_wsl=0
+    windows_username=""
+    if [ ! -z "$(__shuggtool_wsl_detect)" ]; then
+        is_wsl=1
+        windows_username="$(__shuggtool_wsl_get_windows_username)"
+        git_config_dsts+=("/mnt/c/Users/${windows_username}/.gitconfig")
     fi
+    
+    # do the following for each of the destination files
+    for git_config_dst in "${git_config_dsts[@]}"; do
+        git_config_src_real="$(realpath "${git_config_src}")"
+        # we don't want to blindly copy my gitconfig to the destination; we might
+        # overwrite something important an an existing .gitconfig. So, we'll do the
+        # following:
+    
+        # first, check to see if a .gitconfig exists at the destination. If it
+        # doesn't, we'll create one
+        if [ ! -f ${git_config_dst} ]; then
+            __shuggtool_toolsetup_print_note "No git config file exists at ${C_LTBLUE}${git_config_dst}${C_NONE}."
+            __shuggtool_toolsetup_print_good "Creating new git config file."
+            touch ${git_config_dst}
+        fi
 
-    # search the file to see if it has an `include` statement pointed at this
-    # file. If it doesn't, we'll add one to the bottom of the file
-    git_config_src_real="$(realpath "${git_config_src}")"
-    if [ -z "$(grep "\[include\]" "${git_config_dst}")" ] ||
-       [ -z "$(grep "path\s*=\s*${git_config_src_real}\s*" "${git_config_dst}")" ]; then
-        msg=""
-        msg="${msg}Found existing git config file at ${C_LTBLUE}${git_config_dst}${C_NONE} "
-        msg="${msg}with no include statement."
-        __shuggtool_toolsetup_print_note "${msg}"
-        
-        # add the line to the git config
-        echo -e "[include]\n    path = ${git_config_src_real}\n" >> "${git_config_dst}"
-        msg=""
-        msg="${msg}Added include statement to ${C_LTBLUE}${git_config_dist}${C_NONE} "
-        msg="${msg}to include configurations from ${C_LTBLUE}${git_config_src}${C_NONE}."
-        __shuggtool_toolsetup_print_good "${msg}"
-    fi
+        # add an extra step here for WSL; copy the original .gitconfig that
+        # I'll be including from to a location on the Windows filesystem. This
+        # will allow me to modify the [include] statement I'm adding below to
+        # point to a valid Windows path, so `git.exe` can pull in all of my
+        # aliases
+        if [ ${is_wsl} -ne 0 ]; then
+            # determine if the destination file is on Windows
+            __shuggtool_wsl_path_is_windows "${git_config_dst}"
+            path_is_windows=$?
+            if [ ${path_is_windows} -ne 0 ]; then
+                # copy the source file to a location on Windows
+                windows_dst_name=".gitconfig.$(whoami 2> /dev/null)"
+                windows_dst_path="/mnt/c/Users/${windows_username}/${windows_dst_name}"
+                cp "${git_config_src}" "${windows_dst_path}"
+                
+                # show a message
+                msg=""
+                msg="${msg}Copied ${C_LTBLUE}${git_config_src}${C_NONE} to "
+                msg="${msg}${C_LTBLUE}${windows_dst_path}${C_NONE} "
+                msg="${msg}on Windows filesystem."
+                __shuggtool_toolsetup_print_note "${msg}"
 
-    # search the file to see if it has a username and email field. If it
-    # doesn't, we'll add one
-    if [ -z "$(grep "\[user\]" "${git_config_dst}")" ]; then
-        __shuggtool_toolsetup_print_note "Found no user configuration in git config file."
-
-        # read the desired username
-        msg="What username would you like to use for your git config?"
-        __shuggtool_toolsetup_prompt "${msg}"
-        git_config_name="${__shuggtool_toolsetup_prompt_result}"
-
-        # read the desired email
-        msg="What email would you like to use for your git config?"
-        __shuggtool_toolsetup_prompt "${msg}"
-        git_config_email="${__shuggtool_toolsetup_prompt_result}"
-
-        # add the user block with the given values
-        echo -e "[user]"                                >> "${git_config_dst}"
-        echo -e "    name = \"${git_config_name}\""     >> "${git_config_dst}"
-        echo -e "    email = \"${git_config_email}\""   >> "${git_config_dst}"
-
-        # print a confirmation message
-        msg=""
-        msg="${msg}Added username ${C_YELLOW}${git_config_name}${C_NONE} "
-        msg="${msg}and email ${C_YELLOW}${git_config_email}${C_NONE} "
-        msg="${msg}to git config."
-        __shuggtool_toolsetup_print_good "${msg}"
-    fi
+                # update the config src path to use Windows file path notation
+                git_config_src_real="C:/Users/${windows_username}/${windows_dst_name}"
+            fi
+        fi
+    
+        # search the file to see if it has an `include` statement pointed at this
+        # file. If it doesn't, we'll add one to the bottom of the file
+        if [ -z "$(grep "\[include\]" "${git_config_dst}")" ] ||
+           [ -z "$(grep "path\s*=\s*${git_config_src_real}\s*" "${git_config_dst}")" ]; then
+            msg=""
+            msg="${msg}Found existing git config file at ${C_LTBLUE}${git_config_dst}${C_NONE} "
+            msg="${msg}with no include statement."
+            __shuggtool_toolsetup_print_note "${msg}"
+            
+            # add the line to the git config
+            echo -e "[include]\n    path = ${git_config_src_real}\n" >> "${git_config_dst}"
+            msg=""
+            msg="${msg}Added include statement to ${C_LTBLUE}${git_config_dst}${C_NONE} "
+            msg="${msg}to include configurations from ${C_LTBLUE}${git_config_src_real}${C_NONE}."
+            __shuggtool_toolsetup_print_good "${msg}"
+        fi
+    
+        # search the file to see if it has a username and email field. If it
+        # doesn't, we'll add one
+        if [ -z "$(grep "\[user\]" "${git_config_dst}")" ]; then
+            __shuggtool_toolsetup_print_note "Found no user configuration in git config file."
+    
+            # read the desired username
+            msg="What username would you like to use for your git config?"
+            __shuggtool_toolsetup_prompt "${msg}"
+            git_config_name="${__shuggtool_toolsetup_prompt_result}"
+    
+            # read the desired email
+            msg="What email would you like to use for your git config?"
+            __shuggtool_toolsetup_prompt "${msg}"
+            git_config_email="${__shuggtool_toolsetup_prompt_result}"
+    
+            # add the user block with the given values
+            echo -e "[user]"                                >> "${git_config_dst}"
+            echo -e "    name = \"${git_config_name}\""     >> "${git_config_dst}"
+            echo -e "    email = \"${git_config_email}\""   >> "${git_config_dst}"
+    
+            # print a confirmation message
+            msg=""
+            msg="${msg}Added username ${C_YELLOW}${git_config_name}${C_NONE} "
+            msg="${msg}and email ${C_YELLOW}${git_config_email}${C_NONE} "
+            msg="${msg}to git config."
+            __shuggtool_toolsetup_print_good "${msg}"
+        fi
+    done
 
     __shuggtool_toolsetup_print_good "Git config setup complete."
 }

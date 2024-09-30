@@ -2,7 +2,7 @@
 
 [core]
     excludesfile = ~/.gitignore
-    editor = /usr/bin/vim
+    editor = vim
 
 
 # =============================== Diffs/Merges =============================== #

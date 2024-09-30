@@ -611,6 +611,22 @@ function __shuggtool_wsl_find_user_directory()
     done
 }
 
+# Returns 1 if the provided file path is within the Windows filesystem. Returns
+# 0 otherwise.
+function __shuggtool_wsl_path_is_windows()
+{
+    path="$(realpath "$1")"
+
+    # determine if the path begins with `/mnt/c`
+    echo "${path}" | grep -q "^\/mnt\/c\/*"
+    match=$?
+    
+    if [ ${match} -eq 0 ]; then
+        return 1
+    fi
+    return 0
+}
+
 # Returns a path to the git executable that should be used by the shell.
 function __shuggtool_git_binary()
 {
@@ -620,7 +636,10 @@ function __shuggtool_git_binary()
     #
     # Source: https://markentier.tech/posts/2020/10/faster-git-under-wsl2/
     if [ ! -z "$(__shuggtool_wsl_detect)" ]; then
-        if $(pwd -P | grep -q "^\/mnt\/c\/*"); then
+        __shuggtool_wsl_path_is_windows "$(pwd -P)"
+        path_is_windows=$?
+
+        if [ ${path_is_windows} -ne 0 ]; then
             git="$(which git.exe 2> /dev/null)"
             if [ ! -z "${git}" ]; then
                 echo "$(realpath "${git}")"
@@ -637,7 +656,7 @@ function __shuggtool_git_binary()
 function __shuggtool_git()
 {
     git="$(__shuggtool_git_binary)"
-    ${git} "$@"
+    "${git}" "$@"
 }
 alias git="__shuggtool_git"
 
