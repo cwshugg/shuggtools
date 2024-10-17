@@ -207,6 +207,9 @@ if s:os_linux
     " pressing <ESC>, which is super annoying.
     let g:ale_lint_on_insert_leave = 0
 
+    " Only show virtual text warning messages for the current line.
+    let g:ale_virtualtext_cursor = 1
+
     " Map Ctrl-LeftClick to invoke 'ALEGoToDefinition'
     nnoremap <C-LeftMouse> :ALEGoToDefinition<CR>
 endif
