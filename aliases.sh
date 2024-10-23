@@ -58,6 +58,7 @@ fi
 # Set up some paths on the Windows side of things, if WSL is detected.
 if [ ${is_wsl} -ne 0 ]; then
     # set up environment variables to point at various windows locations
+    export WIN_HOME="/mnt/c/Users/$(__shuggtool_wsl_get_windows_username)"
     export WIN_DESKTOP="$(__shuggtool_wsl_find_user_directory "Desktop")"
     export WIN_DOCUMENTS="$(__shuggtool_wsl_find_user_directory "Documents")"
     export WIN_PICTURES="$(__shuggtool_wsl_find_user_directory "Pictures")"
