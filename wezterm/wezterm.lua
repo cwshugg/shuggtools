@@ -154,10 +154,10 @@ config.color_schemes = {
         -- Standard colors
         ansi = {
             "#000000",
-            "#900000",
-            "#009000",
-            "#D09000",
-            "#5F87FF",
+            "#700000",
+            "#005000",
+            "#B07000",
+            "#6585F0",
             "#876FFF",
             "#AFFFFF",
             "#E6E8E9",
@@ -167,7 +167,7 @@ config.color_schemes = {
             "#D70000",
             "#00D700",
             "#FFCE60",
-            "#5F87FF",
+            "#6080FF",
             "#AF00D7",
             "#20FFFF",
             "#FFFFFF"
