@@ -202,10 +202,11 @@ if s:os_linux
     " Have ALE automatically import completion results from external modules.
     let g:ale_completion_autoimport = 1
 
-    " Prevent ALE from performing linting immediately after exiting insert
-    " mode. This causes a ~1-second delay every time I exit insert mode when
-    " pressing <ESC>, which is super annoying.
+    " Prevent ALE from linting when I'm doing things in the buffer,
+    " such as leaving insert mode, or modifying a buffer. This creates lots of
+    " awful lag while I'm editing.
     let g:ale_lint_on_insert_leave = 0
+    let g:ale_lint_on_text_changed = 0
 
     " Only show virtual text warning messages for the current line.
     let g:ale_virtualtext_cursor = 1
