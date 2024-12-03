@@ -65,8 +65,11 @@
     # compare two branches (requires my script)
     branch-diff = !sh git-branchdiff $@
     
-    # wipe all currently unstage changes and files
+    # wipe all currently unstaged changes
     wipe = reset --hard HEAD
+
+    # wipe all currently unstaged changes AND delete *all* untracked files
+    nuke = !git reset --hard HEAD && git clean -f -d
 
     # unstage ALL currently staged changes
     unstage = reset HEAD --
