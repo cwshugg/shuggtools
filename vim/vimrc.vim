@@ -239,11 +239,6 @@ set showcmd
 set number
 set relativenumber
 
-" Disable automatic comment insertion for all file types. (This is when you
-" are typing a comment, then press enter, and Vim inserts a comment prefix in
-" the new line.)
-au FileType * set formatoptions-=cro
-
 " Give me LOTS of undos!
 set undolevels=1000
 
@@ -271,6 +266,15 @@ set mouse=a
 
 " set the leader key to a comma
 let mapleader = ","
+
+" Disable automatic comment insertion for all file types. (This is when you
+" are typing a comment, then press enter, and Vim inserts a comment prefix in
+" the new line.)
+" 
+" Run `:help fo-table` to see a description of each of these settings.
+set formatoptions-=c
+set formatoptions-=r
+set formatoptions-=o
 
 " --------------------------- Remaps and Shortcuts --------------------------- "
 " remap ':' to ';', so I can type commands with one less keystroke. (Normally
