@@ -74,7 +74,14 @@ function __shuggtool_setup_file_boilerplate()
 # long as it already does not appear in PATH.
 function __shuggtool_setup_path_append()
 {
-    p="$(realpath $1)"
+    # expand the path string to use the full file path, unless it's the special
+    # "current directory" syntax
+    p="$1"
+    if [[ "${p}" != "./" ]]; then
+        p="$(realpath $1)"
+    fi
+    
+    # if the path already contains the string, return early
     if [[ "${PATH}" == *"${p}"* ]]; then
         return
     fi
