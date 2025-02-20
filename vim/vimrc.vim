@@ -276,6 +276,9 @@ set formatoptions-=c
 set formatoptions-=r
 set formatoptions-=o
 
+" Make Vim display the number of matches to my current search.
+set shortmess-=S
+
 " --------------------------- Remaps and Shortcuts --------------------------- "
 " remap ':' to ';', so I can type commands with one less keystroke. (Normally
 " you have to press Shift + Semicolon, but now, I only have to write Semicolon
