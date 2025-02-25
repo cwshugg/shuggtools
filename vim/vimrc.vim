@@ -280,10 +280,9 @@ let mapleader = ","
 " https://stackoverflow.com/questions/62943758
 augroup FORMATOPTIONS
     autocmd!
-    autocmd filetype *
-          \ set formatoptions-=c
-          \ set formatoptions-=r
-          \ set formatoptions-=o
+    autocmd filetype * set formatoptions-=c
+                     \ set formatoptions-=r
+                     \ set formatoptions-=o
 augroup END
 
 " Make Vim display the number of matches to my current search.
