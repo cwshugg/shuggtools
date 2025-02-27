@@ -272,9 +272,21 @@ let mapleader = ","
 " the new line.)
 " 
 " Run `:help fo-table` to see a description of each of these settings.
-set formatoptions-=c
-set formatoptions-=r
-set formatoptions-=o
+"
+" Also, rather than just writing `set formatoptions-=c`, etc.,, I am wrapping
+" this in an `augroup`, to prevent *other* plugins from modifying these
+" options.  See this StackOverflow post for the inspiration:
+"
+" https://stackoverflow.com/questions/62943758
+augroup FORMATOPTIONS
+    autocmd!
+    autocmd filetype * set formatoptions-=c
+                         \ formatoptions-=r
+                         \ formatoptions-=o
+augroup END
+
+" Make Vim display the number of matches to my current search.
+set shortmess-=S
 
 " --------------------------- Remaps and Shortcuts --------------------------- "
 " remap ':' to ';', so I can type commands with one less keystroke. (Normally
