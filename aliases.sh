@@ -45,8 +45,10 @@ alias h="history"
 alias bell="echo -en \"\a\""
 alias g="git"
 
-# tmux aliases
-alias tmux-pane="tmux display -pt \"${TMUX_PANE:?}\" \"#{pane_index}\""
+# tmux aliases; only set when launching a shell inside of tmux
+if [ ! -z "${TMUX}" ]; then
+    alias tmux-pane="tmux display -pt \"${TMUX_PANE:?}\" \"#{pane_index}\""
+fi
 
 # are we on WSL?
 is_wsl=0
