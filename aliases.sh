@@ -63,7 +63,16 @@ if [ ${is_wsl} -ne 0 ]; then
     export WIN_DOCUMENTS="$(__shuggtool_wsl_find_user_directory "Documents")"
     export WIN_PICTURES="$(__shuggtool_wsl_find_user_directory "Pictures")"
     export WIN_DOWNLOADS="$(__shuggtool_wsl_find_user_directory "Downloads")"
-    export WIN_DEV="$(__shuggtool_wsl_find_user_directory "dev")"
+
+    # if the Windows environment has a dev drive (assuming it's mounted at
+    # `Q:\`), we'll prefer that instead of any folder named `dev` under the
+    # standard `C:\` drive
+    win_dev_drive="/mnt/q"
+    if [ -d "${win_dev_drive}" ]; then
+        export WIN_DEV="${win_dev_drive}/$(__shuggtool_wsl_get_windows_username)"
+    else
+        export WIN_DEV="$(__shuggtool_wsl_find_user_directory "dev")"
+    fi
 fi
 
 
