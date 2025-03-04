@@ -48,6 +48,7 @@ if s:os_linux
     Plugin 'vim-airline/vim-airline-themes'
     Plugin 'gcmt/taboo.vim'
     Plugin 'mhinz/vim-startify'
+    Plugin 'kshenoy/vim-signature'
     Plugin 'dense-analysis/ale'
     Plugin 'rust-lang/rust.vim'
 
