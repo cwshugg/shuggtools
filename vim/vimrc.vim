@@ -304,12 +304,13 @@ nnoremap <silent> <Space> :nohlsearch<Bar>:echo<CR>
 " the Startify home screen.
 nnoremap <C-n> :Startify<cr>
 
-" YF - Yank File. Stores the full path of the current file we are editing in
-" the unnamed register.
-function! YF()
-    let @" = expand("%:p")
-endfunction
-command! -nargs=* YF call YF(<f-args>)
+" Make `leader + g` map to my `Goto` alias, for invoking ALE and having it
+" jump my current window to the code definition.
+nnoremap <leader>g :Goto<cr>
+
+" Make `leader + d` map to `ALEHover`, to have ALE display information about
+" the symbol my cursor is currently on. ('d' is for 'details')
+nnoremap <leader>d :ALEHover<cr>
 
 " Make a few common commands work the same if I accidentally capitalize them.
 call CreateCommandAlias("w", "W")
