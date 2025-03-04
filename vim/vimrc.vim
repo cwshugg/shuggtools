@@ -265,6 +265,12 @@ set is
 " Enable the mouse everywhere in Vim
 set mouse=a
 
+" Make vertical and horizontal splits focus on the bottom and right-hand
+" windows after the split has occurred (by default, it focuses on the top and
+" left-hand windows)
+set splitbelow
+set splitright
+
 " set the leader key to a comma
 let mapleader = ","
 

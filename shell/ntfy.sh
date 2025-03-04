@@ -1,3 +1,8 @@
+#!/bin/bash
+# ---------- ST.BOILERPLATE: BEGIN [Tue Mar  4 19:19:35 UTC 2025] ---------- #
+sthome=/home/connorshugg/toolbox/shuggtools
+source ${sthome}/globals.sh
+# ----------- ST.BOILERPLATE: END [Tue Mar  4 19:19:35 UTC 2025] ----------- #
 # Ntfy
 # Utility script for easily interacting with ntfy.sh (https://ntfy.sh), a slick
 # push notification utility.

@@ -1,3 +1,8 @@
+#!/bin/bash
+# ---------- ST.BOILERPLATE: BEGIN [Tue Mar  4 19:19:35 UTC 2025] ---------- #
+sthome=/home/connorshugg/toolbox/shuggtools
+source ${sthome}/globals.sh
+# ----------- ST.BOILERPLATE: END [Tue Mar  4 19:19:35 UTC 2025] ----------- #
 # Offenders
 # A function used to display the top N "offenders" for disk storage. It's
 # essentially a way to print the largest N files within a specific directory.

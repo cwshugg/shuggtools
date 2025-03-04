@@ -1,3 +1,8 @@
+#!/bin/bash
+# ---------- ST.BOILERPLATE: BEGIN [Tue Mar  4 19:19:37 UTC 2025] ---------- #
+sthome=/home/connorshugg/toolbox/shuggtools
+source ${sthome}/globals.sh
+# ----------- ST.BOILERPLATE: END [Tue Mar  4 19:19:37 UTC 2025] ----------- #
 # A shell script that sets up my preferred bash prompt.
 #
 #   Connor Shugg

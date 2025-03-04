@@ -1,3 +1,8 @@
+#!/bin/bash
+# ---------- ST.BOILERPLATE: BEGIN [Tue Mar  4 19:19:34 UTC 2025] ---------- #
+sthome=/home/connorshugg/toolbox/shuggtools
+source ${sthome}/globals.sh
+# ----------- ST.BOILERPLATE: END [Tue Mar  4 19:19:34 UTC 2025] ----------- #
 # Git Branch-Diff
 # Script that uses some git commands to produce a report showing the differences
 # between two branches.
