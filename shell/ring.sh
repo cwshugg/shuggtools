@@ -1,8 +1,3 @@
-#!/bin/bash
-# ---------- ST.BOILERPLATE: BEGIN [Tue Mar  4 19:19:35 UTC 2025] ---------- #
-sthome=/home/connorshugg/toolbox/shuggtools
-source ${sthome}/globals.sh
-# ----------- ST.BOILERPLATE: END [Tue Mar  4 19:19:35 UTC 2025] ----------- #
 # Ring
 # Repeatedly sends the bell character to the terminal, to fire a visual or
 # audible bell for the user to see/hear.

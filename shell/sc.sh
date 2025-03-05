@@ -1,8 +1,3 @@
-#!/bin/bash
-# ---------- ST.BOILERPLATE: BEGIN [Tue Mar  4 19:19:35 UTC 2025] ---------- #
-sthome=/home/connorshugg/toolbox/shuggtools
-source ${sthome}/globals.sh
-# ----------- ST.BOILERPLATE: END [Tue Mar  4 19:19:35 UTC 2025] ----------- #
 # Screen Cover (sc)
 # A function used to display some sort of screen-saver or cover over what I
 # currently have in my terminal. Good for privacy!

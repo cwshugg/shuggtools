@@ -1,8 +1,3 @@
-#!/bin/bash
-# ---------- ST.BOILERPLATE: BEGIN [Tue Mar  4 19:19:34 UTC 2025] ---------- #
-sthome=/home/connorshugg/toolbox/shuggtools
-source ${sthome}/globals.sh
-# ----------- ST.BOILERPLATE: END [Tue Mar  4 19:19:34 UTC 2025] ----------- #
 # A shell script that clones and sets up various cybersecurity tools I've used
 # in the past
 #

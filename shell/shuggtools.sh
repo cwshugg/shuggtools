@@ -1,8 +1,3 @@
-#!/bin/bash
-# ---------- ST.BOILERPLATE: BEGIN [Tue Mar  4 19:19:36 UTC 2025] ---------- #
-sthome=/home/connorshugg/toolbox/shuggtools
-source ${sthome}/globals.sh
-# ----------- ST.BOILERPLATE: END [Tue Mar  4 19:19:36 UTC 2025] ----------- #
 # A small function that prints some basic information on shuggtools
 #
 #   Connor Shugg
