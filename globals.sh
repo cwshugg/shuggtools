@@ -617,8 +617,9 @@ function __shuggtool_wsl_path_is_windows()
 {
     path="$(realpath "$1")"
 
-    # determine if the path begins with `/mnt/c`
-    echo "${path}" | grep -q "^\/mnt\/c\/*"
+    # determine if the path begins with `/mnt/c`, `/mnt/q`, or other Windows
+    # drives mounted to WSL
+    echo "${path}" | grep -q "^\/mnt\/[c,q]\/*"
     match=$?
     
     if [ ${match} -eq 0 ]; then
