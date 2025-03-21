@@ -171,6 +171,8 @@ if s:os_linux
     " Create a shortcut to bring up Startify on the current buffer via Ctrl-N
     nnoremap <silent> <C-n> :Startify<CR>
 
+    " --------------------- vim-signature Configuration ---------------------- "
+
 
     " -------------------------- ALE Configuration --------------------------- "
     " Thanks to Peter Malmgren's blog post:
@@ -310,6 +312,14 @@ nnoremap <silent> <Space> :nohlsearch<Bar>:echo<CR>
 " the Startify home screen.
 nnoremap <C-n> :Startify<cr>
 
+" Make `leader + "` split the current buffer in two, horizontally. This is the
+" same keybinding for tmux.
+nnoremap <leader>" :split<cr>
+
+" Make `leader + %` split the current buffer in two, vertically. This is the
+" same keybinding for tmux.
+nnoremap <leader>% :vsplit<cr>
+
 " Make `leader + g` map to my `Goto` alias, for invoking ALE and having it
 " jump my current window to the code definition.
 nnoremap <leader>g :Goto<cr>
@@ -317,6 +327,10 @@ nnoremap <leader>g :Goto<cr>
 " Make `leader + d` map to `ALEHover`, to have ALE display information about
 " the symbol my cursor is currently on. ('d' is for 'details')
 nnoremap <leader>d :ALEHover<cr>
+
+" Make `leader + m` map to `SignatureListBufferMarks`, to have vim-signature
+" display a list of all the markers I've set in the current buffer.
+nnoremap <leader>m :SignatureListBufferMarks<cr>
 
 " Make a few common commands work the same if I accidentally capitalize them.
 call CreateCommandAlias("w", "W")
