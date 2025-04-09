@@ -282,15 +282,14 @@ let mapleader = ","
 " 
 " Run `:help fo-table` to see a description of each of these settings.
 "
-" Also, rather than just writing `set formatoptions-=c`, etc.,, I am wrapping
+" Also, rather than just writing `set formatoptions-=r`, etc.,, I am wrapping
 " this in an `augroup`, to prevent *other* plugins from modifying these
 " options.  See this StackOverflow post for the inspiration:
 "
 " https://stackoverflow.com/questions/62943758
 augroup FORMATOPTIONS
     autocmd!
-    autocmd filetype * set formatoptions-=c
-                         \ formatoptions-=r
+    autocmd filetype * set formatoptions-=r
                          \ formatoptions-=o
 augroup END
 
