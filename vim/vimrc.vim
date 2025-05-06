@@ -226,8 +226,12 @@ colorscheme dwarrowdelf
 
 " Configure Vim to recognize a tab as exactly 4 spaces, and configure the Tab
 " and Backspace key to delete 4 spaces at a time when deleting/inserting tabs.
-set tabstop=4 shiftwidth=4 expandtab
-set softtabstop=4
+"
+" Wrap in an `augroup` to prevent plugins from changing this.
+augroup TABBING_AND_SPACING
+    set tabstop=4 shiftwidth=4 expandtab
+    set softtabstop=4
+augroup END
 
 " Force Vim to auto-indent
 set autoindent
