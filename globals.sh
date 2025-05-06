@@ -661,3 +661,45 @@ function __shuggtool_git()
 }
 alias git="__shuggtool_git"
 
+
+# =========================== Git Helper Functions =========================== #
+# Echoes out the current git repository's directory. Echoes out nothing if the
+# current shell isn't within a git repository.
+function __shuggtool_git_get_current_repo_dir()
+{
+    git rev-parse --git-dir 2> /dev/null
+}
+
+# Returns zero if the current shell is in a git repository. Otherwise,
+# returns non-zero.
+function __shuggtool_git_is_currently_in_git_repo()
+{
+    if [ -z "$(__shuggtool_git_get_current_repo_dir)" ]; then
+        return 1
+    fi
+    
+    echo "yes"
+    return 0
+}
+
+# Determines the current branch and echoes it out. Nothing is echoed out if the
+# current shell is not in a git repository, or the checked out commit does not
+# correspond to a branch.
+function __shuggtool_git_get_current_branch()
+{
+    git branch --show-current
+}
+
+# Returns zero if the provided branch exists. Returns non-zero if it cannot be
+# found.
+function __shuggtool_git_does_branch_exist()
+{
+    b="$1"
+    if [ -z "$(git rev-parse --verify ${b} 2> /dev/null)" ]; then
+        return 1
+    fi
+
+    echo "yes"
+    return 0
+}
+
