@@ -172,9 +172,6 @@ if s:os_linux
     " Create a shortcut to bring up Startify on the current buffer via Ctrl-N
     nnoremap <silent> <C-n> :Startify<CR>
 
-    " --------------------- vim-signature Configuration ---------------------- "
-
-
     " -------------------------- ALE Configuration --------------------------- "
     " Thanks to Peter Malmgren's blog post:
     " https://petermalmgren.com/rc-batch-day-9/
