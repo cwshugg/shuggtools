@@ -43,14 +43,15 @@ if s:os_linux
     
     " Vim community plugins
     Plugin 'VundleVim/Vundle.vim'           " required by vundle
-    Plugin 'lambdalisue/fern.vim'
-    Plugin 'vim-airline/vim-airline'
-    Plugin 'vim-airline/vim-airline-themes'
-    Plugin 'gcmt/taboo.vim'
-    Plugin 'mhinz/vim-startify'
-    Plugin 'kshenoy/vim-signature'
-    Plugin 'dense-analysis/ale'
-    Plugin 'rust-lang/rust.vim'
+    Plugin 'vim-airline/vim-airline'        " neat status bar for Vim
+    Plugin 'vim-airline/vim-airline-themes' " themes for vim-airline
+    Plugin 'gcmt/taboo.vim'                 " commands for working with tabs
+    Plugin 'mhinz/vim-startify'             " nifty start page for Vim
+    Plugin 'kshenoy/vim-signature'          " plugin for visualizing marks
+    Plugin 'inkarkat/vim-ingo-library'      " library plugin required by vim-mark (below)
+    Plugin 'inkarkat/vim-mark'              " plugin for highlighting/searching multiple keywords
+    Plugin 'dense-analysis/ale'             " plugin for syntax analysis when editing code
+    Plugin 'rust-lang/rust.vim'             " plugin for developing Rust
 
     " My plugins
     Plugin 'cwshugg/argonaut.vim'
@@ -330,10 +331,6 @@ nnoremap <leader>g :Goto<cr>
 " Make `leader + d` map to `ALEHover`, to have ALE display information about
 " the symbol my cursor is currently on. ('d' is for 'details')
 nnoremap <leader>d :ALEHover<cr>
-
-" Make `leader + m` map to `SignatureListBufferMarks`, to have vim-signature
-" display a list of all the markers I've set in the current buffer.
-nnoremap <leader>m :SignatureListBufferMarks<cr>
 
 " Make a few common commands work the same if I accidentally capitalize them.
 call CreateCommandAlias("w", "W")
