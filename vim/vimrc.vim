@@ -33,6 +33,18 @@ function! CreateCommandAlias(source, alias)
          \ .'? ("'.a:source.'") : ("'.a:alias.'"))'
 endfunction
 
+" Helper function that enables or disables paste mode depending on the current
+" setting.
+function! TogglePaste()
+    if &paste
+        set nopaste
+        echo "Paste mode DISABLED."
+    else
+        set paste
+        echo "Paste mode ENABLED."
+    endif
+endfunction
+
 
 " ============================ Vundle and Plugins ============================ "
 if s:os_linux
@@ -275,6 +287,10 @@ set mouse=a
 set splitbelow
 set splitright
 
+" Disable the insertion of double spaces when I'm formatting text (especially
+" markdown) using `gq`
+set nojoinspaces
+
 " set the leader key to a comma
 let mapleader = ","
 
@@ -328,6 +344,10 @@ nnoremap <leader>g :Goto<cr>
 " Make `leader + d` map to `ALEHover`, to have ALE display information about
 " the symbol my cursor is currently on. ('d' is for 'details')
 nnoremap <leader>d :ALEHover<cr>
+
+" Make `leader + p` toggle between `set paste` and `set nopaste`. I paste text
+" in from external places frequently, so this is a nice shortcut to have.
+nnoremap <leader>p :call TogglePaste()<cr>
 
 " Make a few common commands work the same if I accidentally capitalize them.
 call CreateCommandAlias("w", "W")
