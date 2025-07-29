@@ -1,8 +1,3 @@
-#!/bin/bash
-# ---------- ST.BOILERPLATE: BEGIN [Tue Jul 29 09:46:23 EDT 2025] ---------- #
-sthome=/home/connorshugg/toolbox/shuggtools
-source ${sthome}/globals.sh
-# ----------- ST.BOILERPLATE: END [Tue Jul 29 09:46:23 EDT 2025] ----------- #
 # Helper function that simply prints a line across the width of the terminal.
 # Used to visually separate things when dealing with a lot of text. Text can be
 # printed in the middle of the line with the '-t' argument, and the character

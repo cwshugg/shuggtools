@@ -1,8 +1,3 @@
-#!/bin/bash
-# ---------- ST.BOILERPLATE: BEGIN [Tue Jul 29 09:46:23 EDT 2025] ---------- #
-sthome=/home/connorshugg/toolbox/shuggtools
-source ${sthome}/globals.sh
-# ----------- ST.BOILERPLATE: END [Tue Jul 29 09:46:23 EDT 2025] ----------- #
 # Space-Tab (STab)
 # A function used to print space tabs (a tab made out of spaces), along with
 # some extra handy prints (such as tree-like formatting).
