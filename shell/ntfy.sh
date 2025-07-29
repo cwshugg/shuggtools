@@ -69,7 +69,7 @@ function __shuggtool_ntfy()
 
     # make sure both a topic and a message was specified
     if [ -z "${topic}" ] || [ -z "${message}" ]; then
-        __shuggtool_print_error "You must specify both a topic (-t) and a message (-m)."
+        __shuggtool_print_error "You must specify both a topic (-t) and a message (-M)."
         return 1
     fi
 
