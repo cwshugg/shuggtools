@@ -278,6 +278,38 @@ function __shuggtool_toolsetup_vim()
 
 
 # =================================== Tmux =================================== #
+# Install the tmux plugin manager.
+#
+# https://github.com/tmux-plugins/tpm
+function __shuggtool_toolsetup_tmux_plugin_manager()
+{
+    tpm_repo_url="https://github.com/tmux-plugins/tpm"
+    tpm_dst="${HOME}/.tmux/plugins/tpm"
+
+    # create the destination directory. If it already exists, AND the directory
+    # isn't empty, return early
+    if [ -d "${tpm_dst}" ] && [ ! -z "$(ls -A "${tpm_dst}")" ]; then
+        __shuggtool_toolsetup_print_note "Tmux plugin manager is already installed."
+        return 1
+    else
+        # otherwise, create the directory
+        mkdir -p "${tpm_dst}"
+    fi
+
+    # clone the repository into the destination
+    git clone "${tpm_repo_url}" "${tpm_dst}" > /dev/null 2> /dev/null
+    git_result=$?
+
+    # check the result; did it clone successfully?
+    if [ ${git_result} -ne 0 ] || [ -z "$(ls -A "${tpm_dst}")" ]; then
+        __shuggtool_toolsetup_print_bad "Failed to clone tmux plugin manager into ${C_LTBLUE}${tpm_dst}${C_NONE}."
+        return 2
+    fi
+
+    __shuggtool_toolsetup_print_good "Installed tmux plugin manager."
+    return 0
+}
+
 # Installs my tmux config file.
 function __shuggtool_toolsetup_tmux()
 {
@@ -296,6 +328,9 @@ function __shuggtool_toolsetup_tmux()
     # install tmux config
     cp ${config_src} ${config_dst}
     __shuggtool_toolsetup_print_good "Installed config file at ${C_LTBLUE}${config_dst}${C_NONE}."
+
+    # install the tmux plugin manager
+    __shuggtool_toolsetup_tmux_plugin_manager
 }
 
 
@@ -480,39 +515,6 @@ function __shuggtool_toolsetup_wezterm()
 }
 
 
-# ========================== Glow Markdown Renderer ========================== #
-# Installs charm.sh's `glow`, a command-line markdown renderer.
-function __shuggtool_toolsetup_glow()
-{
-    # check if glow is already installed
-    glow="$(which glow 2> /dev/null)"
-    if [ ! -z "${glow}" ]; then
-        __shuggtool_toolsetup_print_good "Glow is already installed."
-        return
-    fi
-
-    # this only works with sudo permissions
-    if [ ${__shuggtool_toolsetup_has_sudo} -eq 0 ]; then
-        __shuggtool_toolsetup_print_bad "Cannot install glow; you do not have ${C_LTRED}sudo${C_NONE} permissions."
-        return
-    fi
-        
-   __shuggtool_toolsetup_print_note "Installing charm.sh GPG to keyring..."
-    keyring_dir="/etc/apt/keyrings"
-    if [ ! -d "${keyring_dir}" ]; then
-        sudo mkdir -p "${keyring_dir}"
-    fi
-    curl -fsSL "https://repo.charm.sh/apt/gpg.key" | \
-        sudo gpg --dearmor -o "${keyring_dir}/charm.gpg"
-    echo "deb [signed-by=/etc/apt/keyrings/charm.gpg] https://repo.charm.sh/apt/ * *" | \
-        sudo tee "/etc/apt/sources.list.d/charm.list"
-
-    __shuggtool_toolsetup_print_note "Updating with charm.sh GPG and installing glow..."
-    sudo apt update
-    sudo apt install glow
-}
-
-
 # =================================== Main =================================== #
 function __shuggtool_toolsetup()
 {
@@ -548,10 +550,6 @@ function __shuggtool_toolsetup()
 
     __shuggtool_toolsetup_print_prefix="wezterm"
     __shuggtool_toolsetup_wezterm
-    echo ""
-    
-    __shuggtool_toolsetup_print_prefix="glow"
-    __shuggtool_toolsetup_glow
     echo ""
     
     echo "Setup complete. Please source your bashrc file."
