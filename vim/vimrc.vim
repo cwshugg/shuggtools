@@ -243,6 +243,11 @@ augroup TABBING_AND_SPACING
     autocmd FileType * setlocal tabstop=4 shiftwidth=4 softtabstop=4 expandtab
 augroup END
 
+" Show certain special whitespace/characters (such as trailing whitespace or
+" the tab character)
+set list
+set listchars=tab:->\|,trail:•
+
 " Force Vim to auto-indent
 set autoindent
 filetype indent on
