@@ -226,6 +226,11 @@ if s:os_linux
 
     " Map Ctrl-LeftClick to invoke 'ALEGoToDefinition'
     nnoremap <C-LeftMouse> :ALEGoToDefinition<CR>
+
+    " ----------------------------- Markdown.vim ----------------------------- "
+    " Prevent the markdown plugin from overriding my Vim tabs/spaces indent
+    " settings.
+    let g:markdown_recommended_style = 0
 endif
 
 
