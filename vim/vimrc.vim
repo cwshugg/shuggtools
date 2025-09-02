@@ -354,6 +354,9 @@ nnoremap <leader>d :ALEHover<cr>
 " in from external places frequently, so this is a nice shortcut to have.
 nnoremap <leader>p :call TogglePaste()<cr>
 
+" Make `leader + w" run some whitespace-related cleanup functions
+nnoremap <leader>w :call WhitespaceCleanup()<cr>
+
 " Make a few common commands work the same if I accidentally capitalize them.
 call CreateCommandAlias("w", "W")
 call CreateCommandAlias("q", "Q")
