@@ -205,6 +205,15 @@ if s:os_linux
         endif
     endfunction
 
+    " Disable copilot by default in certain files
+    let g:copilot_filetypes = {
+        \ 'markdown': v:false,
+        \ 'text': v:false,
+        \ 'gitcommit': v:false,
+        \ 'gitrebase': v:false,
+        \ 'startify': v:false,
+    \ }
+
     " ---------------------- Copilot Chat Configuration ---------------------- "
     " Set the chat window to open on the right-hand side of the current
     " window.
