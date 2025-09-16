@@ -183,9 +183,6 @@ if s:os_linux
     " (rather than just a single time when Vim is launched).
     let g:startify_custom_header = 'StartifyMakeHeader()'
 
-    " Create a shortcut to bring up Startify on the current buffer via Ctrl-N
-    nnoremap <silent> <C-n> :Startify<CR>
-
     " ------------------------ Copilot Configuration ------------------------- "
     " Helper function that uses the `:Copilot enable`, `:Copilot disable`, and
     " `:Copilot status` commands to toggle Copilot on and off.
@@ -194,28 +191,18 @@ if s:os_linux
         if stridx(s:copilot_status, 'Ready') > -1
             execute 'Copilot disable'
             echo "Copilot DISABLED."
-        else
+        elseif stridx(s:copilot_status, 'Disabled') > -1
             execute 'Copilot enable'
             echo "Copilot ENABLED."
+        elseif stridx(s:copilot_status, 'version too old') > -1
+            echo "Copilot cannot run on this version of Vim. Please install a newer version."
         endif
     endfunction
-
-    " Create a shortcut to enable/disable Copilot
-    nnoremap <leader>ct :call CopilotToggle()<cr>
 
     " ---------------------- Copilot Chat Configuration ---------------------- "
     " Set the chat window to open on the right-hand side of the current
     " window.
     let g:copilot_chat_window_position = 'right'
-
-    " Create a shortcut to open the Copilot chat window
-    nnoremap <leader>cc :CopilotChatOpen<cr>
-
-    " Create a shortcut to save the current Copilot chat
-    nnoremap <leader>ccs :CopilotChatSave<cr>
-
-    " Create a shortcut to load a previous Copilot chat
-    nnoremap <leader>ccl :CopilotChatLoad<cr>
 
     " -------------------------- ALE Configuration --------------------------- "
     " Thanks to Peter Malmgren's blog post:
@@ -394,6 +381,12 @@ nnoremap <leader>p :call TogglePaste()<cr>
 
 " Make `leader + w" run some whitespace-related cleanup functions
 nnoremap <leader>w :call WhitespaceCleanup()<cr>
+
+" Set up a variety of Copilot-based leader-key bindings
+nnoremap <leader>ct :call CopilotToggle()<cr>
+nnoremap <leader>cc :CopilotChatOpen<cr>
+nnoremap <leader>ccs :CopilotChatSave<cr>
+nnoremap <leader>ccl :CopilotChatLoad<cr>
 
 " Make a few common commands work the same if I accidentally capitalize them.
 call CreateCommandAlias("w", "W")
