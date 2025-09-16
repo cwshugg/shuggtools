@@ -199,7 +199,7 @@ function __shuggtool_toolsetup_vim_copilot()
     install_nodejs=$?
 
     # return early if the user doesn't want to install Copilot dependencies
-    if [ ${install_nodejs} -ne 0 ]; then
+    if [ ${install_nodejs} -eq 0 ]; then
         __shuggtool_toolsetup_print_alert "Skipping Copilot setup for Vim."
         return 1
     fi
@@ -216,13 +216,8 @@ function __shuggtool_toolsetup_vim_copilot()
         __shuggtool_toolsetup_print_bad "Failed to install NodeJS."
         return 1
     fi
-    node_version="$(${node_bin} --version 2> /dev/null)"
-    if [ -z "${node_version}" ]; then
-        __shuggtool_toolsetup_print_bad "Failed to retrieve NodeJS version."
-        return 1
-    fi
 
-    __shuggtool_toolsetup_print_good "Successfully installed NodeJS."
+    __shuggtool_toolsetup_print_good "Successfully installed ${C_YELLOW}NodeJS $(${node_bin} --version 2> /dev/null)${C_NONE}."
     return 0
 }
 
