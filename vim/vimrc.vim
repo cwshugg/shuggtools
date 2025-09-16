@@ -62,6 +62,8 @@ if s:os_linux
     Plugin 'kshenoy/vim-signature'          " plugin for visualizing marks
     Plugin 'inkarkat/vim-ingo-library'      " library plugin required by vim-mark (below)
     Plugin 'inkarkat/vim-mark'              " plugin for highlighting/searching multiple keywords
+    Plugin 'github/copilot.vim'             " official GitHub Copilot plugin
+    Plugin 'DanBradbury/copilot-chat.vim'   " unofficial Copilot chat plugin
     Plugin 'dense-analysis/ale'             " plugin for syntax analysis when editing code
     Plugin 'rust-lang/rust.vim'             " plugin for developing Rust
 
@@ -183,6 +185,37 @@ if s:os_linux
 
     " Create a shortcut to bring up Startify on the current buffer via Ctrl-N
     nnoremap <silent> <C-n> :Startify<CR>
+
+    " ------------------------ Copilot Configuration ------------------------- "
+    " Helper function that uses the `:Copilot enable`, `:Copilot disable`, and
+    " `:Copilot status` commands to toggle Copilot on and off.
+    function CopilotToggle()
+        let s:copilot_status = CaptureCommandOutput('Copilot status')
+        if stridx(s:copilot_status, 'Ready') > -1
+            execute 'Copilot disable'
+            echo "Copilot DISABLED."
+        else
+            execute 'Copilot enable'
+            echo "Copilot ENABLED."
+        endif
+    endfunction
+
+    " Create a shortcut to enable/disable Copilot
+    nnoremap <leader>ct :call CopilotToggle()<cr>
+
+    " ---------------------- Copilot Chat Configuration ---------------------- "
+    " Set the chat window to open on the right-hand side of the current
+    " window.
+    let g:copilot_chat_window_position = 'right'
+
+    " Create a shortcut to open the Copilot chat window
+    nnoremap <leader>cc :CopilotChatOpen<cr>
+
+    " Create a shortcut to save the current Copilot chat
+    nnoremap <leader>ccs :CopilotChatSave<cr>
+
+    " Create a shortcut to load a previous Copilot chat
+    nnoremap <leader>ccl :CopilotChatLoad<cr>
 
     " -------------------------- ALE Configuration --------------------------- "
     " Thanks to Peter Malmgren's blog post:
