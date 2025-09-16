@@ -180,12 +180,6 @@ function __shuggtool_toolsetup_vim_theme()
 # Vim.
 function __shuggtool_toolsetup_vim_copilot()
 {
-    # if we don't have sudo permissions, we can't install NodeJS
-    if [ ${__shuggtool_toolsetup_has_sudo} -eq 0 ]; then
-        __shuggtool_toolsetup_print_bad "You don't have ${C_LTRED}sudo${C_NONE} permissions; skipping Copilot setup for Vim."
-        return 1
-    fi
-
     # check for NodeJS install and return early
     node_bin="$(which node 2> /dev/null)"
     if [ ! -z "${node_bin}" ]; then
