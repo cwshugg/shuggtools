@@ -187,15 +187,19 @@ if s:os_linux
     " Helper function that uses the `:Copilot enable`, `:Copilot disable`, and
     " `:Copilot status` commands to toggle Copilot on and off.
     function CopilotToggle()
-        let s:copilot_status = CaptureCommandOutput('Copilot status')
-        if stridx(s:copilot_status, 'Ready') > -1
+        let s:copilot_status = tolower(CaptureCommandOutput('Copilot status'))
+        if stridx(s:copilot_status, 'ready') > -1
             execute 'Copilot disable'
             echo "Copilot DISABLED."
-        elseif stridx(s:copilot_status, 'Disabled') > -1
+        elseif stridx(s:copilot_status, 'disabled') > -1
             execute 'Copilot enable'
             echo "Copilot ENABLED."
         elseif stridx(s:copilot_status, 'version too old') > -1
             echo "Copilot cannot run on this version of Vim. Please install a newer version."
+        elseif stridx(s:copilot_status, 'not signed into github') > -1
+            echo "You are not signed in. Press ENTER to trigger the sign-in process."
+            call getchar()
+            execute 'Copilot setup'
         else
             echow "Unhandled 'Copilot status' command output: '" . s:copilot_status . "'"
         endif
