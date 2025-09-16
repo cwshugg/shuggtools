@@ -197,7 +197,7 @@ if s:os_linux
         elseif stridx(s:copilot_status, 'version too old') > -1
             echo "Copilot cannot run on this version of Vim. Please install a newer version."
         else
-            echo "Unhandled 'Copilot status' command output: '" . s:copilot_status . "'"
+            echow "Unhandled 'Copilot status' command output: '" . s:copilot_status . "'"
         endif
     endfunction
 
