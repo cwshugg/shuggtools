@@ -3,6 +3,12 @@
 #   Connor Shugg
 
 
+# Global settings
+__shuggtool_toolsetup_nvm_version="v0.40.3"
+__shuggtool_toolsetup_nvm_url="https://raw.githubusercontent.com/nvm-sh/nvm/${__shuggtool_toolsetup_nvm_version}"
+__shuggtool_toolsetup_nodejs_version="24"
+
+
 # ================================= Helpers ================================== #
 __shuggtool_toolsetup_print_prefix="+"
 
@@ -23,7 +29,7 @@ function __shuggtool_toolsetup_print_helper()
     prefix_len=${#__shuggtool_toolsetup_print_prefix}
     prefix_len=$((prefix_len+2))
     max_len=12
-    
+
     if [ ${prefix_len} -gt ${max_len} ]; then
         max_len=$((prefix_len+1))
     fi
@@ -32,7 +38,7 @@ function __shuggtool_toolsetup_print_helper()
         printf " "
         prefix_len=$((prefix_len+1))
     done
-    
+
     # print the message
     printf "${msg}\n" "${prefix}"
 }
@@ -115,7 +121,7 @@ function __shuggtool_toolsetup_vim_theme()
     # first, we'll attempt to clone a repository containing the theme into our
     # ~/.vim directory
     git clone ${theme_repo_url}.git ${theme_repo_dir} > /dev/null 2> /dev/null
-    
+
     # check for the existence of the repo. If it failed, stop trying
     if [ ! -d ${theme_repo_dir} ]; then
         msg="Failed to clone theme from repository: ${C_YELLOW}${theme_repo_dir}${C_NONE}."
@@ -128,7 +134,7 @@ function __shuggtool_toolsetup_vim_theme()
     if [ ! -d ${vim_color_dir} ]; then
         mkdir ${vim_color_dir}
     fi
-    
+
     # locate the '.vim' file
     color_file=$(find ${theme_repo_dir} -name "*.vim" | grep -v "airline" | head -n 1)
     if [ -z ${color_file} ]; then
@@ -165,9 +171,59 @@ function __shuggtool_toolsetup_vim_theme()
             __shuggtool_toolsetup_print_good "Installed ${theme_name} airline theme at ${C_LTBLUE}${dst}${C_NONE}."
         fi
     fi
-    
+
     # once finished, remove the repository directory
     rm -rf ${theme_repo_dir}
+}
+
+# Helper function that specifically sets up dependencies for GitHub Copilot in
+# Vim.
+function __shuggtool_toolsetup_vim_copilot()
+{
+    # if we don't have sudo permissions, we can't install NodeJS
+    if [ ${__shuggtool_toolsetup_has_sudo} -eq 0 ]; then
+        __shuggtool_toolsetup_print_bad "You don't have ${C_LTRED}sudo${C_NONE} permissions; skipping Copilot setup for Vim."
+        return 1
+    fi
+
+    # check for NodeJS install and return early
+    node_bin="$(which node 2> /dev/null)"
+    if [ ! -z "${node_bin}" ]; then
+        __shuggtool_toolsetup_print_good "Found ${C_YELLOW}NodeJS - $(${node_bin} --version 2> /dev/null)${C_NONE}. " \
+                                         "All dependencies for Copilot are met."
+        return 0
+    fi
+
+    # otherwise, prompt the user to install NodeJS
+    __shuggtool_prompt_yesno "Would you like to install dependencies for Copilot in Vim?"
+    install_nodejs=$?
+
+    # return early if the user doesn't want to install Copilot dependencies
+    if [ ${install_nodejs} -ne 0 ]; then
+        __shuggtool_toolsetup_print_alert "Skipping Copilot setup for Vim."
+        return 1
+    fi
+
+    # install NodeJS
+    __shuggtool_toolsetup_print_note "Installing NodeJS..."
+    curl -o- "${__shuggtool_toolsetup_nvm_url}/install.sh" | bash
+    \. "${HOME}/.nvm/nvm.sh"
+    nvm install ${__shuggtool_toolsetup_nodejs_version}
+
+    # check the NodeJS version and log it
+    node_bin="$(which node 2> /dev/null)"
+    if [ -z "${node_bin}" ]; then
+        __shuggtool_toolsetup_print_bad "Failed to install NodeJS."
+        return 1
+    fi
+    node_version="$(${node_bin} --version 2> /dev/null)"
+    if [ -z "${node_version}" ]; then
+        __shuggtool_toolsetup_print_bad "Failed to retrieve NodeJS version."
+        return 1
+    fi
+
+    __shuggtool_toolsetup_print_good "Successfully installed NodeJS."
+    return 0
 }
 
 # Helper function used to load any plugins I've created or use.
@@ -186,7 +242,7 @@ function __shuggtool_toolsetup_vim_plugins()
     if [ -d ${vundle_plugin_dir} ]; then
         rm -rf ${vundle_plugin_dir}
     fi
-    
+
     # copy all plugin files to the destination
     __shuggtool_toolsetup_print_note "Installing my local plugins..."
     cp -r ${vim_plugin_src}/* ${vim_plugin_dst}/
@@ -222,7 +278,7 @@ function __shuggtool_toolsetup_vim_vundle()
     if [ ! -d ${vundle_dst} ]; then
         mkdir ${vundle_dst}
     fi
-    
+
     # clone the git repo into the correct directory (delete and re-clone if
     # necessary)
     vundle_dir=${vundle_dst}/${vundle_name}
@@ -261,10 +317,11 @@ function __shuggtool_toolsetup_vim()
         cp ${vimrc_source} ${vimrc_location}
     fi
     __shuggtool_toolsetup_print_good "Installed .vimrc to ${C_LTBLUE}${vimrc_location}${C_NONE}."
-    
+
     # next we'll install any plugins we have
     __shuggtool_toolsetup_vim_plugins
     __shuggtool_toolsetup_vim_vundle
+    __shuggtool_toolsetup_vim_copilot
 
     # with all the added changes, launch vim and attempt to run ':PluginInstall'
     # to ensure all plugins and themes are installed correctly
@@ -273,7 +330,7 @@ function __shuggtool_toolsetup_vim()
 
     # finally, try to install the theme
     __shuggtool_toolsetup_vim_theme
-    
+
 }
 
 
@@ -324,7 +381,7 @@ function __shuggtool_toolsetup_tmux()
     else
         __shuggtool_toolsetup_print_note "Found ${C_YELLOW}$(${tmux_bin} -V)${C_NONE}."
     fi
-    
+
     # install tmux config
     cp ${config_src} ${config_dst}
     __shuggtool_toolsetup_print_good "Installed config file at ${C_LTBLUE}${config_dst}${C_NONE}."
@@ -361,7 +418,7 @@ function __shuggtool_toolsetup_cat()
         __shuggtool_toolsetup_print_good "Already installed. Try running ${C_YELLOW}bat${C_NONE} or ${C_YELLOW}batcat${C_NONE}."
         return
     fi
-    
+
     # determine if we have user permissions
     if [ ${__shuggtool_toolsetup_has_sudo} -ne 0 ]; then
         __shuggtool_toolsetup_print_note "Installing ${C_YELLOW}bat${C_NONE} via apt-get."
@@ -370,7 +427,7 @@ function __shuggtool_toolsetup_cat()
     fi
 
     # if we don't have sudo permissions, tell the user how to install it
-    __shuggtool_toolsetup_print_bad "Since you don't have ${C_YELLOW}sudo${C_NONE} permissions," \
+    __shuggtool_toolsetup_print_bad "Since you don't have ${C_RED}sudo${C_NONE} permissions," \
             "you'll need to install ${C_YELLOW}bat${C_NONE} manually."
     __shuggtool_toolsetup_print_bad "Head to ${C_LTBLUE}${repo_url}${C_NONE} and download a release or build it from source."
 }
@@ -382,7 +439,7 @@ function __shuggtool_toolsetup_git()
 {
     git_config_src=${sthome}/git/.gitconfig
     git_config_dsts=("${HOME}/.gitconfig")
-    
+
     # make sure the source file exists
     if [ ! -f ${git_config_src} ]; then
         __shuggtool_toolsetup_print_bad "Failed to find source ${C_LTBLUE}$(basename ${git_config_src})${C_NONE}."
@@ -398,14 +455,14 @@ function __shuggtool_toolsetup_git()
         windows_username="$(__shuggtool_wsl_get_windows_username)"
         git_config_dsts+=("/mnt/c/Users/${windows_username}/.gitconfig")
     fi
-    
+
     # do the following for each of the destination files
     for git_config_dst in "${git_config_dsts[@]}"; do
         git_config_src_real="$(realpath "${git_config_src}")"
         # we don't want to blindly copy my gitconfig to the destination; we might
         # overwrite something important an an existing .gitconfig. So, we'll do the
         # following:
-    
+
         # first, check to see if a .gitconfig exists at the destination. If it
         # doesn't, we'll create one
         if [ ! -f ${git_config_dst} ]; then
@@ -428,7 +485,7 @@ function __shuggtool_toolsetup_git()
                 windows_dst_name=".gitconfig.$(whoami 2> /dev/null)"
                 windows_dst_path="/mnt/c/Users/${windows_username}/${windows_dst_name}"
                 cp "${git_config_src}" "${windows_dst_path}"
-                
+
                 # show a message
                 msg=""
                 msg="${msg}Copied ${C_LTBLUE}${git_config_src}${C_NONE} to "
@@ -440,7 +497,7 @@ function __shuggtool_toolsetup_git()
                 git_config_src_real="C:/Users/${windows_username}/${windows_dst_name}"
             fi
         fi
-    
+
         # search the file to see if it has an `include` statement pointed at this
         # file. If it doesn't, we'll add one to the bottom of the file
         if [ -z "$(grep "\[include\]" "${git_config_dst}")" ] ||
@@ -449,7 +506,7 @@ function __shuggtool_toolsetup_git()
             msg="${msg}Found existing git config file at ${C_LTBLUE}${git_config_dst}${C_NONE} "
             msg="${msg}with no include statement."
             __shuggtool_toolsetup_print_note "${msg}"
-            
+
             # add the line to the git config
             echo -e "[include]\n    path = ${git_config_src_real}\n" >> "${git_config_dst}"
             msg=""
@@ -457,27 +514,27 @@ function __shuggtool_toolsetup_git()
             msg="${msg}to include configurations from ${C_LTBLUE}${git_config_src_real}${C_NONE}."
             __shuggtool_toolsetup_print_good "${msg}"
         fi
-    
+
         # search the file to see if it has a username and email field. If it
         # doesn't, we'll add one
         if [ -z "$(grep "\[user\]" "${git_config_dst}")" ]; then
             __shuggtool_toolsetup_print_note "Found no user configuration in git config file."
-    
+
             # read the desired username
             msg="What username would you like to use for your git config?"
             __shuggtool_toolsetup_prompt "${msg}"
             git_config_name="${__shuggtool_toolsetup_prompt_result}"
-    
+
             # read the desired email
             msg="What email would you like to use for your git config?"
             __shuggtool_toolsetup_prompt "${msg}"
             git_config_email="${__shuggtool_toolsetup_prompt_result}"
-    
+
             # add the user block with the given values
             echo -e "[user]"                                >> "${git_config_dst}"
             echo -e "    name = \"${git_config_name}\""     >> "${git_config_dst}"
             echo -e "    email = \"${git_config_email}\""   >> "${git_config_dst}"
-    
+
             # print a confirmation message
             msg=""
             msg="${msg}Added username ${C_YELLOW}${git_config_name}${C_NONE} "
@@ -504,7 +561,7 @@ function __shuggtool_toolsetup_wezterm()
         __shuggtool_toolsetup_print_note "Wezterm doesn't appear to be installed. Skipping configuration."
         return
     fi
-    
+
     # copy config file into the correct spot
     if [ ! -f ${wez_config_src} ]; then
         __shuggtool_toolsetup_print_bad "Failed to find source ${C_LTBLUE}$(basename ${wez_config_src})${C_NONE}."
@@ -551,7 +608,7 @@ function __shuggtool_toolsetup()
     __shuggtool_toolsetup_print_prefix="wezterm"
     __shuggtool_toolsetup_wezterm
     echo ""
-    
+
     echo "Setup complete. Please source your bashrc file."
 }
 
