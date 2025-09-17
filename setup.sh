@@ -30,7 +30,7 @@ globals=${setup_dir}/${globals_file}
 gpath=$(dirname $(realpath ${globals}))
 source ${globals}
 
-# ============================ Helper Functions ============================= # 
+# ============================ Helper Functions ============================= #
 shuggtool_file_boilerplate_id="ST.BOILERPLATE"
 # Function that checks a file to see if boilerplate has already been installed.
 # Outputs nothing if boilerplate is found, and echoes something otherwise.
@@ -63,30 +63,11 @@ function __shuggtool_setup_file_boilerplate()
     echo "sthome=${gpath}"                                          >> ${tfpath}
     echo "source \${sthome}/globals.sh"                             >> ${tfpath}
     echo "# ----------- ${bpid}: END [${cdate}] ----------- #"      >> ${tfpath}
-    
+
     # add the script's contents and swap it into the original file
     cat ${fpath} >> ${tfpath}
     cat ${tfpath} > ${fpath}
     /bin/rm ${tfpath}
-}
-
-# Adds the given path string to the end of the PATH environment variable, so
-# long as it already does not appear in PATH.
-function __shuggtool_setup_path_append()
-{
-    # expand the path string to use the full file path, unless it's the special
-    # "current directory" syntax
-    p="$1"
-    if [[ "${p}" != "./" ]]; then
-        p="$(realpath $1)"
-    fi
-    
-    # if the path already contains the string, return early
-    if [[ "${PATH}" == *"${p}"* ]]; then
-        return
-    fi
-
-    export PATH="$PATH:${p}"
 }
 
 # Optional function that sets up the 'source directory' (the location that gets
@@ -115,11 +96,11 @@ function __shuggtool_setup_source_dir()
         if [ ${count} -eq 0 ]; then
             echo -e "${C_LTBLUE}shuggtools${C_NONE}: initializing scripts..."
         fi
-        
+
         # otherwise, set up the boilerplate code
         echo -en "${STAB_TREE2}$(basename ${func})... "
         __shuggtool_setup_file_boilerplate ${func}
-    
+
         # at this point, we know it's sourcing the correct globals file, so we'll
         # make the file executable and create a link for it in the source dir
         chmod 755 ${func}
@@ -127,7 +108,7 @@ function __shuggtool_setup_source_dir()
         if [ ! -L ${link_fpath} ]; then
             ln -s ${func} ${link_fpath}
         fi
-     
+
         echo -e "${C_GREEN}success${C_NONE}"
         count=$((count+1))
     done
@@ -145,7 +126,7 @@ function __shuggtool_setup_info_file()
 {
     # navigate to the repo's directory
     cd ${setup_dir}
-    
+
     # make sure an argument was given
     if [ $# -lt 1 ]; then
         __shuggtool_print_error "info file could not be set up: the full path was not specified."
@@ -163,7 +144,7 @@ function __shuggtool_setup_info_file()
     cd ${old_dir}
 }
 
-# =============================== Runner Code =============================== # 
+# =============================== Runner Code =============================== #
 # if we got "-f" as the first argument, we'll force a setup by removing
 # the source directory
 if [ $# -ge 1 ] && [ "$1" == "-f" ]; then
@@ -185,12 +166,6 @@ for bin in ${bins[@]}; do
     fi
 done
 
-# append this repo's source directory to our PATH variable, as well as the
-# current directory (so we can locate executables and other files without
-# having to type './')
-__shuggtool_setup_path_append "${source_dir}"
-__shuggtool_setup_path_append "./"
-
 # setup and source our other files - aliases, prompt setup, etc.
 other_files=( aliases.sh prompt.sh )
 other_files_count=0
@@ -209,14 +184,20 @@ for ofile in ${other_files[@]}; do
         echo -e "${C_GREEN}success${C_NONE}"
         other_files_count=$((other_files_count+1))
     fi
-    
+
     # source the file
-    source ${ofpath} 
+    source ${ofpath}
 done
 # print if any 'other files' were set up
 if [ ${other_files_count} -gt 0 ]; then
     echo -e "${STAB_TREE1}initialized ${C_GREEN}${other_files_count}${C_NONE} other files"
 fi
+
+# append this repo's source directory to our PATH variable, as well as the
+# current directory (so we can locate executables and other files without
+# having to type './')
+__shuggtool_path_append "${source_dir}"
+__shuggtool_path_append "./"
 
 # invoke the script that writes to the globals file
 __shuggtool_setup_info_file ${setup_dir}/${shuggtools_info_file}

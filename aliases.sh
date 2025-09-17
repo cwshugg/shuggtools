@@ -56,6 +56,21 @@ if [ ! -z "$(__shuggtool_wsl_detect)" ]; then
     is_wsl=1
 fi
 
+# do we have NVM/NodeJS installed?
+if [ -d "$HOME/.nvm" ]; then
+    # add NVM to the shell environment
+    export NVM_DIR="$HOME/.nvm"
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+
+    # add the node executable to the PATH without using nvm (which is slow)
+    node_versions=($(find "$NVM_DIR/versions/node/" -mindepth 1 -maxdepth 1 -type d 2> /dev/null | sort -V))
+    if [ ${#node_versions[@]} -gt 0 ]; then
+        latest_node_version="${node_versions[-1]}"
+        __shuggtool_path_append "${latest_node_version}/bin"
+    fi
+fi
+
 # ----------------------------------- WSL ------------------------------------ #
 # Set up some paths on the Windows side of things, if WSL is detected.
 if [ ${is_wsl} -ne 0 ]; then
@@ -102,14 +117,14 @@ function __todos_grep_for_tag()
             if [[ "${fpath,,}" == *"binary file"* ]]; then
                 continue
             fi
-            
+
             # separate the file path by slashes - we'll apply a deterministic
             # color to each one
             IFS="/" read -ra fpath_pieces <<< "${fpath}"
             fpp_len=${#fpath_pieces[@]}
             for ((fpp_idx=0; fpp_idx<${fpp_len}; fpp_idx++)); do
                 fpp="${fpath_pieces[${fpp_idx}]}"
-                
+
                 # generate a color for this piece, and print it out
                 fpp_color="$(__shuggtool_color_hash_fg "${fpp}")"
                 echo -en "${fpp_color}${fpp}${C_NONE}"
@@ -164,28 +179,28 @@ function __todos_all()
     if [ ${result} -eq 0 ]; then
         echo ""
     fi
-    
+
     # show tasks for this month
     __todos_show "month" "THIS MONTH"
     result=$?
     if [ ${result} -eq 0 ]; then
         echo ""
     fi
-    
+
     # show tasks for this week
     __todos_show "week" "THIS WEEK"
     result=$?
     if [ ${result} -eq 0 ]; then
         echo ""
     fi
-    
+
     # show tasks for tomorrow
     __todos_show "tomorrow" "TOMORROW"
     result=$?
     if [ ${result} -eq 0 ]; then
         echo ""
     fi
-    
+
     # show tasks for today
     __todos_show "today" "TODAY"
     result=$?
@@ -209,7 +224,7 @@ function __shuggtool_alias_cdf_helper()
 {
     name="$1"
     do_push=$2 # 0=change, 1=push
- 
+
     # search for the name; if one isn't found, complain and return
     result="$(find $(pwd) -name "${name}" 2> /dev/null | head -n 1)"
     if [ -z "${result}" ]; then
@@ -226,7 +241,7 @@ function __shuggtool_alias_cdf_helper()
         __shuggtool_print_error "The matched result is neither file nor directory: ${C_GRAY}${result}${C_NONE}"
         return 1
     fi
-    
+
     # finally, either change or push
     if [ ${do_push} -ne 0 ]; then
         pushd "${result}"
@@ -234,7 +249,7 @@ function __shuggtool_alias_cdf_helper()
         cd "${result}"
     fi
     return 0
-}    
+}
 
 # cdf: Change Directory Find
 function __shuggtool_alias_cdf()
