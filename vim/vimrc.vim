@@ -111,9 +111,6 @@ if s:os_linux
     command! -nargs=* TabReset TabooReset <args>
 
     " ------------------------ Startify Configuration ------------------------ "
-    " Persist sessions; re-save an existing session when Vim is quit.
-    let g:startify_session_persistence = 1
-
     " Specify where to save session files to.
     let g:startify_session_dir = '~/.vim/session'
 
