@@ -206,6 +206,8 @@ if s:os_linux
     let g:copilot_filetypes = {
         \ 'markdown': v:false,
         \ 'text': v:false,
+        \ 'yaml': v:false,
+        \ 'json': v:false,
         \ 'gitcommit': v:false,
         \ 'gitrebase': v:false,
         \ 'startify': v:false,
