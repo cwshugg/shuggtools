@@ -49,11 +49,11 @@ endfunction
 " current setting.
 function! ToggleSpellcheck()
     if &spell
-        set nospell
-        echo "Spell-check DISABLED."
+        setlocal nospell
+        echo "Spell-check DISABLED for this buffer."
     else
-        set spell
-        echo "Spell-check ENABLED."
+        setlocal spell
+        echo "Spell-check ENABLED for this buffer."
     endif
 endfunction
 
