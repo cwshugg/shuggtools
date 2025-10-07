@@ -70,12 +70,18 @@ endfunction
 " Helper function that fills the search register with Git merge conflict
 " markers.
 function! SearchForGitMergeConflict()
-    let @/ = '^\(<<<<<<<\s\+\S\+\|=======\|>>>>>>>\s\+\S\+\)$'
+    let l:regex = '^\(<<<<<<<\s\+\S\+\|=======\|>>>>>>>\s\+\S\+\)$'
+    let l:old_search_reg = @/
+    let @/ = l:regex
     echo "Searching for Git merge conflict markers."
 
-    " With the register filled, jump to the top of the file, then jump to the
-    " first match.
-    call GoToTopOfFile()
+    " Did the register already contain the same regex? If it didn't, we'll
+    " assume that the user wants to jump to the first match.
+    if l:old_search_reg != l:regex
+        call GoToTopOfFile()
+    endif
+
+    " Jump to the next match
     call GoToNextSearchMatch()
 endfunction
 
