@@ -57,6 +57,28 @@ function! ToggleSpellcheck()
     endif
 endfunction
 
+" Jumps to the top of the file.
+function! GoToTopOfFile()
+    normal! gg
+endfunction
+
+" Jumps to the next match of the search register's contents.
+function! GoToNextSearchMatch()
+    normal! n
+endfunction
+
+" Helper function that fills the search register with Git merge conflict
+" markers.
+function! SearchForGitMergeConflict()
+    let @/ = '^\(<<<<<<<\s\+\S\+\|=======\|>>>>>>>\s\+\S\+\)$'
+    echo "Searching for Git merge conflict markers."
+
+    " With the register filled, jump to the top of the file, then jump to the
+    " first match.
+    call GoToTopOfFile()
+    call GoToNextSearchMatch()
+endfunction
+
 
 " ============================ Vundle and Plugins ============================ "
 if s:os_linux
@@ -411,8 +433,11 @@ nnoremap <leader>d :ALEHover<cr>
 " in from external places frequently, so this is a nice shortcut to have.
 nnoremap <leader>p :call TogglePaste()<cr>
 
-" Make `leader + w" run some whitespace-related cleanup functions
+" Make `leader + w` run some whitespace-related cleanup functions
 nnoremap <leader>w :call WhitespaceCleanup()<cr>
+
+" Make `leader + M` search for Git merge conflict markers
+nnoremap <leader>M :call SearchForGitMergeConflict()<cr>
 
 " Make `leader + s` toggle spell-checking.
 nnoremap <leader>s :call ToggleSpellcheck()<cr>
