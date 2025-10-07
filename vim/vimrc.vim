@@ -45,6 +45,18 @@ function! TogglePaste()
     endif
 endfunction
 
+" Helper function that enables or disables spell-check mode depending on the
+" current setting.
+function! ToggleSpellcheck()
+    if &spell
+        set nospell
+        echo "Spell-check DISABLED."
+    else
+        set spell
+        echo "Spell-check ENABLED."
+    endif
+endfunction
+
 
 " ============================ Vundle and Plugins ============================ "
 if s:os_linux
@@ -356,6 +368,12 @@ augroup END
 " Make Vim display the number of matches to my current search.
 set shortmess-=S
 
+" Set spell-check settings
+set spelllang=en_us
+
+" Make Vim enable spell-check when editing specific file types.
+autocmd FileType markdown setlocal spell
+
 " --------------------------- Remaps and Shortcuts --------------------------- "
 " remap ':' to ';', so I can type commands with one less keystroke. (Normally
 " you have to press Shift + Semicolon, but now, I only have to write Semicolon
@@ -393,6 +411,9 @@ nnoremap <leader>p :call TogglePaste()<cr>
 
 " Make `leader + w" run some whitespace-related cleanup functions
 nnoremap <leader>w :call WhitespaceCleanup()<cr>
+
+" Make `leader + s` toggle spell-checking.
+nnoremap <leader>s :call ToggleSpellcheck()<cr>
 
 " Set up a variety of Copilot-based leader-key bindings
 nnoremap <leader>ct :call CopilotToggle()<cr>
