@@ -115,6 +115,7 @@ function __shuggtool_vim_bulk_edit ()
         if [ ${file_idx_modulus} -eq 0 ]; then
             # only append this command if there are more files to open
             if [ ${file_idx} -lt $((files_len - 1)) ]; then
+                script="${script}1wincmd w\n" # <-- move to first window in this tab
                 script="${script}tabnew\n"
             fi
         # otherwise, if we haven't reached the window limit, split to a new
@@ -128,6 +129,12 @@ function __shuggtool_vim_bulk_edit ()
 
         file_idx=$((file_idx + 1))
     done
+
+    # run one last `1wincmd w` to ensure we're focused in the first window of
+    # the last tab, then run a `tabfirst` command to focus on the very first
+    # tab
+    script="${script}1wincmd w\n"
+    script="${script}tabfirst\n"
 
     # dump the Vim script into a temporary file
     script_tmpfile="${HOME}/.vim_bulk_edit_script_$$.vim"
