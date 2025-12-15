@@ -163,7 +163,7 @@ config.color_schemes = {
             "#E6E8E9",
         },
         brights = {
-            "#343434",
+            "#808080",
             "#D70000",
             "#00D700",
             "#FFCE60",
