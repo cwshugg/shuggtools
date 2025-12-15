@@ -445,7 +445,7 @@ function __shuggtool_prompt_command()
                 # add the number of staged files
                 if [ ! -z "${staged_files}" ] && [ ${staged_files} -gt 0 ]; then
                     bgc="${git_bgc}"
-                    fgc="10;100;25"
+                    fgc="10;70;50"
                     pfx="$(echo -e "\u2191")"
                     __shuggtool_prompt_block "${bgc}" "${fgc}" " ${pfx}${staged_files}"
                 fi
