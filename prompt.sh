@@ -54,7 +54,7 @@ function __shuggtool_prompt_configure_collapse_helper()
         __shuggtool_prompt_collapse_pwd=${collapse}
         __shuggtool_prompt_collapse_workspace=${collapse}
     fi
-    
+
     # apply the setting based on the target text
     if [[ "${target}" == *"username"* ]]; then
         __shuggtool_prompt_collapse_username=${collapse}
@@ -166,7 +166,7 @@ function __shuggtool_prompt_command()
     elif [ ${__shuggtool_bash_version_major} -eq 4 ] && [ ${__shuggtool_bash_version_minor} -ge 4 ]; then
         bash_version_4_4=1
     fi
-    
+
     if [ ${bash_version_4_4} -ne 0 ]; then
         cmdnum_str="\#"
         cmdnum="${cmdnum_str@P}" # expand string as if it was PS1
@@ -204,7 +204,7 @@ function __shuggtool_prompt_command()
         username_str="  "
     fi
     __shuggtool_prompt_block "${username_bgc}" "${username_fgc}" "${username_str}"
-    
+
     # add a hostname block
     hostname_str=" \h "
     if [ ${__shuggtool_prompt_collapse_hostname} -ne 0 ]; then
@@ -222,7 +222,7 @@ function __shuggtool_prompt_command()
     # set color for prefix/separator colors
     pfx_bgc="0;0;0"
     pfx_fgc="130;130;130"
-        
+
     # is the shell currently inside a workspace? If show, we'll add a block to
     # our prompt to reflect this
     if [ ! -z "${WORKSPACE}" ] && [ ${__shuggtool_prompt_show_workspace} -ne 0 ]; then
@@ -232,7 +232,7 @@ function __shuggtool_prompt_command()
         ws_bgc="145;185;164"
         ws_fgc="125;15;15"
         __shuggtool_prompt_block "${ws_bgc}" "${ws_fgc}" " ⚒ "
-        
+
         if [ ${__shuggtool_prompt_collapse_workspace} -eq 0 ]; then
             # add the workspace name
             ws_fgc="10;10;10"
@@ -254,12 +254,12 @@ function __shuggtool_prompt_command()
         if [ ${job_count} -gt 0 ]; then
             # add a prefix
             __shuggtool_prompt_block_separator "${pfx_bgc}" "${pfx_fgc}"
-            
+
             # add a character indicating an alive process
             retval_bgc="75;75;75"
             retval_fgc="225;225;225"
             __shuggtool_prompt_block "${retval_bgc}" "${retval_fgc}" " ↻"
-            
+
             # add the job count
             job_bgc="75;75;75"
             job_fgc="225;200;50"
@@ -280,7 +280,7 @@ function __shuggtool_prompt_command()
         retval_bgc="75;75;75"
         retval_fgc="225;225;225"
         __shuggtool_prompt_block "${retval_bgc}" "${retval_fgc}" " ⚑"
-    
+
         # add the return value number block (OR a signal name)
         retval_fgc="225;50;50"
         signame="$(__shuggtool_os_signal_retval ${retval})"
@@ -348,10 +348,10 @@ function __shuggtool_prompt_command()
                     repo_name="[BARE]"
                     repo_name_fgc="128;30;0"
                 fi
-                
+
                 __shuggtool_prompt_block "${repo_name_bgc}" "${repo_name_fgc}" " ${repo_name}"
             fi
-            
+
             # format the repo branch and add it
             if [ ${__shuggtool_prompt_show_git_repo_branch} -ne 0 ]; then
                 blocks_added=$((blocks_added+1))
@@ -399,7 +399,7 @@ function __shuggtool_prompt_command()
                         commits_ahead=${commit_counts[0]}
                         commits_behind=${commit_counts[1]}
                     fi
-                    
+
                     # based on the AHEAD and BEHIND values, add blocks onto the
                     # prompt to display this value
                     if [ ${commits_behind} -gt 0 ]; then
@@ -414,9 +414,9 @@ function __shuggtool_prompt_command()
                     fi
                 fi
             fi
-            
+
             # format the various changes in the file and add it
-            if [ ${__shuggtool_prompt_show_git_repo_diff} -ne 0 ]; then 
+            if [ ${__shuggtool_prompt_show_git_repo_diff} -ne 0 ]; then
                 blocks_added=$((blocks_added+1))
                 # get number of modified files and other stats
                 stat="$("${git}" diff --shortstat 2> /dev/null)"
@@ -424,15 +424,30 @@ function __shuggtool_prompt_command()
                 stat_adds="$(echo ${stat} | cut -d "," -f 2 | xargs | cut -d " " -f 1)"
                 stat_dels="$(echo ${stat} | cut -d "," -f 3 | xargs | cut -d " " -f 1)"
 
+                # get number of files that are staged for commit
+                stat="$("${git}" diff --shortstat --cached 2> /dev/null)"
+                staged_files="$(echo ${stat} | cut -d "," -f 1 | xargs | cut -d " " -f 1)"
+
                 # if at least one statistic is non-empty, we'll add a separator
                 if [ ${__shuggtool_prompt_show_git_repo_branch} -ne 0 ] || \
                    [ ${__shuggtool_prompt_show_git_repo_name} -ne 0 ]; then
-                    if [ ! -z "${stat_files}" ] || [ ! -z "${stat_adds}" ] || [ ! -z "${stat_dels}" ]; then
+                    if [ ! -z "${stat_files}" ] || \
+                       [ ! -z "${stat_adds}" ] || \
+                       [ ! -z "${stat_dels}" ] || \
+                       [ ! -z "${staged_files}" ]; then
                     # add a separator between the branch name and stats
                         sep_bgc="${git_bgc}"
                         sep_fgc="0;0;0"
                         __shuggtool_prompt_block "${sep_bgc}" "${sep_fgc}" " ->"
                     fi
+                fi
+
+                # add the number of staged files
+                if [ ! -z "${staged_files}" ] && [ ${staged_files} -gt 0 ]; then
+                    bgc="${git_bgc}"
+                    fgc="10;100;25"
+                    pfx="$(echo -e "\u2191")"
+                    __shuggtool_prompt_block "${bgc}" "${fgc}" " ${pfx}${staged_files}"
                 fi
 
                 # add the number of files changed
@@ -474,7 +489,7 @@ function __shuggtool_prompt_command()
     # save the captured return value and cmdnum for next iteration
     __shuggtool_prompt_previous_retval=${retval}
     __shuggtool_prompt_previous_cmdnum="${cmdnum}"
-    
+
     # add a space at the end of the prompt
     PS1="${PS1} "
 }
