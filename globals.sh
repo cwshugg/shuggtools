@@ -29,9 +29,17 @@ STAB_TREE1=" \u2514\u2500 "
 STAB_TREE2=" \u251c\u2500 "
 STAB_TREE3=" \u2503  "
 
+# Process information
+__shuggtool_pid="$$"
+__shuggtool_stdout_file_type="$(stat -L -c "%F" /proc/${__shuggtool_pid}/fd/1 2> /dev/null)"
+__shuggtool_stderr_file_type="$(stat -L -c "%F" /proc/${__shuggtool_pid}/fd/2 2> /dev/null)"
+
 # Bash version
 __shuggtool_bash_version_major=$(echo ${BASH_VERSION} | cut -d "." -f 1)
 __shuggtool_bash_version_minor=$(echo ${BASH_VERSION} | cut -d "." -f 2)
+
+echo "STDOUT FILE TYPE: ${__shuggtool_stdout_file_type}" 1>&2
+echo "STDERR FILE TYPE: ${__shuggtool_stderr_file_type}" 1>&2
 
 # Information file
 shuggtools_info_file=info.txt
@@ -123,6 +131,70 @@ function __shuggtool_print_error()
     echo -e "${C_RED}Error:${C_NONE} ${msg}${C_NONE}" 1>&2
 }
 
+# Returns non-zero if STDOUT is writing to a terminal (i.e. not a pipe or
+# file), and zero otherwise.
+function __shuggtool_stdout_is_terminal()
+{
+    if [[ "${__shuggtool_stdout_file_type}" == *"character special file"* ]]; then
+        return 1
+    fi
+    return 0
+}
+
+# Returns non-zero if STDOUT is writing to a pipe, and zero otherwise.
+function __shuggtool_stdout_is_pipe()
+{
+    if [[ "${__shuggtool_stdout_file_type}" == *"fifo"* ]]; then
+        return 1
+    fi
+    return 0
+}
+
+# Returns non-zero if STDERR is writing to a terminal (i.e. not a pipe or
+# file), and zero otherwise.
+function __shuggtool_stderr_is_terminal()
+{
+    if [[ "${__shuggtool_stderr_file_type}" == *"character special file"* ]]; then
+        return 1
+    fi
+    return 0
+}
+
+# Returns non-zero if STDERR is writing to a pipe, and zero otherwise.
+function __shuggtool_stderr_is_pipe()
+{
+    if [[ "${__shuggtool_stderr_file_type}" == *"fifo"* ]]; then
+        return 1
+    fi
+    return 0
+}
+
+# Function that echoes out the provided color string if STDOUT is writing to a
+# terminal. Otherwise, echoes out nothing.
+function __shuggtool_maybe_color_stdout()
+{
+    color_text="$1"
+
+    __shuggtool_stdout_is_terminal
+    is_terminal=$?
+    if [ ${is_terminal} -ne 0 ]; then
+        echo "${color_text}"
+    fi
+}
+
+# Function that echoes out the provided color string if STDERR is writing to a
+# terminal. Otherwise, echoes out nothing.
+function __shuggtool_maybe_color_stderr()
+{
+    color_text="$1"
+
+    __shuggtool_stderr_is_terminal
+    is_terminal=$?
+    if [ ${is_terminal} -ne 0 ]; then
+        echo "${color_text}"
+    fi
+}
+
 # Helper function that sets two global variables equal to the number of rows
 # and number of columns (in characters) that make up the current terminal
 shuggtools_terminal_rows=0
@@ -158,7 +230,7 @@ function __shuggtool_prompt_yesno()
     while true; do
         echo -en "${msg} ${C_LTGRAY}(${C_GREEN}y${C_LTGRAY}/${C_RED}n${C_LTGRAY})${C_NONE}"
         read -p " " answer
-        
+
         # if the response is blank, just re-loop
         if [ -z "${answer}" ]; then
             continue
@@ -198,7 +270,7 @@ function __shuggtool_prompt_choice()
 
     # zero-out the return value
     __shuggtool_prompt_choice_retval=""
-    
+
     # count the number of options, then output the prompt message
     ccount="${#__shuggtool_prompt_choices[@]}"
     if [ ${ccount} -le 0 ]; then
@@ -220,7 +292,7 @@ function __shuggtool_prompt_choice()
         fi
         echo -e "${C_DKGRAY}${prefix}${C_LTBLUE}$((i+1)).${C_NONE} ${choice}"
     done
-    
+
     # read the user's answer until a proper one is given
     while true; do
         read -p "" answer
@@ -228,7 +300,7 @@ function __shuggtool_prompt_choice()
         if [ -z "${answer}" ]; then
             continue
         fi
-        
+
         # if the answer was a number, we'll see if it's in the correct range
         if [[ "${answer}" =~ ^[0-9]+$ ]]; then
             # if a number was given, check the range
@@ -240,7 +312,7 @@ function __shuggtool_prompt_choice()
             # otherwise, set the return value global and return
             __shuggtool_prompt_choice_retval="${__shuggtool_prompt_choices[$((answer-1))]}"
             return
-        fi 
+        fi
 
         # otherwise, if 'other' isn't allowed, forbid it
         if [ ${allow_other} -eq 0 ]; then
@@ -264,7 +336,7 @@ function __shuggtool_print_text_centered()
         return
     fi
     text=$1
-    
+
     # get the width of the terminal
     __shuggtool_terminal_size
     columns=${shuggtools_terminal_cols}
@@ -398,7 +470,7 @@ function __shuggtool_rand_range()
     if [ $# -ge 2 ]; then
         upper=$2
     fi
-    
+
     val=$(__shuggtool_rand_uint32)
     val=$(expr ${val} % $((upper - lower)))
     val=$(expr ${val} + ${lower})
@@ -424,7 +496,7 @@ function __shuggtool_rand_hex()
             uppercase=1
         fi
     fi
-    
+
     # run the hexdump command
     if [ ${uppercase} -ne 0 ]; then
         hexdump -n ${len} -v -e '"%0X"' < /dev/urandom 2> /dev/null
@@ -450,7 +522,7 @@ function __shuggtool_rand_word()
             break
         fi
     done
-    
+
     # if we didn't find a dictionary file, output an error
     if [ -z "${dictionary_file}" ] || [ ! -f "${dictionary_file}" ]; then
         __shuggtool_print_error "Failed to find a suitable dictionary file on the system."
@@ -490,7 +562,7 @@ function __shuggtool_os_signal_init()
         if [[ "${word}" != *"SIG"* ]]; then
             continue
         fi
-        
+
         # get the signal's number, then add both to the arrays
         signum=$(kill -l "${word}")
         __shuggtool_os_signal_names+=("${word}")
@@ -639,7 +711,7 @@ function __shuggtool_wsl_path_is_windows()
     # drives mounted to WSL
     echo "${path}" | grep -q "^\/mnt\/[c,q]\/*"
     match=$?
-    
+
     if [ ${match} -eq 0 ]; then
         return 1
     fi
@@ -695,7 +767,7 @@ function __shuggtool_git_is_currently_in_git_repo()
     if [ -z "$(__shuggtool_git_get_current_repo_dir)" ]; then
         return 1
     fi
-    
+
     echo "yes"
     return 0
 }

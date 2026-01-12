@@ -54,9 +54,9 @@ function __shuggtool_dupdiff()
     fi
 
     echo -e "Comparing files between directory-1" \
-            "(${C_LTBLUE}${dir1}${C_NONE})" \
+            "($(__shuggtool_maybe_color_stdout "${C_LTBLUE}")${dir1}$(__shuggtool_maybe_color_stdout "${C_NONE}"))" \
             "and directory-2" \
-            "(${C_LTPURPLE}${dir2}${C_NONE})"
+            "($(__shuggtool_maybe_color_stdout "${C_LTPURPLE}")${dir2}$(__shuggtool_maybe_color_stdout "${C_NONE}"))"
 
     # get a list of files to compare from each directory
     flist_dir1=($(__shuggtool_dupdiff_get_file_list "${dir1}"))
@@ -75,11 +75,11 @@ function __shuggtool_dupdiff()
             # do the files differ?
             diff_output="$(diff -q "${f_real}" "${f_in_dir2}")"
             if [ ! -z "${diff_output}" ]; then
-                echo -e "${C_LTRED}Shared File Differs:${C_NONE} ${f_relative}"
+                echo -e "$(__shuggtool_maybe_color_stdout "${C_LTRED}")Shared File Differs:$(__shuggtool_maybe_color_stdout "${C_NONE}") ${f_relative}"
                 issue_count=$((issue_count + 1))
             fi
         else
-            echo -e "${C_LTBLUE}Directory-1 Only:   ${C_NONE} ${f_relative}"
+            echo -e "$(__shuggtool_maybe_color_stdout "${C_LTBLUE}")Directory-1 Only:   $(__shuggtool_maybe_color_stdout "${C_NONE}") ${f_relative}"
             issue_count=$((issue_count + 1))
         fi
     done
@@ -92,14 +92,14 @@ function __shuggtool_dupdiff()
 
         # does the file exist in dir1?
         if [ ! -f "${f_in_dir1}" ]; then
-            echo -e "${C_LTPURPLE}Directory-2 Only:   ${C_NONE} ${f_relative}"
+            echo -e "$(__shuggtool_maybe_color_stdout "${C_LTPURPLE}")Directory-2 Only:   $(__shuggtool_maybe_color_stdout "${C_NONE}") ${f_relative}"
             issue_count=$((issue_count + 1))
         fi
     done
 
     # print out a message is no issues were found
     if [ ${issue_count} -eq 0 ]; then
-        echo -e "${C_GREEN}No differences found.${C_NONE}"
+        echo -e "$(__shuggtool_maybe_color_stdout "${C_GREEN}")No differences found.$(__shuggtool_maybe_color_stdout "${C_NONE}")"
     fi
 }
 
