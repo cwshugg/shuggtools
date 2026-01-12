@@ -1,4 +1,4 @@
-# DupDiff ("Duplicate Differences")
+# DupDirDiff ("Duplicate Directory Differences")
 # A script that compares two different directories (usually two different
 # clones of the same git repo) containing the same files, and looks for
 # differences between those same files.
