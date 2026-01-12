@@ -38,9 +38,6 @@ __shuggtool_stderr_file_type="$(stat -L -c "%F" /proc/${__shuggtool_pid}/fd/2 2>
 __shuggtool_bash_version_major=$(echo ${BASH_VERSION} | cut -d "." -f 1)
 __shuggtool_bash_version_minor=$(echo ${BASH_VERSION} | cut -d "." -f 2)
 
-echo "STDOUT FILE TYPE: ${__shuggtool_stdout_file_type}" 1>&2
-echo "STDERR FILE TYPE: ${__shuggtool_stderr_file_type}" 1>&2
-
 # Information file
 shuggtools_info_file=info.txt
 
