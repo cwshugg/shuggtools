@@ -85,6 +85,36 @@ function! SearchForGitMergeConflict()
     call GoToNextSearchMatch()
 endfunction
 
+" Helper function that enables or disables ALE globally depending on the
+" current setting.
+let g:__ale_enabled = 1
+function! ToggleALEGlobally()
+    if g:__ale_enabled
+        ALEDisable
+        let g:__ale_enabled = 0
+        echo "ALE disabled globally."
+    else
+        ALEEnable
+        let g:__ale_enabled = 1
+        echo "ALE enabled globally."
+    endif
+endfunction
+
+" Helper function that enables or disables ALE for a certain buffer depending
+" on the current setting.
+let b:__ale_enabled = 1
+function! ToggleALEInBuffer()
+    if b:__ale_enabled
+        ALEDisableBuffer
+        let b:__ale_enabled = 0
+        echo "ALE disabled in current buffer."
+    else
+        ALEEnableBuffer
+        let b:__ale_enabled = 1
+        echo "ALE enabled in current buffer."
+    endif
+endfunction
+
 
 " ============================ Vundle and Plugins ============================ "
 if s:os_linux
@@ -301,6 +331,16 @@ if s:os_linux
     " Map Ctrl-LeftClick to invoke 'ALEGoToDefinition'
     nnoremap <C-LeftMouse> :ALEGoToDefinition<CR>
 
+    " Set my custom 'ALE is enabled' toggles based on what state ALE is
+    " currently in.
+    if get(g:, "ale_enabled", 1) == 1
+        let g:__ale_enabled = 1
+        let b:__ale_enabled = 1
+    else
+        let g:__ale_enabled = 0
+        let b:__ale_enabled = 0
+    endif
+
     " ----------------------------- Markdown.vim ----------------------------- "
     " Prevent the markdown plugin from overriding my Vim tabs/spaces indent
     " settings.
@@ -434,6 +474,14 @@ nnoremap <leader>g :Goto<cr>
 " Make `leader + d` map to `ALEHover`, to have ALE display information about
 " the symbol my cursor is currently on. ('d' is for 'details')
 nnoremap <leader>d :ALEHover<cr>
+
+" Make `leader + a` map to a function that toggles ALE on and off in the
+" current buffer.
+nnoremap <leader>a :call ToggleALEInBuffer()<cr>
+
+" Make `leader + a` map to a function that toggles ALE on and off across all
+" buffers.
+nnoremap <leader>A :call ToggleALEGlobally()<cr>
 
 " Make `leader + p` toggle between `set paste` and `set nopaste`. I paste text
 " in from external places frequently, so this is a nice shortcut to have.
