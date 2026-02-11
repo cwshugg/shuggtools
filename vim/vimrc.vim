@@ -87,30 +87,28 @@ endfunction
 
 " Helper function that enables or disables ALE globally depending on the
 " current setting.
-let g:__ale_enabled = 1
 function! ToggleALEGlobally()
-    if g:__ale_enabled
+    if get(g:, 'ale_enabled', 0) == 1
         ALEDisable
-        let g:__ale_enabled = 0
+        let g:ale_enabled = 0
         echo "ALE disabled globally."
     else
         ALEEnable
-        let g:__ale_enabled = 1
+        let g:ale_enabled = 1
         echo "ALE enabled globally."
     endif
 endfunction
 
 " Helper function that enables or disables ALE for a certain buffer depending
 " on the current setting.
-let b:__ale_enabled = 1
 function! ToggleALEInBuffer()
-    if b:__ale_enabled
+    if get(b:, 'ale_enabled', 0) == 1
         ALEDisableBuffer
-        let b:__ale_enabled = 0
+        let b:ale_enabled = 0
         echo "ALE disabled in current buffer."
     else
         ALEEnableBuffer
-        let b:__ale_enabled = 1
+        let b:ale_enabled = 1
         echo "ALE enabled in current buffer."
     endif
 endfunction
