@@ -130,10 +130,15 @@ if s:os_linux
     Plugin 'kshenoy/vim-signature'          " plugin for visualizing marks
     Plugin 'inkarkat/vim-ingo-library'      " library plugin required by vim-mark (below)
     Plugin 'inkarkat/vim-mark'              " plugin for highlighting/searching multiple keywords
+
+    " AI/LLM plugins
     Plugin 'github/copilot.vim'             " official GitHub Copilot plugin
     Plugin 'DanBradbury/copilot-chat.vim'   " unofficial Copilot chat plugin
+
+    " Syntax and language support plugins
     Plugin 'dense-analysis/ale'             " plugin for syntax analysis when editing code
     Plugin 'rust-lang/rust.vim'             " plugin for developing Rust
+    Plugin 'NateLehman/kustocli-vim'        " working with Kusto query language
 
     " My plugins
     Plugin 'cwshugg/argonaut.vim'
@@ -212,8 +217,8 @@ if s:os_linux
     let g:startify_lists = [
         \ { 'type': 'sessions',                         'header': ['    ────────────── Sessions ───────────────'] },
         \ { 'type': 'files',                            'header': ['    ────────────── MRU Files ──────────────'] },
-        \ { 'type': function('s:StartifyGitModified'),  'header': ['    ──────── Git - Modified Files ─────────'] },
-        \ { 'type': function('s:StartifyGitUntracked'), 'header': ['    ──────── Git - Untracked Files ────────'] },
+        "\ { 'type': function('s:StartifyGitModified'),  'header': ['    ──────── Git - Modified Files ─────────'] },
+        "\ { 'type': function('s:StartifyGitUntracked'), 'header': ['    ──────── Git - Untracked Files ────────'] },
         \ ]
 
 
