@@ -19,6 +19,7 @@ Contained in this repository is the following:
 * `gdb/` - a directory containing any [GDB](https://sourceware.org/gdb/) scripts I've written
 * `remind/` - a directory containing any files I've written for the [remind](https://dianne.skoll.ca/wiki/Remind) Linux utility.
 * `wezterm/` - a directory containing my configurations for [Wezterm](https://wezfurlong.org/wezterm), my terminal of choice.
+* `agents/` - a directory containing the GitHub Copilot agent documents I've written.
 
 # Setup
 

@@ -8,6 +8,8 @@ __shuggtool_toolsetup_nvm_version="v0.40.3"
 __shuggtool_toolsetup_nvm_url="https://raw.githubusercontent.com/nvm-sh/nvm/${__shuggtool_toolsetup_nvm_version}"
 __shuggtool_toolsetup_nodejs_version="24"
 __shuggtool_toolsetup_ghcp_install_url="https://gh.io/copilot-install"
+__shuggtool_toolsetup_ghcp_agent_src="${sthome}/agents"
+__shuggtool_toolsetup_ghcp_agent_dst="${HOME}/.copilot/agents"
 
 
 # ================================= Helpers ================================== #
@@ -589,8 +591,40 @@ function __shuggtool_toolsetup_ghcp_cli()
         __shuggtool_toolsetup_print_bad "${msg}"
         return 1
     fi
-
     __shuggtool_toolsetup_print_good "Successfully installed ${C_YELLOW}GitHub Copilot CLI${C_NONE}."
+
+    # next, we'll copy my agents into a place where GHCP can fidn them. Start
+    # by making sure the source directory exists
+    if [ ! -d "${__shuggtool_toolsetup_ghcp_agent_src}" ]; then
+        __shuggtool_toolsetup_print_bad "Failed to find agent source directory at ${C_LTBLUE}${__shuggtool_toolsetup_ghcp_agent_src}${C_NONE}."
+        return 1
+    fi
+
+    # locate all agent files and make sure we have some
+    agent_files=($(find "${__shuggtool_toolsetup_ghcp_agent_src}" -type f -name "*.md"))
+    agent_count=${#agent_files[@]}
+    if [ ${agent_count} -eq 0 ]; then
+        __shuggtool_toolsetup_print_note "Failed to find any agent files in ${C_LTBLUE}${__shuggtool_toolsetup_ghcp_agent_src}${C_NONE}."
+    else
+        # make sure the destination directory exists
+        if [ ! -d "${__shuggtool_toolsetup_ghcp_agent_dst}" ]; then
+            mkdir -p "${__shuggtool_toolsetup_ghcp_agent_dst}"
+        fi
+
+        for agent_file in "${agent_files[@]}"; do
+            agent_src_path="$(realpath "${agent_file}")"
+
+            # determine the path to copy the agent file into
+            agent_dst_name="$(basename "${agent_file}")"
+            agent_dst_path="${__shuggtool_toolsetup_ghcp_agent_dst}/${agent_dst_name}"
+
+            # copy the agent file
+            __shuggtool_toolsetup_print_note "Installing agent from ${C_LTBLUE}${agent_file}${C_NONE} to ${C_LTBLUE}${agent_dst_path}${C_NONE}."
+            cp "${agent_src_path}" "${agent_dst_path}"
+        done
+    fi
+    __shuggtool_toolsetup_print_good "Installed ${agent_count} agent(s) for GitHub Copilot CLI."
+
     return 0
 }
 
