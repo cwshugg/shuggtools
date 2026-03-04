@@ -7,6 +7,7 @@
 __shuggtool_toolsetup_nvm_version="v0.40.3"
 __shuggtool_toolsetup_nvm_url="https://raw.githubusercontent.com/nvm-sh/nvm/${__shuggtool_toolsetup_nvm_version}"
 __shuggtool_toolsetup_nodejs_version="24"
+__shuggtool_toolsetup_ghcp_install_url="https://gh.io/copilot-install"
 
 
 # ================================= Helpers ================================== #
@@ -561,6 +562,40 @@ function __shuggtool_toolsetup_wezterm()
 }
 
 
+# ============================== GitHub Copilot ============================== #
+# Helper function that specifically sets up dependencies for the GitHub Copilot
+# CLI.
+function __shuggtool_toolsetup_ghcp_cli()
+{
+    # prompt the user to install
+    __shuggtool_prompt_yesno "Would you like to install GitHub Copilot CLI?"
+    install_ghcp_cli=$?
+
+    # return early if the user doesn't want to install
+    if [ ${install_ghcp_cli} -eq 0 ]; then
+        __shuggtool_toolsetup_print_alert "Skipping GitHub Copilot CLI setup."
+        return 1
+    fi
+
+    # download the installation script and source it
+    __shuggtool_toolsetup_print_note "Installing GitHub Copilot CLI..."
+    curl -fsSL "${__shuggtool_toolsetup_ghcp_install_url}" | bash
+
+    # check the copilot version and log it
+    ghcp_bin="$(which copilot 2> /dev/null)"
+    if [ -z "${ghcp_bin}" ]; then
+        msg="Could not find GitHub Copilot CLI after installation."
+        msg="${msg} You may need to add it to your PATH, source your .bashrc file, or open a new terminal."
+        __shuggtool_toolsetup_print_bad "${msg}"
+        return 1
+    fi
+
+    __shuggtool_toolsetup_print_good "Successfully installed ${C_YELLOW}GitHub Copilot CLI${C_NONE}."
+    return 0
+}
+
+
+
 # =================================== Main =================================== #
 function __shuggtool_toolsetup()
 {
@@ -596,6 +631,10 @@ function __shuggtool_toolsetup()
 
     __shuggtool_toolsetup_print_prefix="wezterm"
     __shuggtool_toolsetup_wezterm
+    echo ""
+
+    __shuggtool_toolsetup_print_prefix="ghcp-cli"
+    __shuggtool_toolsetup_ghcp_cli
     echo ""
 
     echo "Setup complete. Please source your bashrc file."
