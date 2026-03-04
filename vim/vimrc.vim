@@ -85,6 +85,34 @@ function! SearchForGitMergeConflict()
     call GoToNextSearchMatch()
 endfunction
 
+" Helper function that enables or disables ALE globally depending on the
+" current setting.
+function! ToggleALEGlobally()
+    if get(g:, 'ale_enabled', 0) == 1
+        ALEDisable
+        let g:ale_enabled = 0
+        echo "ALE disabled globally."
+    else
+        ALEEnable
+        let g:ale_enabled = 1
+        echo "ALE enabled globally."
+    endif
+endfunction
+
+" Helper function that enables or disables ALE for a certain buffer depending
+" on the current setting.
+function! ToggleALEInBuffer()
+    if get(b:, 'ale_enabled', 0) == 1
+        ALEDisableBuffer
+        let b:ale_enabled = 0
+        echo "ALE disabled in current buffer."
+    else
+        ALEEnableBuffer
+        let b:ale_enabled = 1
+        echo "ALE enabled in current buffer."
+    endif
+endfunction
+
 
 " ============================ Vundle and Plugins ============================ "
 if s:os_linux
@@ -102,10 +130,15 @@ if s:os_linux
     Plugin 'kshenoy/vim-signature'          " plugin for visualizing marks
     Plugin 'inkarkat/vim-ingo-library'      " library plugin required by vim-mark (below)
     Plugin 'inkarkat/vim-mark'              " plugin for highlighting/searching multiple keywords
+
+    " AI/LLM plugins
     Plugin 'github/copilot.vim'             " official GitHub Copilot plugin
     Plugin 'DanBradbury/copilot-chat.vim'   " unofficial Copilot chat plugin
+
+    " Syntax and language support plugins
     Plugin 'dense-analysis/ale'             " plugin for syntax analysis when editing code
     Plugin 'rust-lang/rust.vim'             " plugin for developing Rust
+    Plugin 'NateLehman/kustocli-vim'        " working with Kusto query language
 
     " My plugins
     Plugin 'cwshugg/argonaut.vim'
@@ -184,8 +217,8 @@ if s:os_linux
     let g:startify_lists = [
         \ { 'type': 'sessions',                         'header': ['    ────────────── Sessions ───────────────'] },
         \ { 'type': 'files',                            'header': ['    ────────────── MRU Files ──────────────'] },
-        \ { 'type': function('s:StartifyGitModified'),  'header': ['    ──────── Git - Modified Files ─────────'] },
-        \ { 'type': function('s:StartifyGitUntracked'), 'header': ['    ──────── Git - Untracked Files ────────'] },
+        "\ { 'type': function('s:StartifyGitModified'),  'header': ['    ──────── Git - Modified Files ─────────'] },
+        "\ { 'type': function('s:StartifyGitUntracked'), 'header': ['    ──────── Git - Untracked Files ────────'] },
         \ ]
 
 
@@ -300,6 +333,16 @@ if s:os_linux
 
     " Map Ctrl-LeftClick to invoke 'ALEGoToDefinition'
     nnoremap <C-LeftMouse> :ALEGoToDefinition<CR>
+
+    " Set my custom 'ALE is enabled' toggles based on what state ALE is
+    " currently in.
+    if get(g:, "ale_enabled", 1) == 1
+        let g:__ale_enabled = 1
+        let b:__ale_enabled = 1
+    else
+        let g:__ale_enabled = 0
+        let b:__ale_enabled = 0
+    endif
 
     " ----------------------------- Markdown.vim ----------------------------- "
     " Prevent the markdown plugin from overriding my Vim tabs/spaces indent
@@ -434,6 +477,14 @@ nnoremap <leader>g :Goto<cr>
 " Make `leader + d` map to `ALEHover`, to have ALE display information about
 " the symbol my cursor is currently on. ('d' is for 'details')
 nnoremap <leader>d :ALEHover<cr>
+
+" Make `leader + a` map to a function that toggles ALE on and off in the
+" current buffer.
+nnoremap <leader>a :call ToggleALEInBuffer()<cr>
+
+" Make `leader + a` map to a function that toggles ALE on and off across all
+" buffers.
+nnoremap <leader>A :call ToggleALEGlobally()<cr>
 
 " Make `leader + p` toggle between `set paste` and `set nopaste`. I paste text
 " in from external places frequently, so this is a nice shortcut to have.

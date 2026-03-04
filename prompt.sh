@@ -6,6 +6,7 @@
 __shuggtool_prompt_show_jobs=1              # show jobs in background
 __shuggtool_prompt_show_exitcode=1          # show exit codes
 __shuggtool_prompt_show_workspace=1         # show current workspace
+__shuggtool_prompt_show_conda_env=1         # show conda environment
 __shuggtool_prompt_show_git=1               # enables git repo stats
 __shuggtool_prompt_show_git_repo_name=1     # shows git repo name
 __shuggtool_prompt_show_git_repo_branch=1   # shows git branch name
@@ -225,7 +226,7 @@ function __shuggtool_prompt_command()
 
     # is the shell currently inside a workspace? If show, we'll add a block to
     # our prompt to reflect this
-    if [ ! -z "${WORKSPACE}" ] && [ ${__shuggtool_prompt_show_workspace} -ne 0 ]; then
+    if [ ${__shuggtool_prompt_show_workspace} -ne 0 ] && [ ! -z "${WORKSPACE}" ]; then
         __shuggtool_prompt_block_separator "${pfx_bgc}" "${pfx_fgc}"
 
         # add a workspace symbol
@@ -238,6 +239,26 @@ function __shuggtool_prompt_command()
             ws_fgc="10;10;10"
             wsname="$(basename ${WORKSPACE})"
             __shuggtool_prompt_block "${ws_bgc}" "${ws_fgc}" "${wsname} "
+        fi
+    fi
+
+    # are we in a conda environment? If so, we'll add a block to our prompt to
+    # reflect this
+    conda_env="${CONDA_DEFAULT_ENV}"
+    if [ ${__shuggtool_prompt_show_conda_env} ] && \
+       [ ! -z "${conda_env}" ] && \
+       [[ "${conda_env}" != "base" ]]; then
+        __shuggtool_prompt_block_separator "${pfx_bgc}" "${pfx_fgc}"
+
+        # add a workspace symbol
+        conda_env_bgc="185;185;164"
+        conda_env_fgc="50;50;185"
+        __shuggtool_prompt_block "${conda_env_bgc}" "${conda_env_fgc}" " ⚒ "
+
+        if [ ${__shuggtool_prompt_collapse_workspace} -eq 0 ]; then
+            # add the workspace name
+            conda_env_fgc="10;10;10"
+            __shuggtool_prompt_block "${conda_env_bgc}" "${conda_env_fgc}" "${conda_env} "
         fi
     fi
 
