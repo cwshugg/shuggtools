@@ -28,12 +28,8 @@ if [ ! -z "${bat_binary}" ]; then
     alias pcat="${bat_binary} --style=plain"
 fi
 
-# alias 'mdcat' and 'mdpcat' to 'glow'
-glow_binary="$(which glow 2> /dev/null)"
-if [ ! -z "${glow_binary}" ]; then
-    alias mdcat="${glow_binary} --width 80"
-    alias mdpcat="${glow_binary} --width 80 --pager"
-fi
+# alias `gdiff` to `lumen diff`
+alias gdiff="lumen diff"
 
 # coding/debugging aliases
 alias valg="valgrind -v --leak-check=full --show-leak-kinds=all --track-origins=yes"
