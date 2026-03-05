@@ -6,7 +6,6 @@
     safecrlf = "warn"
 
 
-# =============================== Diffs/Merges =============================== #
 [diff]
     tool = vimdiff
 
@@ -16,13 +15,20 @@
 [merge]
     tool = vimdiff
 
-
-# ============================== Other Commands ============================== #
 [pull]
     rebase = false
 
+[color "diff"]
+    meta = 189
+    frag = 229
+    old = 160
+    new = 34
 
-# ================================= Aliases ================================== #
+[color "status"]
+    added = 34
+    changed = 160
+    untracked = 169
+
 [alias]
     d = difftool
     m = mergetool
@@ -41,7 +47,7 @@
 
     # view changes for a particular commit
     commit-changes = "!__git_commit_changes() { commit=\"HEAD~1\"; if [ $# -ge 1 ]; then commit=\"$1\"; fi; git diff ${commit}~ ${commit}; }; __git_commit_changes | less"
-    
+
     # compare commits between two branches (invokes my custom bash function)
     compare-branch-commits = "__shuggtool_git_compare_branch_commits"
 
@@ -67,7 +73,7 @@
 
     # compare two branches (requires my script)
     branch-diff = !sh git-branchdiff $@
-    
+
     # wipe all currently unstaged changes
     wipe = reset --hard HEAD
 
