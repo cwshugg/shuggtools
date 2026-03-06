@@ -12,6 +12,12 @@ export EDITOR="${vim}"
 # alias for vim
 alias v="${vim}"
 
+# are we on WSL?
+is_wsl=0
+if [ ! -z "$(__shuggtool_wsl_detect)" ]; then
+    is_wsl=1
+fi
+
 # cscope adjustments (if it's installed)
 cscope_exists="$(which cscope 2>&1)"
 if [[ ${cscope_exists} != *"no cscope"* ]]; then
@@ -28,7 +34,56 @@ if [ ! -z "${bat_binary}" ]; then
     alias pcat="${bat_binary} --style=plain"
 fi
 
-# alias `gdiff` to `lumen diff`
+# Set up aliasing for Lumen, a tool that provides a better `git diff`
+# experience.
+# https://github.com/jnsahaj/lumen
+function __shuggtool_lumen_binary()
+{
+    # Are we running in WSL, and is our current directory on the Windows
+    # filesystem?
+    if [ ${is_wsl} -ne 0 ]; then
+        __shuggtool_wsl_path_is_windows "$(pwd -P)"
+        path_is_windows=$?
+        if [ ${path_is_windows} -ne 0 ]; then
+            # Lumen seems to have trouble when running on a repo stored on the
+            # Windows filesystem from within WSL, so we'll look for the Windows
+            # version of the lumen executable here.
+            lumen_win_path="$(which "lumen.exe" 2> /dev/null)"
+            if [ -z "${lumen_win_path}" ]; then
+                msg="Lumen does not work well when running on a repo stored on the Windows filesystem from within WSL."
+                msg="${msg}\nPlease install the Windows version of the Lumen executable first."
+                msg="${msg}\nFor now, please use the standard ${C_LTYELLOW}git diff${C_NONE} command."
+                __shuggtool_print_error "${msg}"
+                return 1
+            fi
+
+            # Echo the path of the Windows binary out:
+            echo "${lumen_win_path}"
+            return 0
+        fi
+    fi
+
+    # Otherwise, just execute the standard Lumen command
+    lumen_path="$(which "lumen" 2> /dev/null)"
+    if [ -z "${lumen_path}" ]; then
+        __shuggtool_print_error "Could not find Lumen. Please install it or add it to your path."
+        return 1
+    fi
+    echo "${lumen_path}"
+    return 0
+}
+
+function __shuggtool_lumen()
+{
+    lumen_binary="$(__shuggtool_lumen_binary)"
+    if [ -z "${lumen_binary}" ]; then
+        return 1
+    fi
+
+    "${lumen_binary}" "$@"
+    return $?
+}
+alias lumen="__shuggtool_lumen"
 alias gdiff="lumen diff"
 alias gd="gdiff"
 
@@ -45,12 +100,6 @@ alias g="git"
 # tmux aliases; only set when launching a shell inside of tmux
 if [ ! -z "${TMUX}" ]; then
     alias tmux-pane="tmux display -pt \"${TMUX_PANE:?}\" \"#{pane_index}\""
-fi
-
-# are we on WSL?
-is_wsl=0
-if [ ! -z "$(__shuggtool_wsl_detect)" ]; then
-    is_wsl=1
 fi
 
 # do we have NVM/NodeJS installed?
