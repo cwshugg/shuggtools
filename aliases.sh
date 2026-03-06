@@ -30,6 +30,7 @@ fi
 
 # alias `gdiff` to `lumen diff`
 alias gdiff="lumen diff"
+alias gd="gdiff"
 
 # coding/debugging aliases
 alias valg="valgrind -v --leak-check=full --show-leak-kinds=all --track-origins=yes"
