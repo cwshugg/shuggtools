@@ -113,6 +113,14 @@ function! ToggleALEInBuffer()
     endif
 endfunction
 
+" Helper function that retrieves the current buffer's directory and updates
+" the buffer to edit that directory.
+function! EditCurrentBufferDirectory()
+    let s:current_file_path = expand('%:p')
+    let s:current_file_dir = fnamemodify(s:current_file_path, ':h')
+    execute 'edit ' . s:current_file_dir
+endfunction
+
 
 " ============================ Vundle and Plugins ============================ "
 if s:os_linux
@@ -498,6 +506,11 @@ nnoremap <leader>M :call SearchForGitMergeConflict()<cr>
 
 " Make `leader + s` toggle spell-checking.
 nnoremap <leader>s :call ToggleSpellcheck()<cr>
+
+" Make `leader + e + d` edit the current buffer's directory. This is useful
+" when I'm editing a file, then realize I want to open a different file in the
+" same directory.
+nnoremap <leader>ed :call EditCurrentBufferDirectory()<cr>
 
 " Set up a variety of Copilot-based leader-key bindings
 nnoremap <leader>ct :call CopilotToggle()<cr>
