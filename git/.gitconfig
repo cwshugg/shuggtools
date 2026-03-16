@@ -30,7 +30,7 @@
     untracked = 169
 
 [alias]
-    d = difftool
+    d = diff
     m = mergetool
 
     # shortened commands
