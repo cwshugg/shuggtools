@@ -8,8 +8,10 @@ __shuggtool_toolsetup_nvm_version="v0.40.3"
 __shuggtool_toolsetup_nvm_url="https://raw.githubusercontent.com/nvm-sh/nvm/${__shuggtool_toolsetup_nvm_version}"
 __shuggtool_toolsetup_nodejs_version="24"
 __shuggtool_toolsetup_ghcp_install_url="https://gh.io/copilot-install"
-__shuggtool_toolsetup_ghcp_agent_src="${sthome}/agents"
+__shuggtool_toolsetup_ghcp_agent_src="${sthome}/ai/agents"
 __shuggtool_toolsetup_ghcp_agent_dst="${HOME}/.copilot/agents"
+__shuggtool_toolsetup_ghcp_skill_src="${sthome}/ai/skills"
+__shuggtool_toolsetup_ghcp_skill_dst="${HOME}/.copilot/skills"
 
 
 # ================================= Helpers ================================== #
@@ -593,7 +595,8 @@ function __shuggtool_toolsetup_ghcp_cli()
     fi
     __shuggtool_toolsetup_print_good "Successfully installed ${C_YELLOW}GitHub Copilot CLI${C_NONE}."
 
-    # next, we'll copy my agents into a place where GHCP can fidn them. Start
+    # -------------------------- Agent Installation -------------------------- #
+    # next, we'll copy my agents into a place where GHCP can find them. Start
     # by making sure the source directory exists
     if [ ! -d "${__shuggtool_toolsetup_ghcp_agent_src}" ]; then
         __shuggtool_toolsetup_print_bad "Failed to find agent source directory at ${C_LTBLUE}${__shuggtool_toolsetup_ghcp_agent_src}${C_NONE}."
@@ -624,6 +627,29 @@ function __shuggtool_toolsetup_ghcp_cli()
         done
     fi
     __shuggtool_toolsetup_print_good "Installed ${agent_count} agent(s) for GitHub Copilot CLI."
+
+    # -------------------------- Skill Installation -------------------------- #
+    # next, we'll do the same thing for skills. Copy over all the skills I have
+    # in this repository to a place where GHCP can find them
+    if [ ! -d "${__shuggtool_toolsetup_ghcp_skill_src}" ]; then
+        __shuggtool_toolsetup_print_bad "Failed to find agent source directory at ${C_LTBLUE}${__shuggtool_toolsetup_ghcp_skill_src}${C_NONE}."
+        return 1
+    fi
+
+    # make sure the skill directory contains something
+    if [ -z "$(ls -A "${__shuggtool_toolsetup_ghcp_skill_src}")" ]; then
+        __shuggtool_toolsetup_print_note "Skill source directory at ${C_LTBLUE}${__shuggtool_toolsetup_ghcp_skill_src}${C_NONE} is empty."
+    else
+        # make sure the destination directory exists
+        if [ ! -d "${__shuggtool_toolsetup_ghcp_skill_dst}" ]; then
+            mkdir -p "${__shuggtool_toolsetup_ghcp_skill_dst}"
+        fi
+
+        # recursively copy all contents of the skill source directory into the
+        # skill destination directory
+        cp -r "${__shuggtool_toolsetup_ghcp_skill_src}/*" "${__shuggtool_toolsetup_ghcp_skill_dst}/"
+        __shuggtool_toolsetup_print_good "Installed ${skill_count} skill(s) for GitHub Copilot CLI."
+    fi
 
     return 0
 }
