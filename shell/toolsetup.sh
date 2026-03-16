@@ -8,10 +8,14 @@ __shuggtool_toolsetup_nvm_version="v0.40.3"
 __shuggtool_toolsetup_nvm_url="https://raw.githubusercontent.com/nvm-sh/nvm/${__shuggtool_toolsetup_nvm_version}"
 __shuggtool_toolsetup_nodejs_version="24"
 __shuggtool_toolsetup_ghcp_install_url="https://gh.io/copilot-install"
+
+# Copilot
 __shuggtool_toolsetup_ghcp_agent_src="${sthome}/ai/agents"
 __shuggtool_toolsetup_ghcp_agent_dst="${HOME}/.copilot/agents"
 __shuggtool_toolsetup_ghcp_skill_src="${sthome}/ai/skills"
 __shuggtool_toolsetup_ghcp_skill_dst="${HOME}/.copilot/skills"
+__shuggtool_toolsetup_ghcp_instructions_src="${sthome}/ai/instructions"
+__shuggtool_toolsetup_ghcp_instructions_dst="${HOME}/.copilot/instructions"
 
 
 # ================================= Helpers ================================== #
@@ -614,8 +618,15 @@ function __shuggtool_toolsetup_ghcp_cli()
             mkdir -p "${__shuggtool_toolsetup_ghcp_agent_dst}"
         fi
 
+        agents_installed=0
         for agent_file in "${agent_files[@]}"; do
             agent_src_path="$(realpath "${agent_file}")"
+
+            # Skip `README.md` files:
+            agent_filename="$(basename "${agent_file}")"
+            if [ "${agent_filename,,}" == "readme.md" ]; then
+                continue
+            fi
 
             # determine the path to copy the agent file into
             agent_dst_name="$(basename "${agent_file}")"
@@ -624,9 +635,51 @@ function __shuggtool_toolsetup_ghcp_cli()
             # copy the agent file
             __shuggtool_toolsetup_print_note "Installing agent from ${C_LTBLUE}${agent_file}${C_NONE} to ${C_LTBLUE}${agent_dst_path}${C_NONE}."
             cp "${agent_src_path}" "${agent_dst_path}"
+            agents_installed=$((agents_installed+1))
         done
     fi
-    __shuggtool_toolsetup_print_good "Installed ${agent_count} agent(s) for GitHub Copilot CLI."
+    __shuggtool_toolsetup_print_good "Installed ${agents_installed} agent(s) for GitHub Copilot CLI."
+
+    # ----------------------- Instruction Installation ----------------------- #
+    # next, we'll copy my instructions into a place where GHCP can find them.
+    # Start by making sure the source directory exists
+    if [ ! -d "${__shuggtool_toolsetup_ghcp_instructions_src}" ]; then
+        __shuggtool_toolsetup_print_bad "Failed to find instructions source directory at ${C_LTBLUE}${__shuggtool_toolsetup_ghcp_instructions_src}${C_NONE}."
+        return 1
+    fi
+
+    # locate all instructions files and make sure we have some
+    instructions_files=($(find "${__shuggtool_toolsetup_ghcp_instructions_src}" -type f -name "*.md"))
+    instructions_count=${#instructions_files[@]}
+    if [ ${instructions_count} -eq 0 ]; then
+        __shuggtool_toolsetup_print_note "Failed to find any instructions files in ${C_LTBLUE}${__shuggtool_toolsetup_ghcp_instructions_src}${C_NONE}."
+    else
+        # make sure the destination directory exists
+        if [ ! -d "${__shuggtool_toolsetup_ghcp_instructions_dst}" ]; then
+            mkdir -p "${__shuggtool_toolsetup_ghcp_instructions_dst}"
+        fi
+
+        instructions_installed=0
+        for instructions_file in "${instructions_files[@]}"; do
+            instructions_src_path="$(realpath "${instructions_file}")"
+
+            # Skip `README.md` files:
+            instructions_filename="$(basename "${instructions_file}")"
+            if [ "${instructions_filename,,}" == "readme.md" ]; then
+                continue
+            fi
+
+            # determine the path to copy the instructions file into
+            instructions_dst_name="$(basename "${instructions_file}")"
+            instructions_dst_path="${__shuggtool_toolsetup_ghcp_instructions_dst}/${instructions_dst_name}"
+
+            # copy the instructions file
+            __shuggtool_toolsetup_print_note "Installing instructions from ${C_LTBLUE}${instructions_file}${C_NONE} to ${C_LTBLUE}${instructions_dst_path}${C_NONE}."
+            cp "${instructions_src_path}" "${instructions_dst_path}"
+            instructions_installed=$((instructions_installed+1))
+        done
+    fi
+    __shuggtool_toolsetup_print_good "Installed ${instructions_installed} instructions(s) for GitHub Copilot CLI."
 
     # -------------------------- Skill Installation -------------------------- #
     # next, we'll do the same thing for skills. Copy over all the skills I have
