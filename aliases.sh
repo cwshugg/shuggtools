@@ -90,6 +90,13 @@ if [ ${is_wsl} -ne 0 ]; then
 fi
 
 
+# ------------------------------ Copilot Stuff ------------------------------- #
+# Point copilot to the directory where I install my custom agents,
+# instructions, etc.
+#
+# https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-custom-instructions
+export COPILOT_CUSTOM_INSTRUCTIONS_DIRS="${HOME}/.copilot/"
+
 # ------------------------------ Task Tracking ------------------------------- #
 # I am currently working on writing my own advanced task tracking tool, but in
 # the meantime, I need something to work with. This is a simple solution.
