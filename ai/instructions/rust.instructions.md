@@ -97,6 +97,17 @@ In general, minimize the number of crate dependencies unless:
 * Error types should be meaningful and well-behaved (implement standard traits).
 * Validate function arguments and return appropriate errors for invalid input.
 
+## Logging
+
+* Logging should be added to most projects, especially those with high amounts of complexity or those that represent a comprehensive system where logging could eventually be consumed by a user.
+* When logging is justified, please use the [Rust `log` crate](https://docs.rs/log/latest/log/).
+    * Make generous use of the `debug!`-level logs to share information about the system's inner workings.
+        * This should be disabled by default; the user will enable it when they wish.
+    * The `info!` level should be used for important information, but it should not be implemented such that the logs are "flooded" with `info!`-level messages.
+    * The `warn!` level should be used to raise concerns that are not propagated up to the user as an error.
+    * The `error!` level should be used to raise concerns that *are* propagated up to the user as an error.
+* Please ensure no secrets (passwords, cryptographic keys, etc.) are leaked through the logs.
+
 ## API Design Guidelines
 
 ### Common Traits Implementation
@@ -162,4 +173,7 @@ Before publishing or reviewing Rust code, ensure:
 * [ ] **API Design**: Functions are predictable, flexible, and type-safe
 * [ ] **Future Proofing**: Private fields in structs, sealed traits where appropriate
 * [ ] **Tooling**: Code passes `cargo fmt`, `cargo clippy`, and `cargo test`
+
+Your code will be reviewed by humans and other agents for quality based on these instructions.
+Please ensure the utmost quality in your work; thank you!
 
