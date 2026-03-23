@@ -113,13 +113,64 @@ function! ToggleALEInBuffer()
     endif
 endfunction
 
+" ------------------------------- Git Helpers -------------------------------- "
+" Helper function that retrieves the root of the Git repository that contains:
+"
+" 1. The file path provided as a parameter to this function, OR
+" 2. The current file being edited, OR
+" 3. The current working directory of Vim
+"
+" Returns `v:null` if a Git root cannot be found.
+function! GitGetRoot(...)
+    " If an argument is provided, expand it into a file path:
+    let l:fpath = a:0 ? trim(a:1) : expand('%:p')
+    if empty(l:fpath)
+        let l:fpath = getcwd()
+    endif
+
+    " Is the path pointing to a file? If so, we need to grab its directory
+    " path to use for `git -C`:
+    if filereadable(l:fpath)
+        let l:fpath = fnamemodify(l:fpath, ':h')
+    endif
+
+    " Use `systemlist` to run the git command; output is split by line for
+    " easy parsing. Make sure the command didn't fail, and that it returned
+    " some sort of output.
+    let l:cmd = 'git -C ' . shellescape(l:fpath) . ' rev-parse --show-toplevel'
+    let l:out = systemlist(l:cmd)
+    if v:shell_error != 0 || empty(l:out)
+        return v:null
+    endif
+
+    " Make sure the returned output is a directory path:
+    let l:root = l:out[0]
+    if !isdirectory(l:root)
+        echoerr "Git output is not a valid directory: " . l:root
+        return v:null
+    endif
+
+    return l:root
+endfunction
+
 " ----------------------------- Editing Helpers ------------------------------ "
 " Helper function that retrieves the current buffer's directory and updates
 " the buffer to edit that directory.
-function! EditCurrentBufferDirectory()
+function! EditParentDirectory()
     let s:current_file_path = expand('%:p')
     let s:current_file_dir = fnamemodify(s:current_file_path, ':h')
     execute 'edit ' . s:current_file_dir
+endfunction
+
+function! EditGitRoot()
+    let l:current_file_path = expand('%:p')
+    let l:git_root = GitGetRoot(l:current_file_path)
+    if l:git_root != v:null
+        execute 'edit ' . l:git_root
+        return
+    endif
+
+    echoerr 'No Git repository found for current file. (' . l:current_file_path . ')'
 endfunction
 
 " ------------------------------- Tab Helpers -------------------------------- "
@@ -134,6 +185,18 @@ function! TabNewParentDirectory()
     let s:current_file_path = expand('%:p')
     let s:current_file_dir = fnamemodify(s:current_file_path, ':h')
     execute 'tabnew ' . s:current_file_dir
+endfunction
+
+function! TabNewGitRoot()
+    let l:current_file_path = expand('%:p')
+    let l:git_root = GitGetRoot(l:current_file_path)
+    if l:git_root != v:null
+        execute 'tabnew ' . l:git_root
+        return
+    endif
+
+    " If we don't have a git root, show an error message and do nothing:
+    echoerr 'No Git repository found for current file. (' . l:current_file_path . ')'
 endfunction
 
 
@@ -526,7 +589,10 @@ nnoremap <leader>s :call ToggleSpellcheck()<cr>
 " Make `leader + e + d` edit the current buffer's directory. This is useful
 " when I'm editing a file, then realize I want to open a different file in the
 " same directory.
-nnoremap <leader>ed :call EditCurrentBufferDirectory()<cr>
+nnoremap <leader>ed :call EditParentDirectory()<cr>
+
+" Make `leader + e + r` edit the current buffer's git root directory.
+nnoremap <leader>er :call EditGitRoot()<cr>
 
 " ------------------------------- Tab Hotkeys -------------------------------- "
 " Make `leader + t` open the current file in a new tab.
@@ -534,6 +600,10 @@ nnoremap <leader>t :call TabNewSameFile()<cr>
 
 " Make `leader + t + d` open the current file's parent directory in a new tab.
 nnoremap <leader>td :call TabNewParentDirectory()<cr>
+
+" Make `leader + t + r` open the current file's git root directory in a new
+" tab.
+nnoremap <leader>tr :call TabNewGitRoot()<cr><cr>
 
 " ----------------------------- Copilot Hotkeys ------------------------------ "
 " Set up a variety of Copilot-based leader-key bindings
