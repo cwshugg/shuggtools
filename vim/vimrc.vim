@@ -113,12 +113,27 @@ function! ToggleALEInBuffer()
     endif
 endfunction
 
+" ----------------------------- Editing Helpers ------------------------------ "
 " Helper function that retrieves the current buffer's directory and updates
 " the buffer to edit that directory.
 function! EditCurrentBufferDirectory()
     let s:current_file_path = expand('%:p')
     let s:current_file_dir = fnamemodify(s:current_file_path, ':h')
     execute 'edit ' . s:current_file_dir
+endfunction
+
+" ------------------------------- Tab Helpers -------------------------------- "
+" Helper function that opens the current file in a new tab.
+function! TabNewSameFile()
+    let s:current_file_path = expand('%:p')
+    execute 'tabnew ' . s:current_file_path
+endfunction
+
+" Helper function that opens the current file's parent directory in a new tab.
+function! TabNewParentDirectory()
+    let s:current_file_path = expand('%:p')
+    let s:current_file_dir = fnamemodify(s:current_file_path, ':h')
+    execute 'tabnew ' . s:current_file_dir
 endfunction
 
 
@@ -507,11 +522,20 @@ nnoremap <leader>M :call SearchForGitMergeConflict()<cr>
 " Make `leader + s` toggle spell-checking.
 nnoremap <leader>s :call ToggleSpellcheck()<cr>
 
+" ----------------------------- Editing Hotkeys ------------------------------ "
 " Make `leader + e + d` edit the current buffer's directory. This is useful
 " when I'm editing a file, then realize I want to open a different file in the
 " same directory.
 nnoremap <leader>ed :call EditCurrentBufferDirectory()<cr>
 
+" ------------------------------- Tab Hotkeys -------------------------------- "
+" Make `leader + t` open the current file in a new tab.
+nnoremap <leader>t :call TabNewSameFile()<cr>
+
+" Make `leader + t + d` open the current file's parent directory in a new tab.
+nnoremap <leader>td :call TabNewParentDirectory()<cr>
+
+" ----------------------------- Copilot Hotkeys ------------------------------ "
 " Set up a variety of Copilot-based leader-key bindings
 nnoremap <leader>ct :call CopilotToggle()<cr>
 nnoremap <leader>cc :CopilotChatOpen<cr>
