@@ -10,10 +10,10 @@ __shuggtool_toolsetup_nodejs_version="24"
 __shuggtool_toolsetup_ghcp_install_url="https://gh.io/copilot-install"
 
 # Copilot settings
-__shuggtool_toolsetup_ghcp_dst="${HOME}/.copilot"
-__shuggtool_toolsetup_ghcp_agent_dst="${__shuggtool_toolsetup_ghcp_dst}/agents"
-__shuggtool_toolsetup_ghcp_skill_dst="${__shuggtool_toolsetup_ghcp_dst}/skills"
-__shuggtool_toolsetup_ghcp_instructions_dst="${__shuggtool_toolsetup_ghcp_dst}/instructions"
+
+# AI-tooling settings
+__shuggtool_toolsetup_ai_repo_url="https://github.com/cwshugg/cobots"
+__shuggtool_toolsetup_ai_install_dir="${HOME}/.copilot"
 
 
 # ================================= Helpers ================================== #
@@ -597,10 +597,48 @@ function __shuggtool_toolsetup_ghcp_cli()
     fi
     __shuggtool_toolsetup_print_good "Successfully installed ${C_YELLOW}GitHub Copilot CLI${C_NONE}."
 
-    # -------------------------- Agent Installation -------------------------- #
-    # TODO - clone repo and copy all agent files, instruction files, etc.
+    return 0
+}
 
-    __shuggtool_toolsetup_print_bad "TODO - NEED TO FINISH AGENT SETUP"
+
+# ================================ AI Tooling ================================ #
+# Installs my own AI tooling to my local environment.
+function __shuggtool_toolsetup_ai()
+{
+    # First, clone the repository that contains my AI tools
+    repo_clone_dirname="$(basename "${__shuggtool_toolsetup_ai_repo_url}")"
+    repo_clone_path="$(realpath "${HOME}/.${repo_clone_dirname}")"
+    if [ -d "${repo_clone_path}" ]; then
+        __shuggtool_toolsetup_print_note "AI tooling repository already cloned at ${C_LTBLUE}${repo_clone_path}${C_NONE}. Deleting."
+        rm -rf "${repo_clone_path}"
+    fi
+
+    __shuggtool_toolsetup_print_note "Cloning AI tooling repository from ${C_LTBLUE}${__shuggtool_toolsetup_ai_repo_url}${C_NONE} to ${C_LTBLUE}${repo_clone_path}${C_NONE}..."
+    git clone "${__shuggtool_toolsetup_ai_repo_url}" "${repo_clone_path}" > /dev/null 2> /dev/null
+
+    # Make sure the directory exists after cloning:
+    if [ ! -d "${repo_clone_path}" ]; then
+        __shuggtool_toolsetup_print_bad "Failed to clone AI tooling repository."
+        return 1
+    fi
+
+    # Find the setup script and execute it.
+    setup_script="${repo_clone_path}/scripts/install.sh"
+    if [ ! -f "${setup_script}" ]; then
+        __shuggtool_toolsetup_print_bad "Failed to find AI tooling setup script at ${C_LTBLUE}${setup_script}${C_NONE}."
+        return 1
+    fi
+
+    __shuggtool_toolsetup_print_note "Running AI tooling setup script..."
+    bash "${setup_script}" --install-path "${__shuggtool_toolsetup_ai_install_dir}"
+    retval=$?
+
+    if [ ${retval} -ne 0 ]; then
+        __shuggtool_toolsetup_print_bad "AI tooling setup script failed with exit code ${retval}."
+        return ${retval}
+    fi
+    __shuggtool_toolsetup_print_good "Successfully installed AI tooling to ${C_LTBLUE}${__shuggtool_toolsetup_ai_install_dir}${C_NONE}."
+    return 0
 }
 
 
@@ -681,6 +719,10 @@ function __shuggtool_toolsetup()
 
     __shuggtool_toolsetup_print_prefix="ghcp-cli"
     __shuggtool_toolsetup_ghcp_cli
+    echo ""
+
+    __shuggtool_toolsetup_print_prefix="ai"
+    __shuggtool_toolsetup_ai
     echo ""
 
     __shuggtool_toolsetup_print_prefix="lumen"
