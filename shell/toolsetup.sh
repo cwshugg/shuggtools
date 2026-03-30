@@ -607,7 +607,7 @@ function __shuggtool_toolsetup_ai()
 {
     # First, clone the repository that contains my AI tools
     repo_clone_dirname="$(basename "${__shuggtool_toolsetup_ai_repo_url}")"
-    repo_clone_path="$(realpath "${HOME}/.${repo_clone_dirname}")"
+    repo_clone_path="$(realpath "${HOME}/.${repo_clone_dirname}_repo")"
     if [ -d "${repo_clone_path}" ]; then
         __shuggtool_toolsetup_print_note "AI tooling repository already cloned at ${C_LTBLUE}${repo_clone_path}${C_NONE}. Deleting."
         rm -rf "${repo_clone_path}"
