@@ -144,11 +144,17 @@ fi
 # instructions, etc.
 #
 # https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-custom-instructions
-export COPILOT_CUSTOM_INSTRUCTIONS_DIRS="${HOME}/.copilot/"
+copilot_root="${HOME}/.copilot"
+export COPILOT_CUSTOM_INSTRUCTIONS_DIRS="${copilot_root}/"
+
+# If we have an aliases file in the copilot directory, source it:
+if [ -f "${copilot_root}/aliases.sh" ]; then
+    source "${copilot_root}/aliases.sh"
+fi
 
 # ------------------------------ Task Tracking ------------------------------- #
-# I am currently working on writing my own advanced task tracking tool, but in
-# the meantime, I need something to work with. This is a simple solution.
+# A simple, universal way to track tasks in my various markdown (and other)
+# files.
 
 function __todos_grep_for_tag()
 {
