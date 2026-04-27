@@ -612,10 +612,6 @@ nnoremap <leader>cc :CopilotChatOpen<cr>
 nnoremap <leader>ccs :CopilotChatSave<cr>
 nnoremap <leader>ccl :CopilotChatLoad<cr>
 
-" Make a few common commands work the same if I accidentally capitalize them.
-call CreateCommandAlias("w", "W")
-call CreateCommandAlias("q", "Q")
-
 
 " ============================== GVim Settings =============================== "
 if s:is_gui
