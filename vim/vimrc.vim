@@ -229,6 +229,7 @@ if s:os_linux
     " My plugins
     Plugin 'cwshugg/argonaut.vim'
     Plugin 'cwshugg/fops.vim'
+    Plugin 'cwshugg/lexicon.vim'
     Plugin 'file://' . expand('~/.vim/shuggtools')
 
     call vundle#end()                       " finish vundle setup
@@ -584,6 +585,17 @@ nnoremap <leader>M :call SearchForGitMergeConflict()<cr>
 
 " Make `leader + s` toggle spell-checking.
 nnoremap <leader>s :call ToggleSpellcheck()<cr>
+
+" ----------------------------- Writing Hotkeys ------------------------------ "
+" Some hotkeys centered around writing prose.
+
+" Make `leader + w + t` invoke `lexicon.vim` to look up the current word in the
+" thesaurus.
+nnoremap <leader>wt :LexiconThesaurus<cr>
+
+" Make `leader + w + d` invoke `lexicon.vim` to look up the current word in the
+" dictionary.
+nnoremap <leader>wd :LexiconDictionary<cr>
 
 " ----------------------------- Editing Hotkeys ------------------------------ "
 " Make `leader + e + d` edit the current buffer's directory. This is useful
