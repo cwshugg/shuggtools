@@ -73,20 +73,6 @@ function __shuggtool_lumen_binary()
     return 0
 }
 
-function __shuggtool_lumen()
-{
-    lumen_binary="$(__shuggtool_lumen_binary)"
-    if [ -z "${lumen_binary}" ]; then
-        return 1
-    fi
-
-    "${lumen_binary}" "$@"
-    return $?
-}
-alias lumen="__shuggtool_lumen"
-alias gdiff="lumen diff"
-alias gd="gdiff"
-
 # coding/debugging aliases
 alias valg="valgrind -v --leak-check=full --show-leak-kinds=all --track-origins=yes"
 alias gdb="gdb -q" # quiet-mode GDB (don't print intro)
