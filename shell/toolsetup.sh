@@ -642,44 +642,6 @@ function __shuggtool_toolsetup_ai()
 }
 
 
-# ================================== Lumen =================================== #
-function __shuggtool_toolsetup_lumen()
-{
-    # Lumen is a terminal-based git diff viewer (among other things). It
-    # provides a really nice interface for scrolling through git diffs; much
-    # better than vimdiff or the standard `git diff`.
-
-    # Look for the `cargo` binary; we need this to install lumen.
-    cargo_bin="$(which cargo 2> /dev/null)"
-    if [ -z "${cargo_bin}" ]; then
-        __shuggtool_toolsetup_print_bad "Couldn't find ${C_YELLOW}cargo${C_NONE} binary."
-        __shuggtool_toolsetup_print_alert "Make sure you have Rust installed and that ${C_YELLOW}cargo${C_NONE} is in your PATH."
-        return 1
-    fi
-
-    # Invoke cargo to install lumen
-    __shuggtool_toolsetup_print_note "Installing lumen via cargo..."
-    ${cargo_bin} install lumen
-    install_result=$?
-
-    # If installation failed, return early
-    if [ ${install_result} -ne 0 ]; then
-        __shuggtool_toolsetup_print_bad "Failed to install lumen via cargo."
-        return 1
-    fi
-
-    # Otherwise, make sure the `lumen` binary can be found.
-    lumen_bin="$(which lumen 2> /dev/null)"
-    if [ -z "${lumen_bin}" ]; then
-        __shuggtool_toolsetup_print_bad "Couldn't find lumen binary after installation."
-        __shuggtool_toolsetup_print_alert "You may need to add the cargo bin directory to your PATH, source your .bashrc file, or open a new terminal."
-        return 1
-    fi
-
-    __shuggtool_toolsetup_print_good "Successfully installed ${C_YELLOW}lumen${C_NONE}."
-}
-
-
 # =================================== Main =================================== #
 function __shuggtool_toolsetup()
 {
@@ -723,10 +685,6 @@ function __shuggtool_toolsetup()
 
     __shuggtool_toolsetup_print_prefix="ai"
     __shuggtool_toolsetup_ai
-    echo ""
-
-    __shuggtool_toolsetup_print_prefix="lumen"
-    __shuggtool_toolsetup_lumen
     echo ""
 
     echo "Setup complete. Please source your bashrc file."
