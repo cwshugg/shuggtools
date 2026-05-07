@@ -13,7 +13,12 @@
     prompt = false
 
 [merge]
-    tool = vimdiff
+    tool = merg
+
+# Using my custom Vim plugin for merge conflicts
+[mergetool "merg"]
+    cmd = vim -c "MergMergetool --merged \"$MERGED\" --local \"$LOCAL\" --remote \"$REMOTE\" --base \"$BASE\"" "$MERGED"
+    trustExitCode = true
 
 [pull]
     rebase = false
@@ -31,7 +36,14 @@
 
 [alias]
     d = diff
+
+    # Custom Vim plugin for viewing git diffs
+    dd = "!vim +MergDiff"
+
     m = mergetool
+
+    # Custom Vim plugin for resolving merge conflicts
+    conflict = "!vim +MergConflict"
 
     # shortened commands
     a = add
