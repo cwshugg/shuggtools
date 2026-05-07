@@ -227,9 +227,10 @@ if s:os_linux
     Plugin 'NateLehman/kustocli-vim'        " working with Kusto query language
 
     " My plugins
-    Plugin 'cwshugg/argonaut.vim'
-    Plugin 'cwshugg/fops.vim'
-    Plugin 'cwshugg/lexicon.vim'
+    Plugin 'cwshugg/argonaut.vim'           " Argument parsing library
+    Plugin 'cwshugg/fops.vim'               " File operations library
+    Plugin 'cwshugg/merg.vim'               " Git diff & merge conflict plugin
+    Plugin 'cwshugg/lexicon.vim'            " Word lookup plugin
     Plugin 'file://' . expand('~/.vim/shuggtools')
 
     call vundle#end()                       " finish vundle setup
@@ -585,6 +586,30 @@ nnoremap <leader>M :call SearchForGitMergeConflict()<cr>
 
 " Make `leader + s` toggle spell-checking.
 nnoremap <leader>s :call ToggleSpellcheck()<cr>
+
+" ------------------------------- Merg Hotkeys ------------------------------- "
+" Hotkeys centered around my `merg.vim` plugin, which helps me resolve Git
+" merge conflicts.
+
+" `leader + g + c + n` - ('git conflict next') called `MergNext` to jump to
+" the next conflict spot.
+nnoremap <leader>gcn :MergNext<cr>
+
+" `leader + g + c + p` - ('git conflict previous') called `MergPrev` to jump
+" to the previous conflict spot.
+nnoremap <leader>gcp :MergPrev<cr>
+
+" `leader + g + t + y` - ('git conflict take yours') called `MergTakeYours` to
+" take the 'yours' side of the merge conflict.
+nnoremap <leader>gty :MergTakeYours<cr>
+
+" `leader + g + t + t` - ('git conflict take theirs') called `MergTakeTheirs`
+" to take the 'theirs' side of the merge conflict.
+nnoremap <leader>gtt :MergTakeTheirs<cr>
+
+" `leader + g + t + b` - ('git conflict take both') called `MergTakeBoth` to
+" take both sides of the merge conflict.
+nnoremap <leader>gtb :MergTakeBoth<cr>
 
 " ----------------------------- Writing Hotkeys ------------------------------ "
 " Some hotkeys centered around writing prose.
