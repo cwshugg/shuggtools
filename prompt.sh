@@ -11,12 +11,13 @@ __shuggtool_prompt_show_git=1               # enables git repo stats
 __shuggtool_prompt_show_git_repo_name=1     # shows git repo name
 __shuggtool_prompt_show_git_repo_branch=1   # shows git branch name
 __shuggtool_prompt_show_git_repo_diff=1     # show git diffs
+__shuggtool_prompt_show_duration=1          # show previous command duration
 
 # knobs to adjust what fields in the prompt to "collapse" (i.e. remove the text
 # and only show a small color block in its place). I added these in to have my
 # prompt take up less room if necessary.
 __shuggtool_prompt_collapse_username=0      # collapse username block
-__shuggtool_prompt_collapse_hostname=0      # collapse hostname block
+__shuggtool_prompt_collapse_hostname=1      # collapse hostname block
 __shuggtool_prompt_collapse_pwd=0           # collapse current directory block
 __shuggtool_prompt_collapse_workspace=0     # collapse current workspace
 
@@ -25,6 +26,34 @@ __shuggtool_prompt_bg_format="48;2"         # prefix for background colors
 __shuggtool_prompt_fg_format="38;2"         # prefix for foreground colors
 __shuggtool_prompt_previous_cmdnum=0        # prefix bash command number
 __shuggtool_prompt_previous_retval=0        # return captured during previous prompt generation
+__shuggtool_prompt_cmd_start_time=""         # epoch seconds when last command started
+__shuggtool_prompt_cmd_elapsed=""            # elapsed seconds of last command
+__shuggtool_prompt_in_prompt=0              # flag to avoid DEBUG trap during prompt
+
+# DEBUG trap to capture the start time of each command. Guarded to avoid
+# re-recording the start time during prompt generation.
+__shuggtool_prompt_debug_trap()
+{
+    # don't record start time while the prompt function is running
+    if [ ${__shuggtool_prompt_in_prompt} -ne 0 ]; then
+        return
+    fi
+    # only record the start time once per command (first DEBUG after prompt)
+    if [ -z "${__shuggtool_prompt_cmd_start_time}" ]; then
+        # prefer EPOCHREALTIME (bash 5.0+) for sub-second precision, then
+        # fall back to date +%s.%N, then plain integer seconds
+        if [ -n "${EPOCHREALTIME+x}" ]; then
+            __shuggtool_prompt_cmd_start_time="${EPOCHREALTIME}"
+        else
+            __shuggtool_prompt_cmd_start_time="$(date +%s.%N 2>/dev/null)"
+            # if %N is not supported (e.g. macOS), fall back to integer
+            if [[ "${__shuggtool_prompt_cmd_start_time}" == *"N"* ]]; then
+                __shuggtool_prompt_cmd_start_time="$(date +%s)"
+            fi
+        fi
+    fi
+}
+trap '__shuggtool_prompt_debug_trap' DEBUG
 
 
 # ------------------------ Prompt Adjustment Aliases ------------------------- #
@@ -159,6 +188,25 @@ function __shuggtool_prompt_command()
     retval=$?
     shell_pid="$$"
 
+    # mark that we're inside the prompt function (guards the DEBUG trap)
+    __shuggtool_prompt_in_prompt=1
+
+    # compute elapsed time for the previous command (with sub-second precision)
+    __shuggtool_prompt_cmd_elapsed=""
+    if [ ! -z "${__shuggtool_prompt_cmd_start_time}" ]; then
+        local now
+        if [ -n "${EPOCHREALTIME+x}" ]; then
+            now="${EPOCHREALTIME}"
+        else
+            now="$(date +%s.%N 2>/dev/null)"
+            if [[ "${now}" == *"N"* ]]; then
+                now="$(date +%s)"
+            fi
+        fi
+        # use awk for floating-point subtraction, output to 3 decimal places
+        __shuggtool_prompt_cmd_elapsed="$(awk "BEGIN {printf \"%.3f\", ${now} - ${__shuggtool_prompt_cmd_start_time}}")"
+    fi
+
     # if the bash version is 4.4 or greater, we can use '@P' expansion to force
     # PS1-style expansion of the "\#" string
     bash_version_4_4=0
@@ -202,21 +250,21 @@ function __shuggtool_prompt_command()
     # add a username block to PS1
     username_str=" \u "
     if [ ${__shuggtool_prompt_collapse_username} -ne 0 ]; then
-        username_str="  "
+        username_str=""
     fi
     __shuggtool_prompt_block "${username_bgc}" "${username_fgc}" "${username_str}"
 
     # add a hostname block
     hostname_str=" \h "
     if [ ${__shuggtool_prompt_collapse_hostname} -ne 0 ]; then
-        hostname_str="  "
+        hostname_str=""
     fi
     __shuggtool_prompt_block "${hostname_bgc}" "${hostname_fgc}" "${hostname_str}"
 
     # add current directory block
     pwd_str=" \W "
     if [ ${__shuggtool_prompt_collapse_pwd} -ne 0 ]; then
-        pwd_str="  "
+        pwd_str=""
     fi
     __shuggtool_prompt_block "${pwd_bgc}" "${pwd_fgc}" "${pwd_str}"
 
@@ -310,6 +358,39 @@ function __shuggtool_prompt_command()
             retval_str="${signame}"
         fi
         __shuggtool_prompt_block "${retval_bgc}" "${retval_fgc}" " ${retval_str} "
+    fi
+
+    # show the duration of the previous command (only when a command was run)
+    if [ ${__shuggtool_prompt_show_duration} -ne 0 ] && \
+       [[ "${cmdnum}" != "${__shuggtool_prompt_previous_cmdnum}" ]] && \
+       [ ! -z "${__shuggtool_prompt_cmd_elapsed}" ]; then
+        # add a separator
+        __shuggtool_prompt_block_separator "${pfx_bgc}" "${pfx_fgc}"
+
+        # add a clock symbol
+        dur_bgc="75;75;75"
+        dur_fgc="225;225;225"
+        __shuggtool_prompt_block "${dur_bgc}" "${dur_fgc}" " ⏱"
+
+        # format the elapsed time (sub-second precision, 2 decimal places)
+        dur_fgc="150;200;255"
+        local dur_formatted
+        dur_formatted="$(awk "BEGIN {
+            t = ${__shuggtool_prompt_cmd_elapsed} + 0;
+            if (t >= 3600) {
+                h = int(t / 3600);
+                m = int((t - (h * 3600)) / 60);
+                s = t - (h * 3600) - (m * 60);
+                printf \"%dh %dm %.2fs\", h, m, s;
+            } else if (t >= 60) {
+                m = int(t / 60);
+                s = t - (m * 60);
+                printf \"%dm %.2fs\", m, s;
+            } else {
+                printf \"%.2fs\", t;
+            }
+        }")"
+        __shuggtool_prompt_block "${dur_bgc}" "${dur_fgc}" " ${dur_formatted} "
     fi
 
     # check for the current git repo
@@ -510,6 +591,10 @@ function __shuggtool_prompt_command()
     # save the captured return value and cmdnum for next iteration
     __shuggtool_prompt_previous_retval=${retval}
     __shuggtool_prompt_previous_cmdnum="${cmdnum}"
+
+    # reset the command start time and allow the DEBUG trap to record again
+    __shuggtool_prompt_cmd_start_time=""
+    __shuggtool_prompt_in_prompt=0
 
     # add a space at the end of the prompt
     PS1="${PS1} "
