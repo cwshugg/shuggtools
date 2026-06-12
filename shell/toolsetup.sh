@@ -644,8 +644,8 @@ function __shuggtool_toolsetup_ai()
 
 # ================================== Ragtag ================================== #
 # Clones and installs the ragtag CLI tool.
-__shuggtool_toolsetup_ragtag_repo_url="git@github.com:cwshugg/ragtag.git"
-__shuggtool_toolsetup_ragtag_clone_dir="${HOME}/toolbox/ragtag"
+__shuggtool_toolsetup_ragtag_repo_url="https://github.com/cwshugg/ragtag.git"
+__shuggtool_toolsetup_ragtag_clone_dir="${HOME}/.ragtag-repo"
 
 function __shuggtool_toolsetup_ragtag()
 {
@@ -660,32 +660,36 @@ function __shuggtool_toolsetup_ragtag()
         return 1
     fi
 
-    # clone the repo if it doesn't already exist
+    # clean up any previous clone
     if [ -d "${clone_dir}" ]; then
-        __shuggtool_toolsetup_print_note "Repository already exists at ${C_LTBLUE}${clone_dir}${C_NONE}. Pulling latest..."
-        git -C "${clone_dir}" pull --quiet > /dev/null 2> /dev/null
-    else
-        __shuggtool_toolsetup_print_note "Cloning ragtag from ${C_LTBLUE}${repo_url}${C_NONE}..."
-        mkdir -p "$(dirname "${clone_dir}")"
-        git clone "${repo_url}" "${clone_dir}" > /dev/null 2> /dev/null
-        if [ ! -d "${clone_dir}" ]; then
-            __shuggtool_toolsetup_print_bad "Failed to clone ragtag repository."
-            return 1
-        fi
+        rm -rf "${clone_dir}"
+    fi
+
+    # clone the repo into a temporary directory
+    __shuggtool_toolsetup_print_note "Cloning ragtag from ${C_LTBLUE}${repo_url}${C_NONE}..."
+    mkdir -p "$(dirname "${clone_dir}")"
+    git clone "${repo_url}" "${clone_dir}" > /dev/null 2> /dev/null
+    if [ ! -d "${clone_dir}" ]; then
+        __shuggtool_toolsetup_print_bad "Failed to clone ragtag repository."
+        return 1
     fi
 
     # install the CLI tool via cargo install
-    local cli_dir="${clone_dir}/ragtag"
-    if [ ! -f "${cli_dir}/Cargo.toml" ]; then
-        __shuggtool_toolsetup_print_bad "Could not find ${C_LTBLUE}Cargo.toml${C_NONE} in ${C_LTBLUE}${cli_dir}${C_NONE}."
+    if [ ! -f "${clone_dir}/Cargo.toml" ]; then
+        __shuggtool_toolsetup_print_bad "Could not find ${C_LTBLUE}Cargo.toml${C_NONE} in ${C_LTBLUE}${clone_dir}${C_NONE}."
+        rm -rf "${clone_dir}"
         return 1
     fi
 
     __shuggtool_toolsetup_print_note "Installing ragtag CLI via ${C_YELLOW}cargo install${C_NONE}..."
-    if ! cargo install --path "${cli_dir}" --quiet 2> /dev/null; then
+    if ! cargo install --path "${clone_dir}" --quiet 2> /dev/null; then
         __shuggtool_toolsetup_print_bad "Failed to install ragtag CLI."
+        rm -rf "${clone_dir}"
         return 1
     fi
+
+    # clean up the temporary clone
+    rm -rf "${clone_dir}"
 
     __shuggtool_toolsetup_print_good "Installed ragtag CLI via ${C_YELLOW}cargo install${C_NONE}."
     return 0
