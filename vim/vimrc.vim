@@ -231,6 +231,7 @@ if s:os_linux
     Plugin 'cwshugg/fops.vim'               " File operations library
     Plugin 'cwshugg/merg.vim'               " Git diff & merge conflict plugin
     Plugin 'cwshugg/lexicon.vim'            " Word lookup plugin
+    Plugin 'cwshugg/ragtag.vim'             " Ragtag tagging plugin
     Plugin 'file://' . expand('~/.vim/shuggtools')
 
     call vundle#end()                       " finish vundle setup
@@ -621,6 +622,41 @@ nnoremap <leader>wt :LexiconThesaurus<cr>
 " Make `leader + w + d` invoke `lexicon.vim` to look up the current word in the
 " dictionary.
 nnoremap <leader>wd :LexiconDictionary<cr>
+
+" ------------------------------ Ragtag Hotkeys ------------------------------ "
+" Hotkeys for the `ragtag.vim` plugin, which manages @task(...) and other tags
+" embedded in source files. All ragtag bindings use the `r` prefix.
+
+" `leader + r + q` - query and highlight all tags in the current buffer.
+nnoremap <leader>rq :RagtagQuery<cr>
+
+" `leader + r + s` - display a summary of all tags.
+nnoremap <leader>rs :RagtagSummary<cr>
+
+" `leader + r + t + c` - create a new task via interactive buffer.
+nnoremap <leader>rtc :RagtagTaskCreate<cr>
+
+" `leader + r + t + s` - display an interactive task summary buffer.
+nnoremap <leader>rts :RagtagTaskSummary<cr>
+
+" `leader + r + t + s + c` - mark the task under the cursor as complete.
+nnoremap <leader>rtsc :RagtagTaskComplete<cr>
+
+" `leader + r + t + s + a` - set the task under the cursor to active.
+nnoremap <leader>rtsa :RagtagTaskActivate<cr>
+
+" `leader + r + t + s + d` - set the task under the cursor to inactive.
+nnoremap <leader>rtsd :RagtagTaskDeactivate<cr>
+
+" `leader + r + t + s + b` - set the task under the cursor to blocked.
+nnoremap <leader>rtsb :RagtagTaskBlock<cr>
+
+" `leader + r + t + s + A` - set the task under the cursor to abandoned.
+nnoremap <leader>rtsA :RagtagTaskAbandon<cr>
+
+" `leader + r + t + p` - set the task under the cursor's priority (prompts
+" for the priority number).
+nnoremap <leader>rtp :execute 'RagtagTaskPrioritize --priority ' . input('Priority: ')<cr>
 
 " ----------------------------- Editing Hotkeys ------------------------------ "
 " Make `leader + e + d` edit the current buffer's directory. This is useful
