@@ -658,6 +658,10 @@ nnoremap <leader>rtsA :RagtagTaskAbandon<cr>
 " for the priority number).
 nnoremap <leader>rtp :execute 'RagtagTaskPrioritize --priority ' . input('Priority: ')<cr>
 
+" `leader + r + t + t` - set the task under the cursor's worktime_spent
+" (prompts for the number).
+nnoremap <leader>rtt :execute 'RagtagTaskTime --worktime-spent ' . input('Worktime Spent: ')<cr>
+
 " ----------------------------- Editing Hotkeys ------------------------------ "
 " Make `leader + e + d` edit the current buffer's directory. This is useful
 " when I'm editing a file, then realize I want to open a different file in the
