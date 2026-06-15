@@ -370,7 +370,7 @@ function __shuggtool_prompt_command()
         # add a clock symbol
         dur_bgc="75;75;75"
         dur_fgc="225;225;225"
-        __shuggtool_prompt_block "${dur_bgc}" "${dur_fgc}" " ⏱"
+        __shuggtool_prompt_block "${dur_bgc}" "${dur_fgc}" " ⏱ "
 
         # format the elapsed time (sub-second precision, 2 decimal places)
         dur_fgc="150;200;255"
