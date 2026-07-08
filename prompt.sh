@@ -421,6 +421,8 @@ function __shuggtool_prompt_command()
                 git_bgc="170;150;190"
             elif [[ "${repo_url}" == *"azure"* ]]; then
                 git_bgc="150;150;210"
+            elif [[ "${repo_url}" == *"codeberg"* ]]; then
+                git_bgc="100;180;230"
             fi
 
             # add a prefix and count what we're displaying
