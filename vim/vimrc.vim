@@ -225,6 +225,7 @@ if s:os_linux
     Plugin 'dense-analysis/ale'             " plugin for syntax analysis when editing code
     Plugin 'rust-lang/rust.vim'             " plugin for developing Rust
     Plugin 'NateLehman/kustocli-vim'        " working with Kusto query language
+    Plugin 'kaarmu/typst.vim'               " writing Typst (https://typst.app) documents
 
     " My plugins
     Plugin 'cwshugg/argonaut.vim'           " Argument parsing library
