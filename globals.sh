@@ -750,7 +750,7 @@ function __shuggtool_git()
 # If we're on a WSL system within Windows, we want to set the git binary with
 # this alias.
 # Otherwise, we can ignore it.
-if [ $(__shuggtool_wsl_detect) ]; then
+if [ ! -z "$(__shuggtool_wsl_detect)" ]; then
     alias git="__shuggtool_git"
 fi
 
