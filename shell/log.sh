@@ -32,7 +32,7 @@ function __shuggtool_log_pad_number()
 {
     num="$1"
     width="$2"
-    
+
     # compare the length of the number to the expected width, then compensate
     # by prepending zeroes to the resulting string
     result="${num}"
@@ -42,7 +42,7 @@ function __shuggtool_log_pad_number()
         result="0${result}"
         diff=$((diff-1))
     done
-    
+
     echo "${result}"
 }
 
@@ -117,12 +117,12 @@ function __shuggtool_log_get_datestring()
     else
         ds="$(date -d "$(date)")"
     fi
-    
+
     # get the year, month, and day
     year="$(__shuggtool_log_get_date_year "${ds}")"
     month="$(__shuggtool_log_get_date_month "${ds}")"
     day="$(__shuggtool_log_get_date_day "${ds}")"
-    
+
     # pad with zeroes
     year="$(__shuggtool_log_pad_number "${year}" 4)"
     month="$(__shuggtool_log_pad_number "${month}" 2)"
@@ -137,11 +137,11 @@ function __shuggtool_log_translate_keyword()
     # grab the input and convert it to lowercase
     arg="$1"
     str="${arg,,}"
-    
+
     # get the current time in seconds and as a datestring
     now_secs=$(__shuggtool_log_get_date_seconds)
     now_str="$(__shuggtool_log_get_datestring "@${now_secs}")"
-    
+
     # SPECIAL KEYWORD 1: 'yesterday'
     if [[ "${str}" == "yesterday" ]] || [[ "${str}" == "yd" ]]; then
         yd_secs=$((now_secs-86400))
@@ -249,7 +249,7 @@ function __shuggtool_log_file_init()
     fi
 
     # start by retreiving the location from the user. If the user doesn't
-    # give a location, abort 
+    # give a location, abort
     __shuggtool_log_get_location
     location="${__shuggtool_log_get_location_retval}"
     if [ -z "${location}" ]; then
@@ -258,11 +258,11 @@ function __shuggtool_log_file_init()
         fi
         return 0
     fi
-    
+
     # create the file, retrieve the weekday, and write a template into the file
     touch ${fpath}
     weekday="$(date -d "${ds}" +%A)"
-    echo -e "# ${weekday} ${ds}\n\n* \n\n**Location:** ${location}.\n" > ${fpath}
+    echo -e "# ${weekday} ${ds}\n\n* \n\n@work-location(\"${location}\")\n" > ${fpath}
 }
 
 # Searches all log files for a specific string.
@@ -445,7 +445,7 @@ function __shuggtool_log()
     if [[ "$(date -d ${ds} 2>&1)" == *"invalid date"* ]]; then
         __shuggtool_print_error "the given date is invalid."
         return 2
-    fi  
+    fi
     year="${ds_array[0]}"   # grab the year
     month="${ds_array[1]}"  # grab the month
     day="${ds_array[2]}"    # grab the day
@@ -455,9 +455,9 @@ function __shuggtool_log()
        [ -z "$(__shuggtool_log_is_number ${month})" ] || \
        [ -z "$(__shuggtool_log_is_number ${day})" ]; then
         __shuggtool_print_error "each part of the date string must be a number."
-        return 
+        return
     fi
-    
+
     # pad all numbers with zeroes
     year="$(__shuggtool_log_pad_number "${year}" 4)"
     month="$(__shuggtool_log_pad_number "${month}" 2)"
@@ -479,7 +479,7 @@ function __shuggtool_log()
     # create the path for the log file and initialize it
     lfpath=${log_dir}/${year}-${month}-${day}${log_extension}
     __shuggtool_log_file_init ${lfpath} "${year}-${month}-${day}"
-    
+
     # open the log file for viewing/editing
     ${log_editor} ${lfpath} -c ":3"
 }
