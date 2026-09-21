@@ -386,6 +386,10 @@ if s:os_linux
         \ 'startify': v:false,
     \ }
 
+    " ----------------------- Git Gutter Configuration ----------------------- "
+    " Always enable the sign column:
+    set signcolumn=yes
+
     " ---------------------- Copilot Chat Configuration ---------------------- "
     " Set the chat window to open on the right-hand side of the current
     " window.
