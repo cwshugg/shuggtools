@@ -228,6 +228,9 @@ if s:os_linux
     Plugin 'github/copilot.vim'             " official GitHub Copilot plugin
     Plugin 'DanBradbury/copilot-chat.vim'   " unofficial Copilot chat plugin
 
+    " Git plugins
+    Plugin 'airblade/vim-gitgutter'         " vertical git indicator plugin
+
     " Syntax and language support plugins
     Plugin 'dense-analysis/ale'             " plugin for syntax analysis when editing code
     Plugin 'rust-lang/rust.vim'             " plugin for developing Rust
@@ -480,6 +483,9 @@ set showcmd
 set number
 set relativenumber
 
+" Increase the update frequency to 200ms
+set updatetime=200
+
 " Give me LOTS of undos!
 set undolevels=1000
 
@@ -571,10 +577,6 @@ nnoremap <leader>% :vsplit<cr>
 " jump my current window to the code definition.
 nnoremap <leader>g :Goto<cr>
 
-" Make `leader + d` map to `ALEHover`, to have ALE display information about
-" the symbol my cursor is currently on. ('d' is for 'details')
-nnoremap <leader>d :ALEHover<cr>
-
 " Make `leader + a` map to a function that toggles ALE on and off in the
 " current buffer.
 nnoremap <leader>a :call ToggleALEInBuffer()<cr>
@@ -596,9 +598,9 @@ nnoremap <leader>M :call SearchForGitMergeConflict()<cr>
 " Make `leader + s` toggle spell-checking.
 nnoremap <leader>s :call ToggleSpellcheck()<cr>
 
-" Make `leader + D` append the current date, in YYYY-MM-DD format, to the
+" Make `leader + d` append the current date, in YYYY-MM-DD format, to the
 " current cursor position.
-nnoremap <leader>D :call AppendCurrentDate()<cr>
+nnoremap <leader>d :call AppendCurrentDate()<cr>
 
 " ------------------------------- Merg Hotkeys ------------------------------- "
 " Hotkeys centered around my `merg.vim` plugin, which helps me resolve Git
