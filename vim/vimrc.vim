@@ -1,6 +1,5 @@
 " Connor's Vim Settings
 
-
 " =============================== OS Detection =============================== "
 let s:os_linux = has('unix')
 let s:os_windows = has('win32')
@@ -65,6 +64,14 @@ endfunction
 " Jumps to the next match of the search register's contents.
 function! GoToNextSearchMatch()
     normal! n
+endfunction
+
+" Helper function that inserts the date as YYYY-MM-DD at the current cursor
+" position.
+function! AppendCurrentDate()
+    let l:pos = getpos('.')
+    execute 'normal! a' . strftime('%Y-%m-%d')
+    call setpos('.', l:pos)
 endfunction
 
 " Helper function that fills the search register with Git merge conflict
@@ -588,6 +595,10 @@ nnoremap <leader>M :call SearchForGitMergeConflict()<cr>
 
 " Make `leader + s` toggle spell-checking.
 nnoremap <leader>s :call ToggleSpellcheck()<cr>
+
+" Make `leader + D` append the current date, in YYYY-MM-DD format, to the
+" current cursor position.
+nnoremap <leader>D :call AppendCurrentDate()<cr>
 
 " ------------------------------- Merg Hotkeys ------------------------------- "
 " Hotkeys centered around my `merg.vim` plugin, which helps me resolve Git
