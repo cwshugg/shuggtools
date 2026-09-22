@@ -120,6 +120,41 @@ function! ToggleALEInBuffer()
     endif
 endfunction
 
+" Windows mount prefixes can be overridden before this vimrc is sourced.
+if !exists('g:wsl_windows_mount_prefixes')
+    let g:wsl_windows_mount_prefixes = ['/mnt/']
+endif
+
+" Returns whether a path is within a configured Windows mount prefix.
+function! PathIsUnderWindowsMountPrefix(path)
+    if empty(a:path)
+        return 0
+    endif
+
+    let l:path = substitute(simplify(fnamemodify(a:path, ':p')), '/\+$', '', '') . '/'
+    for l:prefix in g:wsl_windows_mount_prefixes
+        let l:prefix =
+            \ substitute(simplify(fnamemodify(l:prefix, ':p')), '/\+$', '', '') . '/'
+        if stridx(l:path, l:prefix) == 0
+            return 1
+        endif
+    endfor
+    return 0
+endfunction
+
+" Returns whether a buffer is within a configured Windows mount prefix.
+function! BufferIsUnderWindowsMountPrefix(bufnr)
+    return bufexists(a:bufnr)
+        \ && PathIsUnderWindowsMountPrefix(bufname(a:bufnr))
+endfunction
+
+" Disables GitGutter buffer-locally on configured Windows mounts.
+function! DisableGitGutterOnWindowsMount(bufnr)
+    if BufferIsUnderWindowsMountPrefix(a:bufnr)
+        call gitgutter#buffer_disable(a:bufnr)
+    endif
+endfunction
+
 " ------------------------------- Git Helpers -------------------------------- "
 " Helper function that retrieves the root of the Git repository that contains:
 "
@@ -252,6 +287,22 @@ if s:os_linux
 
     call vundle#end()                       " finish vundle setup
     filetype plugin indent on               " required by vundle
+
+    " Run the policy before GitGutter's expensive BufEnter handler.
+    augroup gitgutter_windows_mount_policy
+        autocmd!
+        autocmd BufReadPre,BufNewFile,BufEnter *
+            \ call DisableGitGutterOnWindowsMount(+expand('<abuf>'))
+    augroup END
+
+    " Load GitGutter after the policy without changing its autocommands.
+    runtime plugin/gitgutter.vim
+
+    augroup gitgutter_windows_mount_policy
+        " Moving back to native storage stays disabled until reopen/manual enable.
+        autocmd BufFilePost,BufWritePost *
+            \ call DisableGitGutterOnWindowsMount(+expand('<abuf>'))
+    augroup END
 
     " -------------------------- Fern Configuration -------------------------- "
     " FT - File Tree. Utilizes Fern to open a 'project-drawer'-style file tree
@@ -750,4 +801,3 @@ if s:is_gui
         endfor
     endif
 endif
-
