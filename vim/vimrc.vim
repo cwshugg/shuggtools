@@ -225,10 +225,6 @@ if s:os_linux
     Plugin 'inkarkat/vim-mark'              " plugin for highlighting/searching multiple keywords
 
     " Git plugins
-    let g:gitgutter_git_executable = '/usr/bin/git'
-    if !executable(g:gitgutter_git_executable)
-        echoerr 'GitGutter requires executable /usr/bin/git.'
-    endif
     Plugin 'airblade/vim-gitgutter'         " vertical git indicator plugin
 
     " AI/LLM plugins
@@ -392,6 +388,11 @@ if s:os_linux
     \ }
 
     " ----------------------- Git Gutter Configuration ----------------------- "
+    let g:gitgutter_git_executable = '/usr/bin/git'
+    if !executable(g:gitgutter_git_executable)
+        echoerr 'GitGutter requires executable /usr/bin/git.'
+    endif
+
     " Always enable the sign column:
     set signcolumn=yes
 
