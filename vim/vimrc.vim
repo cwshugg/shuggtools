@@ -224,18 +224,19 @@ if s:os_linux
     Plugin 'inkarkat/vim-ingo-library'      " library plugin required by vim-mark (below)
     Plugin 'inkarkat/vim-mark'              " plugin for highlighting/searching multiple keywords
 
+    " Git plugins
+    Plugin 'airblade/vim-gitgutter'         " vertical git indicator plugin
+
     " AI/LLM plugins
     Plugin 'github/copilot.vim'             " official GitHub Copilot plugin
     Plugin 'DanBradbury/copilot-chat.vim'   " unofficial Copilot chat plugin
-
-    " Git plugins
-    Plugin 'airblade/vim-gitgutter'         " vertical git indicator plugin
 
     " Syntax and language support plugins
     Plugin 'dense-analysis/ale'             " plugin for syntax analysis when editing code
     Plugin 'rust-lang/rust.vim'             " plugin for developing Rust
     Plugin 'NateLehman/kustocli-vim'        " working with Kusto query language
     Plugin 'kaarmu/typst.vim'               " writing Typst (https://typst.app) documents
+    Plugin 'd2lang/d2-vim'                  " writing D2 diagrams (https://d2lang.com)
 
     " My plugins
     Plugin 'cwshugg/argonaut.vim'           " Argument parsing library
