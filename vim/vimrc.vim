@@ -737,6 +737,12 @@ nnoremap <leader>rtp :execute 'RagtagTaskPrioritize --priority ' . input('Priori
 " (prompts for the number).
 nnoremap <leader>rtt :execute 'RagtagTaskTime --worktime-spent ' . input('Worktime Spent: ')<cr>
 
+" `leader + r + c` - create a new tag
+nnoremap <leader>rc :RagtagCreate<cr>
+
+" `leader + r + c + p` - create a new tag from a preset
+nnoremap <leader>rcp :RagtagCreateFromPreset<cr>
+
 " ----------------------------- Editing Hotkeys ------------------------------ "
 " Make `leader + e + d` edit the current buffer's directory. This is useful
 " when I'm editing a file, then realize I want to open a different file in the
