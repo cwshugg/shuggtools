@@ -12,6 +12,9 @@ export EDITOR="${vim}"
 # alias for vim
 alias v="${vim}"
 
+# alias for clearing the terminal
+alias c="clear"
+
 # are we on WSL?
 is_wsl=0
 if [ ! -z "$(__shuggtool_wsl_detect)" ]; then
