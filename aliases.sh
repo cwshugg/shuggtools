@@ -51,6 +51,9 @@ alias h="history"
 alias bell="echo -en \"\a\""
 alias g="git"
 
+# alias for using tmux - `t`
+alias t="tmux"
+
 # tmux aliases; only set when launching a shell inside of tmux
 if [ ! -z "${TMUX}" ]; then
     alias tmux-pane="tmux display -pt \"${TMUX_PANE:?}\" \"#{pane_index}\""
